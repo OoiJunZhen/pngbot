@@ -14,6 +14,9 @@
 4. 278466 Ooi Jun Zhen <br>
 ![Jun Zhen](https://user-images.githubusercontent.com/103915949/201014364-a8759b18-9729-4089-871a-36e8ff964d4f.jpg) <br>
 017-4764379
+5. 276917 Ang Shu Khai <br>
+![7 Photo ASK](https://user-images.githubusercontent.com/80701138/201035139-35c0bd7e-4daf-4760-9870-928c9bf904fb.jpg)<br>
+018-7904739
 
 1. Matric Number & Name & Photo & Phone Number
 1. Mention who is the leader.
