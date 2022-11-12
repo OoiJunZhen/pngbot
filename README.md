@@ -3,7 +3,7 @@
 
 ## Group Info:
 1. 277364 Ang Toon Ph'ng <br>
-![me](https://user-images.githubusercontent.com/116187610/200738288-66f8eaa8-2f7d-43d4-8355-924b72aa8188.jpg | width="200") <br>
+2. <img src="https://user-images.githubusercontent.com/116187610/200738288-66f8eaa8-2f7d-43d4-8355-924b72aa8188.jpg" width="200"/> <br>
 012-4037118
 2. 281279 Low Xin Yin <br>
 ![xy](https://user-images.githubusercontent.com/103938851/201012783-13ae9d45-0d40-43c9-9c5a-0b81e6eb9bc0.jpg) <br>
