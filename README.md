@@ -2,9 +2,10 @@
 [Read the instruction](https://github.com/STIW3054-A221/class-activity-soc/blob/main/GroupProject.md)
 
 ## Group Info:
-1. 277364 Ang Toon Ph'ng <br>
-<img src="https://user-images.githubusercontent.com/116187610/200738288-66f8eaa8-2f7d-43d4-8355-924b72aa8188.jpg" width="200"/> <br>
-012-4037118
+|Bil | Matric No. |Name          | Photo          | Phone Number|
+|----|------------|--------------|----------------|-------------|
+1.   |277364      |Ang Toon Ph'ng| 
+<img src="https://user-images.githubusercontent.com/116187610/200738288-66f8eaa8-2f7d-43d4-8355-924b72aa8188.jpg" width="100"/> |012-4037118|
 2. 281279 Low Xin Yin <br>
 <img src="https://user-images.githubusercontent.com/103938851/201012783-13ae9d45-0d40-43c9-9c5a-0b81e6eb9bc0.jpg" width="200"/> <br>
 016-4465836
