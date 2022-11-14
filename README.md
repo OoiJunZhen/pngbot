@@ -24,11 +24,17 @@
 ## Title of your application
 ## Introduction
 ## Flow Diagram of the requirements
+![image](https://user-images.githubusercontent.com/80701138/201608693-4214f3a5-8e68-448a-9ce8-4ed0fb33ed03.png)
+
 ## User manual for installing your application on Heroku Server
 ## User manual/guideline for testing the system
 ## Result/Output (Screenshot of the output)
 ## Use Case Diagram
+![image](https://user-images.githubusercontent.com/80701138/201608575-185ea5c5-9f8e-4733-a693-6c26806a3b29.png)
+
 ## UML Class Diagram
+![image](https://user-images.githubusercontent.com/80701138/201608618-2f3ac5da-066d-4f5e-929e-6afe0b533b66.png)
+
 ## Database Design
 ## Youtube Presentation
 ## References (Not less than 20)
