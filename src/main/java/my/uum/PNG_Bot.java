@@ -14,29 +14,9 @@ import java.util.*;
 
 public class PNG_Bot extends TelegramLongPollingBot {
 
-    /**
-     * Hashmap for updating on User State
-     */
-    Map<Long, String> userState = new HashMap<>();
-
-    /**
-     * Hashmap for adding user information
-     */
-    Map<Long, Users> usersMap = new HashMap<>();
-
-    /**
-     * Hashmap for adding school admin information
-     */
-    Map<Long, SchoolAdmin> schoolAdminMap = new HashMap<>();
-
-    /**
-     * Hashmap for adding booking information
-     */
-    Map<Long, Booking> bookingMap = new HashMap<>();
-
     @Override
     public String getBotUsername() {
-        return "UUMBook_bot";
+        return "PNG_Bot";
     }
 
     @Override
@@ -44,19 +24,45 @@ public class PNG_Bot extends TelegramLongPollingBot {
         return "5910395144:AAHRugfXt0hbgX2FNLjdDVuMdQtm0OOq6Is";
     }
 
+    /**
+     * Hashmap for updating on User State
+     */
+    Map<Long, String> userState = new HashMap<Long, String>();
+
+    /**
+     * Hashmap for adding user information
+     */
+    Map<Long, Users> usersMap = new HashMap<Long, Users>();
+
+    /**
+     * Hashmap for adding school admin information
+     */
+    //Map<Long, SchoolAdmin> schoolAdminMap = new HashMap<Long, SchoolAdmin>();
+
+    /**
+     * Hashmap for adding booking information
+     */
+    //Map<Long, Booking> bookingMap = new HashMap<Long, Booking>();
+
     public void onUpdateReceived(Update update) {
         SendMessage sendMessage = new SendMessage();
-
+        DatabaseManager databaseManager = new DatabaseManager();
 
         Message message;
         if (update.hasMessage()) {
             message = update.getMessage();
 
+            System.out.println(message.getChatId().toString() + " " +  message.getText());
+
+            if(!userState.containsKey(message.getChatId())){
+                userState.put(message.getChatId(),"Start");
+            }
+
             //seperate command/input from user to recognize the command better and go to better switch case
             String[] command = message.getText().split(" ");
 
             //state will be categorized such as Book:Book1, the word at the front will be recognized and labeled based on the command
-            String[] state = userState.get(message.getChatId()).split(":",2);
+            //String[] state = userState.get(message.getChatId()).split(":",2);
 
 
             /**
@@ -64,7 +70,6 @@ public class PNG_Bot extends TelegramLongPollingBot {
              */
             switch (command[0]) {
                 case "/start":
-                    if (command.length == 1) {
                         String info = "Hi there! I'm Turtle, your UUM Room Booking Assistant.\n\n" +
                                 "Enter /book to book a room! The rooms can be booked between 8am to 8pm";
                         sendMessage = new SendMessage();
@@ -75,13 +80,15 @@ public class PNG_Bot extends TelegramLongPollingBot {
                         } catch (TelegramApiException e) {
                             e.printStackTrace();
                         }
-                    }
                     break;
                 case "/book":
+                    //当command flow正当开始的第一步骤时，我们会给这个chatID开object来接收接下来的information
+                    usersMap.put(message.getChatId(), new Users("","","","",""));
+
                     userState.put(message.getChatId(), "Book");
-                    String info = "Do you intend to book a room?";
+                    String info2 = "Do you intend to book a room?";
                     sendMessage = new SendMessage();
-                    sendMessage.setText(info);
+                    sendMessage.setText(info2);
                     sendMessage.setParseMode(ParseMode.MARKDOWN);
                     sendMessage.setChatId(message.getChatId());
 
@@ -125,7 +132,7 @@ public class PNG_Bot extends TelegramLongPollingBot {
             }
 
             //Go to check state if no command found AND State have the first word as 'Book'
-            if(!String.valueOf(command[0].charAt(0)).equals("/") && state[0].equals("Book")){
+            if(!String.valueOf(command[0].charAt(0)).equals("/") && userState.get(message.getChatId()).contains("Book:")){
                 switch (userState.get(message.getChatId())){
                     case "Book:IC":
                         //save user 在 Book:Book_Y 之后input的内容起来，进object
@@ -159,8 +166,7 @@ public class PNG_Bot extends TelegramLongPollingBot {
 
             if(buttonData[0].equals("Book")){
                 if(data.equals("Book:Book_Y")){
-                    //当command flow正当开始的第一步骤时，我们会给这个chatID开object来接收接下来的information
-                    usersMap.put(message.getChatId(), new Users("","","","",""));
+
 
                     //记得在save东西之后换state,可以看Book:IC做example
                     userState.put(message.getChatId(),"Book:IC");
