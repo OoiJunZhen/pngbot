@@ -3,6 +3,7 @@ package my.uum;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.api.methods.ParseMode;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
+import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
@@ -50,9 +51,14 @@ public class PNG_Bot extends TelegramLongPollingBot {
         Message message;
         if (update.hasMessage()) {
             message = update.getMessage();
+
+            //seperate command/input from user to recognize the command better and go to better switch case
             String[] command = message.getText().split(" ");
 
-            //usersMap.put(message.getChatId(), new Users("","","","",""));
+            //state will be categorized such as Book:Book1, the word at the front will be recognized and labeled based on the command
+            String[] state = userState.get(message.getChatId()).split(":",2);
+
+
             /**
              * Check the command inputted by the user
              */
@@ -87,8 +93,8 @@ public class PNG_Bot extends TelegramLongPollingBot {
                     InlineKeyboardButton inlineKeyboardButton2 = new InlineKeyboardButton();
                     inlineKeyboardButton1.setText("Yes");
                     inlineKeyboardButton2.setText("No");
-                    inlineKeyboardButton1.setCallbackData("Book1_Y");
-                    inlineKeyboardButton2.setCallbackData("Book1_N");
+                    inlineKeyboardButton1.setCallbackData("Book:Book_Y");
+                    inlineKeyboardButton2.setCallbackData("Book:Book_N");
                     inlineKeyboardButtonList.add(inlineKeyboardButton1);
                     inlineKeyboardButtonList.add(inlineKeyboardButton2);
                     inlineButtons.add(inlineKeyboardButtonList);
@@ -101,7 +107,7 @@ public class PNG_Bot extends TelegramLongPollingBot {
                         e.printStackTrace();
                     }
                     break;
-                case "/login":
+                /*case "/login":
                     String info2 = "Please enter your IC and Email to access your account\n\n" +
                             "Example: 990724070661@MyEmail@hotmail.com";
                     sendMessage = new SendMessage();
@@ -114,13 +120,54 @@ public class PNG_Bot extends TelegramLongPollingBot {
                         e.printStackTrace();
                     }
                     break;
+
+                 */
             }
 
-            //Go to check state if no command found AND State have the first word as 'B'
-            if(!String.valueOf(command[0].charAt(0)).equals("/")){
+            //Go to check state if no command found AND State have the first word as 'Book'
+            if(!String.valueOf(command[0].charAt(0)).equals("/") && state[0].equals("Book")){
+                switch (userState.get(message.getChatId())){
+                    case "Book:IC":
+                        //save user 在 Book:Book_Y 之后input的内容起来，进object
+                        usersMap.get(message.getChatId()).setName(message.getText());
 
+                        //set新的State
+                        userState.put(message.getChatId(),"Book:Email");
+                        sendMessage.setText("How about your NRIC number?\nExample: 001211080731");
+                        sendMessage.setChatId(message.getChatId());
+
+                        break;
+                }
+
+                try{
+                    execute(sendMessage);
+                }catch (TelegramApiException e){
+                    e.printStackTrace();
+                }
             }
 
+        }else if(update.hasCallbackQuery()){
+            //buttonData will be categorized such as Book:Conf_Y, same reason as state
+            String[] buttonData = update.getCallbackQuery().getData().split(":",2);
+
+            message = update.getCallbackQuery().getMessage();
+            CallbackQuery callbackQuery = update.getCallbackQuery();
+            String data = callbackQuery.getData();
+            sendMessage = new SendMessage();
+            sendMessage.setParseMode(ParseMode.MARKDOWN);
+            sendMessage.setChatId(message.getChatId());
+
+            if(buttonData[0].equals("Book")){
+                if(data.equals("Book:Book_Y")){
+                    //当command flow正当开始的第一步骤时，我们会给这个chatID开object来接收接下来的information
+                    usersMap.put(message.getChatId(), new Users("","","","",""));
+
+                    //记得在save东西之后换state,可以看Book:IC做example
+                    userState.put(message.getChatId(),"Book:IC");
+                    sendMessage.setText("May I have the your NAME (as per NRIC/PASSPORT) please?" +
+                            "\n\n P.S.:Don't worry, you can edit your information after the information are entered ;)");
+                }
+            }
         }
 
 
