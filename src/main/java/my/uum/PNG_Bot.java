@@ -52,12 +52,6 @@ public class PNG_Bot extends TelegramLongPollingBot {
             message = update.getMessage();
             String[] command = message.getText().split(" ");
 
-            //If the user chatID does not appear in userState hashmap, add/put the chatID into hashmap
-            if (!userState.containsKey(message.getChatId())) {
-                userState.put(message.getChatId(), "Start");
-            }
-
-
             //usersMap.put(message.getChatId(), new Users("","","","",""));
             /**
              * Check the command inputted by the user
