@@ -36,12 +36,12 @@ public class PNG_Bot extends TelegramLongPollingBot {
 
     @Override
     public String getBotUsername() {
-        return null;
+        return "UUMBook_bot";
     }
 
     @Override
     public String getBotToken() {
-        return null;
+        return "5910395144:AAHRugfXt0hbgX2FNLjdDVuMdQtm0OOq6Is";
     }
 
     public void onUpdateReceived(Update update) {
