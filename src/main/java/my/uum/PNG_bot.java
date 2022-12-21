@@ -1,27 +1,27 @@
 package my.uum;
 
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
-import org.telegram.telegrambots.meta.api.methods.ParseMode;
-import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
-import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
-import org.telegram.telegrambots.meta.api.objects.Message;
-import org.telegram.telegrambots.meta.api.objects.Update;
-import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
-import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
-import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
+        import org.telegram.telegrambots.meta.api.methods.ParseMode;
+        import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
+        import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
+        import org.telegram.telegrambots.meta.api.objects.Message;
+        import org.telegram.telegrambots.meta.api.objects.Update;
+        import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
+        import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
+        import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
-import java.util.*;
+        import java.util.*;
 
-public class PNG_Bot extends TelegramLongPollingBot {
+public class PNG_bot extends TelegramLongPollingBot {
 
     @Override
     public String getBotUsername() {
-        return "PNG_Bot";
+        return "PNG_bot";
     }
 
     @Override
     public String getBotToken() {
-        return "5910395144:AAHRugfXt0hbgX2FNLjdDVuMdQtm0OOq6Is";
+        return "5813032321:AAFWCPiKtpUVrPa5mTzu6ZhZhXGVP7Va_vc";
     }
 
     /**
@@ -46,40 +46,37 @@ public class PNG_Bot extends TelegramLongPollingBot {
 
     public void onUpdateReceived(Update update) {
         SendMessage sendMessage = new SendMessage();
-        DatabaseManager databaseManager = new DatabaseManager();
+        //DatabaseManager databaseManager = new DatabaseManager(); (I dont know why, but this line fucks up the system
 
-        Message message;
+
         if (update.hasMessage()) {
-            message = update.getMessage();
+            Message message = update.getMessage();
+            System.out.println(message.getChatId() + " " +  message.getText());
 
-            System.out.println(message.getChatId().toString() + " " +  message.getText());
 
             if(!userState.containsKey(message.getChatId())){
                 userState.put(message.getChatId(),"Start");
             }
 
             //seperate command/input from user to recognize the command better and go to better switch case
-            String[] command = message.getText().split(" ");
-
-            //state will be categorized such as Book:Book1, the word at the front will be recognized and labeled based on the command
-            //String[] state = userState.get(message.getChatId()).split(":",2);
+            String command = message.getText().toString();
 
 
             /**
              * Check the command inputted by the user
              */
-            switch (command[0]) {
+            switch (command) {
                 case "/start":
-                        String info = "Hi there! I'm Turtle, your UUM Room Booking Assistant.\n\n" +
-                                "Enter /book to book a room! The rooms can be booked between 8am to 8pm";
-                        sendMessage = new SendMessage();
-                        sendMessage.setText(info);
-                        sendMessage.setChatId(message.getChatId().toString());
-                        try {
-                            execute(sendMessage);
-                        } catch (TelegramApiException e) {
-                            e.printStackTrace();
-                        }
+                    String info = "Hi there! I'm Turtle, your UUM Room Booking Assistant.\n\n" +
+                            "Enter /book to book a room! The rooms can be booked between 8am to 8pm";
+                    sendMessage = new SendMessage();
+                    sendMessage.setText(info);
+                    sendMessage.setChatId(message.getChatId().toString());
+                    try {
+                        execute(sendMessage);
+                    } catch (TelegramApiException e) {
+                        e.printStackTrace();
+                    }
                     break;
                 case "/book":
                     //当command flow正当开始的第一步骤时，我们会给这个chatID开object来接收接下来的information
@@ -127,12 +124,11 @@ public class PNG_Bot extends TelegramLongPollingBot {
                         e.printStackTrace();
                     }
                     break;
-
                  */
             }
 
             //Go to check state if no command found AND State have the first word as 'Book'
-            if(!String.valueOf(command[0].charAt(0)).equals("/") && userState.get(message.getChatId()).contains("Book:")){
+            if(!String.valueOf(command.charAt(0)).equals("/") && userState.get(message.getChatId()).contains("Book:")){
                 switch (userState.get(message.getChatId())){
                     case "Book:IC":
                         //save user 在 Book:Book_Y 之后input的内容起来，进object
@@ -157,7 +153,7 @@ public class PNG_Bot extends TelegramLongPollingBot {
             //buttonData will be categorized such as Book:Conf_Y, same reason as state
             String[] buttonData = update.getCallbackQuery().getData().split(":",2);
 
-            message = update.getCallbackQuery().getMessage();
+            Message message = update.getCallbackQuery().getMessage();
             CallbackQuery callbackQuery = update.getCallbackQuery();
             String data = callbackQuery.getData();
             sendMessage = new SendMessage();

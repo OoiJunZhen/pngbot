@@ -13,7 +13,7 @@ public class App {
             App app = new App();
 
             TelegramBotsApi botApi = new TelegramBotsApi(DefaultBotSession.class);
-            botApi.registerBot(new PNG_Bot());
+            botApi.registerBot(new PNG_bot());
         } catch (TelegramApiException e) {
             e.printStackTrace();
         }

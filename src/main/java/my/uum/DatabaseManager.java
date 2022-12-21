@@ -18,7 +18,6 @@ public class DatabaseManager {
 
     }
 
-
     private Connection connect() {
         // SQLite connection string
         String url = "jdbc:sqlite:database.db";
