@@ -67,4 +67,20 @@
 ## Database Design
 ## Youtube Presentation
 ## References (Not less than 20)
+<ol>
+<li>Azamat Ordabekov. (2021). How to Create Telegram Bot in Java. YouTube. Retrieved December 10, 2022, from https://www.youtube.com/watch?v=XjOnp8TVNSQ.</li>
+<li>Java Code Junkie. (2021). PreparedStatement | Jdbc Tutorial for Beginners. YouTube. Retrieved December 15, 2022, from https://www.youtube.com/watch?v=T0P-cfsD45o.</li> 
+<li>RedSysTech. (2021). # 111 Internal Working of HashMap in Java | How HashMap works internally in java | Java | RedSysTech. YouTube. Retrieved December 12, 2022, from https://www.youtube.com/watch?v=HArvh9AZ1IE.</li> 
+<li>Sebastian Daschner. (2022). Creating and using a Telegram Bot with Java. YouTube. Retrieved December 10, 2022, from https://www.youtube.com/watch?v=LCuC88s6m4k.</li> 
+<li>Cameron McKenzie. (2020). Multiple Values Per Key in Java Maps Example. YouTube. Retrieved December 13, 2022, from https://www.youtube.com/watch?v=6Zlo5Kf-CV4&amp;t=199s.</li>
+<li>Class SimpleDateFormat. Java™ Platform Standard Ed. 7. (2020, June 24). Retrieved December 15, 2022, from https://docs.oracle.com/javase/7/docs/api/java/text/SimpleDateFormat.html </li>
+<li>Crack Concepts. (2019). How To Join 3 Or More Tables In Sql | Two Ways. YouTube. Retrieved December 16, 2022, from https://www.youtube.com/watch?v=wdz4MRlzOyE. </li>
+<li>Date format in java: Java simple date format. Edureka. (2022, November 29). Retrieved December 14, 2022, from https://www.edureka.co/blog/date-format-in-java/#:~:text=The%20DateFormat%20class%20in%20Java,Format%20classes%20are%20not%20synchronized. </li>
+<li>JavaTPoint. (n.d.). Java convert string to date - javatpoint. www.javatpoint.com. Retrieved December 14, 2022, from https://www.javatpoint.com/java-string-to-date </li>
+<li>Refsnes Data. (n.d.). Javascript string split(). JavaScript String split() Method. Retrieved December 11, 2022, from https://www.w3schools.com/jsref/jsref_split.asp </li>
+</li>SendPulse Team. (2022, November 18). How to Create and Connect a Telegram Chatbot. SendPulse. Retrieved December 10, 2022, from https://sendpulse.com/knowledge-base/chatbot/telegram/create-telegram-chatbot </li>
+<li>SQLite java: Select data. SQLite Tutorial. (2022, August 28). Retrieved December 13, 2022, from https://www.sqlitetutorial.net/sqlite-java/select/ </li>
+<li>Using SimpleDateFormat for custom date formatting and parsing. (n.d.). Retrieved December 17, 2022, from http://web.cs.ucla.edu/classes/winter15/cs144/projects/java/simpledateformat.html </li>
+</ol>
+
 ## JavaDoc
