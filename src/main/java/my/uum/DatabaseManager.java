@@ -12,7 +12,7 @@ public class DatabaseManager {
         try {
             connection = DriverManager.getConnection(url);
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            e.printStackTrace();
         }
 
     }
@@ -24,7 +24,7 @@ public class DatabaseManager {
         try {
             conn = DriverManager.getConnection(url);
         } catch (SQLException e) {
-            System.out.println(e.getMessage());
+            e.printStackTrace();
         }
         return conn;
     }
