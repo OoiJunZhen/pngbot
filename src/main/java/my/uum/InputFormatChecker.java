@@ -1,12 +1,21 @@
 package my.uum;
 
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 public class InputFormatChecker {
+
     public boolean checkICFormat(String ICNO){
         char c;
         int num;
         int sum = 0;
 
-        //1. Check whether the input is ICNO
+        //1. Check Whether the ICNO format is correct
+        // Check whether there are 12 digits
+        if(ICNO.length() != 12)
+            return false;
+
+        //2. Check whether the input is numbers
         try{
             Integer.parseInt(ICNO);
         } catch (NumberFormatException e){
@@ -15,8 +24,8 @@ public class InputFormatChecker {
             return false;
         }
 
-        //2. Check Whether the ICNO format is correct
-        //i. Check whether the month is over 12
+
+        //3 i. Check whether the month is over 12
         for(int i = 2; i < 4; i++){
             c = ICNO.charAt(i);
             num = Character.getNumericValue(c);
@@ -49,11 +58,66 @@ public class InputFormatChecker {
             return false;
         }
 
+
         //iii. Check whether the 7th character is 0
         if(ICNO.charAt(6)=='0')
             return true;
         else
             return false;
 
+    }
+
+    public boolean TelNumFormat(String TelNo){
+        //1. Check whether the input is numbers
+        try{
+            Integer.parseInt(TelNo);
+        } catch (NumberFormatException e){
+            e.printStackTrace();
+            //if not, return false
+            return false;
+        }
+
+        //2. Check whether the first number is 0
+        if(TelNo.charAt(0) != '0')
+            return false;
+
+        //3. check the length of Telephone number
+        if(!(TelNo.length() >= 9) && TelNo.length() <= 12)
+            return false;
+        else
+            return true;
+
+    }
+
+    public boolean NameFormat(String name){
+
+        //Check whether the name is null
+        if(name.length() == 0)
+            return false;
+
+        //Check whether the name if just bunch of numbers
+        try{
+            Integer.parseInt(name);
+        } catch (NumberFormatException e){
+            System.out.println("Name input correct");
+            //if not, return false
+            return true;
+        }
+
+        return false;
+    }
+
+
+    public boolean EmailFormat(String email){
+        final String emailRegex = "^[\\\\w!#$%&amp;'*+/=?`{|}~^-]+(?:\\\\.[\\\\w!#$%&amp;'*+/=?`{|}~^-]+)*@(?:[a-zA-Z0-9-]+\\\\.)+[a-zA-Z]{2,6}$";
+
+        //Inernet抄来的，别理那么多哈哈哈哈
+        Pattern pattern = Pattern.compile(emailRegex);
+        Matcher matcher = pattern.matcher(email);
+
+        if(matcher.matches())
+            return true;
+        else
+            return false;
     }
 }

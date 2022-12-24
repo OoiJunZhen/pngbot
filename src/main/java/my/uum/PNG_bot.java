@@ -47,6 +47,7 @@ public class PNG_bot extends TelegramLongPollingBot {
     public void onUpdateReceived(Update update) {
         SendMessage sendMessage = new SendMessage();
         DatabaseManager databaseManager = new DatabaseManager();
+        InputFormatChecker inputFormatChecker = new InputFormatChecker();
 
 
         if (update.hasMessage()) {
@@ -124,10 +125,41 @@ public class PNG_bot extends TelegramLongPollingBot {
                     }
                     break;
 
+                case "/test":
+                    usersMap.put(message.getChatId(), new Users("","","","",""));
+                    userState.put(message.getChatId(), "Test:Input");
+                    sendMessage = new SendMessage();
+                    sendMessage.setText("Enter Email");
+                    sendMessage.setChatId(message.getChatId().toString());
+
+                    try {
+                        execute(sendMessage);
+                    } catch (TelegramApiException e) {
+                        e.printStackTrace();
+                    }
+                    break;
+
+            }
+
+
+            //Go to check state if State have the first word as 'Test:'
+            if(!String.valueOf(message.getText().charAt(0)).equals("/") && userState.get(message.getChatId()).contains("Test:")){
+                if(inputFormatChecker.EmailFormat(message.getText())){
+                    sendMessage.setText("True");
+                }
+                else{
+                    sendMessage.setText("False");
+                }
+                sendMessage.setChatId(message.getChatId());
+                try{
+                    execute(sendMessage);
+                }catch (TelegramApiException e){
+                    e.printStackTrace();
+                }
             }
 
             //Go to check state if State have the first word as 'Book'
-            if(!String.valueOf(message.getText().charAt(0)).equals("/") && userState.get(message.getChatId()).contains("Book:")){
+            else if(!String.valueOf(message.getText().charAt(0)).equals("/") && userState.get(message.getChatId()).contains("Book:")){
                 //Get User State
                 switch (userState.get(message.getChatId())){
                     case "Book:IC":
@@ -140,6 +172,13 @@ public class PNG_bot extends TelegramLongPollingBot {
                         sendMessage.setChatId(message.getChatId());
 
                         break;
+
+                    case "Book:Email":
+
+                        //save user 在 Book:Book_Y 之后input的内容起来，进object
+                        usersMap.get(message.getChatId()).setICNO(message.getText());
+
+                        break;
                 }
 
                 try{
@@ -148,6 +187,7 @@ public class PNG_bot extends TelegramLongPollingBot {
                     e.printStackTrace();
                 }
             }
+
 
             //Go to check state if State have the first word as 'Login'
             else if(!String.valueOf(message.getText().charAt(0)).equals("/") && userState.get(message.getChatId()).contains("Login:")){
@@ -246,6 +286,11 @@ public class PNG_bot extends TelegramLongPollingBot {
                     userState.put(message.getChatId(),"Book:IC");
                     sendMessage.setText("May I have the your NAME (as per NRIC/PASSPORT) please?" +
                             "\n\n P.S.:Don't worry, you can edit your information after the information are entered ;)");
+
+                }else if(data.equals("Book:Book_N")){
+                    sendMessage.setText("I'll be here whenever you need me :)");
+                    userState.put(message.getChatId(),"Start");
+                    sendMessage.setChatId(message.getChatId());
                 }
             }
 
