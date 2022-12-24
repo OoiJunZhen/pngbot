@@ -9,7 +9,6 @@ public class App {
 
         //A part for Telegram Bot registration
         try {
-
             App app = new App();
 
             TelegramBotsApi botApi = new TelegramBotsApi(DefaultBotSession.class);

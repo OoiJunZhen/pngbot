@@ -46,7 +46,13 @@ public class PNG_bot extends TelegramLongPollingBot {
 
     public void onUpdateReceived(Update update) {
         SendMessage sendMessage = new SendMessage();
-        DatabaseManager databaseManager = new DatabaseManager();
+
+        try{
+            //DatabaseManager databaseManager = new DatabaseManager();
+        }catch(Exception e){
+            e.printStackTrace();
+        }
+        DatabaseManager databaseManager2 = new DatabaseManager();
 
 
         if (update.hasMessage()) {
@@ -112,11 +118,11 @@ public class PNG_bot extends TelegramLongPollingBot {
                         e.printStackTrace();
                     }
                     break;
-                /*case "/login":
-                    String info2 = "Please enter your IC and Email to access your account\n\n" +
+                case "/login":
+                    String info3 = "Please enter your IC and Email to access your account\n\n" +
                             "Example: 990724070661@MyEmail@hotmail.com";
                     sendMessage = new SendMessage();
-                    sendMessage.setText(info2);
+                    sendMessage.setText(info3);
                     sendMessage.setChatId(message.getChatId().toString());
                     userState.put(message.getChatId(), "Login");
                     try {
@@ -125,11 +131,11 @@ public class PNG_bot extends TelegramLongPollingBot {
                         e.printStackTrace();
                     }
                     break;
-                 */
+
             }
 
-            //Go to check state if no command found AND State have the first word as 'Book'
-            if(!String.valueOf(message.getText().charAt(0)).equals("/") && userState.get(message.getChatId()).contains("Book:")){
+            //Go to check state if State have the first word as 'Book'
+            if(userState.get(message.getChatId()).contains("Book:")){
                 switch (userState.get(message.getChatId())){
                     case "Book:IC":
                         //save user 在 Book:Book_Y 之后input的内容起来，进object
@@ -150,24 +156,24 @@ public class PNG_bot extends TelegramLongPollingBot {
                 }
             }
 
-            //Go to check state if no command found AND State have the first word as 'Login'
-            if(!String.valueOf(message.getText().charAt(0)).equals("/") && userState.get(message.getChatId()).contains("Login")){
+            //Go to check state if State have the first word as 'Login'
+            else if(userState.get(message.getChatId()).contains("Login:")){
                 switch (userState.get(message.getChatId())){
 
                     case "Login:Verification":
                         //if password verification is true
-                        if(databaseManager.passwordCheck(password[0],password[1])){
+                        if(databaseManager2.passwordCheck(password[0],password[1])){
                             //先把Password里的IC放进去usersMap
                             usersMap.get(message.getChatId()).setICNO(password[0]);
 
                             //用Assign好的IC来找user ID, 然后放进int userID里面
-                            int userID = databaseManager.getUserID(usersMap.get(message.getChatId()).getICNO());
+                            int userID = databaseManager2.getUserID(usersMap.get(message.getChatId()).getICNO());
 
                             //用userID 来找user的booking记录
-                            String bookedRooms = databaseManager.viewBookedList(userID, "start");
+                            String bookedRooms = databaseManager2.viewBookedList(userID, "start");
 
                             //打招呼和问user要做什么
-                            bookedRooms+= "\n\n" + databaseManager.greetings(usersMap.get(message.getChatId()).getICNO());
+                            bookedRooms+= "\n\n" + databaseManager2.greetings(usersMap.get(message.getChatId()).getICNO());
 
                             sendMessage = new SendMessage();
                             sendMessage.setText(bookedRooms);
@@ -228,13 +234,21 @@ public class PNG_bot extends TelegramLongPollingBot {
 
             if(buttonData[0].equals("Book")){
                 if(data.equals("Book:Book_Y")){
-
-
                     //记得在save东西之后换state,可以看Book:IC做example
                     userState.put(message.getChatId(),"Book:IC");
                     sendMessage.setText("May I have the your NAME (as per NRIC/PASSPORT) please?" +
                             "\n\n P.S.:Don't worry, you can edit your information after the information are entered ;)");
                 }
+            }
+
+            else if(buttonData[0].equals("Login")){
+
+            }
+
+            try {
+                execute(sendMessage);
+            } catch (TelegramApiException e) {
+                e.printStackTrace();
             }
         }
 
