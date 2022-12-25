@@ -109,7 +109,7 @@ public class InputFormatChecker {
 
 
     public boolean EmailFormat(String email){
-        final String emailRegex = "^[\\\\w!#$%&amp;'*+/=?`{|}~^-]+(?:\\\\.[\\\\w!#$%&amp;'*+/=?`{|}~^-]+)*@(?:[a-zA-Z0-9-]+\\\\.)+[a-zA-Z]{2,6}$";
+        final String emailRegex = "^[\\w-\\+]+(\\.[\\w]+)*@[\\w-]+(\\.[\\w]+)*(\\.[a-z]{2,})$";
 
         //Inernet抄来的，别理那么多哈哈哈哈
         Pattern pattern = Pattern.compile(emailRegex);
@@ -119,5 +119,39 @@ public class InputFormatChecker {
             return true;
         else
             return false;
+    }
+
+    public boolean DateFormat(String date){
+        //date format reference 15/03/2024
+
+        int day=0;
+        int month=0;
+        int year=0;
+
+
+        if(!date.contains("/"))
+            return false;
+
+        String[] checker = date.split("/");
+
+        if(checker.length != 3)
+            return false;
+
+        try{
+            day = Integer.parseInt(checker[0]);
+            month = Integer.parseInt(checker[1]);
+            year = Integer.parseInt(checker[2]);
+
+        }catch (NumberFormatException e){
+            System.out.println("User date consist characters other than numbers");
+            e.printStackTrace();
+            return false;
+        }
+
+        if(day>31||day<1||month>12||month<1||year<1)
+            return false;
+        else
+            return true;
+
     }
 }

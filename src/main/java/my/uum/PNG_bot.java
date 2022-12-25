@@ -174,7 +174,6 @@ public class PNG_bot extends TelegramLongPollingBot {
                         break;
 
                     case "Book:Email":
-
                         //save user 在 Book:Book_Y 之后input的内容起来，进object
                         usersMap.get(message.getChatId()).setICNO(message.getText());
 
