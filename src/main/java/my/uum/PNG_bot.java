@@ -10,7 +10,9 @@ import org.telegram.telegrambots.bots.TelegramLongPollingBot;
         import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
         import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
-        import java.util.*;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 public class PNG_bot extends TelegramLongPollingBot {
 
@@ -347,17 +349,24 @@ public class PNG_bot extends TelegramLongPollingBot {
                     case "Book:School":
                         if(message.getText().contains("@")){
                             String[] password = message.getText().split("@", 2);
-                            if(databaseManager.passwordCheck(password[0],password[1])){
-                                usersMap.get(message.getChatId()).setEmail(password[1]);
 
+                            if(databaseManager.passwordCheck(password[0],password[1])){
+                                Date date = new Date();
+                                bookingMap.put(message.getChatId(),new Booking(date, date, date, 0, "", "", 0));
+                                usersMap.get(message.getChatId()).setEmail(password[1]);
+                                userState.put(message.getChatId(),"Book:Room");
+
+                                String list = databaseManager.schoolList();
+                                list+="Excellent! Which school do you wish to book in?\nExample reply: 1";
+
+                            sendMessage.setText(list);
+                            sendMessage.setChatId(message.getChatId());
 
                             }else {
                                 sendMessage.setText("We can't find you in the database. Please re-enter your IC and Email thank you.\n\n" +
                                         "Example: 990724070661@MyEmail@hotmail.com");
                                 sendMessage.setChatId(message.getChatId());
                             }
-
-
                         }else{
                             sendMessage.setText("Incorrect format, please re-enter your IC and Email thank you.\n\n" +
                                     "Example: 990724070661@MyEmail@hotmail.com");
@@ -365,9 +374,25 @@ public class PNG_bot extends TelegramLongPollingBot {
                         }
 
 
+                    break;
+
+                    case "Book:Room":
+                        if(databaseManager.checkSchool(message.getText())){
+                            bookingMap.get(message.getChatId()).setBookID(Integer.parseInt(message.getText()));
+                            String roomList = databaseManager.getRoomList(bookingMap.get(message.getChatId()).getBookID());
+
+                            roomList += "Which room do you want to book?\nExample reply: 1";
+                            sendMessage.setText(roomList);
+                            sendMessage.setChatId(message.getChatId());
 
 
+                        }else{
+                            String list2 = databaseManager.schoolList();
+                            list2 += "This school does not exist. Please re-enter the school that you wish to book in.\nExample reply: 1";
 
+                            sendMessage.setText(list2);
+                            sendMessage.setChatId(message.getChatId());
+                        }
                     break;
                 }
 
@@ -565,6 +590,20 @@ public class PNG_bot extends TelegramLongPollingBot {
                     }
 
                     sendMessage.setChatId(message.getChatId());
+                }else if(data.equals("Book:Conf_Y")){
+                    databaseManager.insertUser(usersMap.get(message.getChatId()).getName(), usersMap.get(message.getChatId()).getICNO(), usersMap.get(message.getChatId()).getEmail(), usersMap.get(message.getChatId()).getStaffID(), usersMap.get(message.getChatId()).getTelNo());
+
+                    Date date = new Date();
+                    bookingMap.put(message.getChatId(),new Booking(date, date, date, 0, "", "", 0));
+
+                    userState.put(message.getChatId(),"Book:Room");
+
+                    String list = databaseManager.schoolList();
+                    list+="Excellent! Which school do you wish to book in?\nExample reply: 1";
+
+                    sendMessage.setText(list);
+                    sendMessage.setChatId(message.getChatId());
+
                 }
 
 
@@ -583,5 +622,6 @@ public class PNG_bot extends TelegramLongPollingBot {
 
 
     }
+
 
 }

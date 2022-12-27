@@ -11,13 +11,18 @@ public class Booking {
     private String bookPurpose;
     private String temp;
 
-    public Booking(Date startDate, Date endDate, Date timeStamp, Integer bookID, String bookPurpose, String temp){
+    private Integer userID;
+
+
+
+    public Booking(Date startDate, Date endDate, Date timeStamp, Integer bookID, String bookPurpose, String temp, Integer userID){
         this.startDate = startDate;
         this.endDate = endDate;
         this.timeStamp = timeStamp;
         this.bookID = bookID;
         this.bookPurpose = bookPurpose;
         this.temp = temp;
+        this.userID = userID;
     }
 
     public Date getStartDate() {
@@ -66,6 +71,14 @@ public class Booking {
 
     public Date getEndDate() {
         return endDate;
+    }
+
+    public Integer getUserID() {
+        return userID;
+    }
+
+    public void setUserID(Integer userID) {
+        this.userID = userID;
     }
 
 }

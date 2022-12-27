@@ -248,6 +248,127 @@ public class DatabaseManager {
             return true;
     }
 
+    public  void insertUser(String Name, String ICNO, String Email, String Staff_ID, String Mobile_TelNo){
+        try{
+            //set dynamic query
+            String q = "INSERT INTO Users (Name, ICNO, Email, Staff_ID,Mobile_TelNo)VALUES (?,?,?,?,?)";
+
+
+
+            //Get the preparedStatement Object
+            PreparedStatement preparedStatement = connection.prepareStatement(q);
+
+            //set the values to query
+            preparedStatement.setString(1,Name);
+            preparedStatement.setString(2,ICNO);
+            preparedStatement.setString(3,Email);
+            preparedStatement.setString(4,Staff_ID);
+            preparedStatement.setString(5,Mobile_TelNo);
+
+            preparedStatement.executeUpdate();
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public String schoolList(){
+        String list = "";
+
+        String q = "SELECT * FROM School";
+
+
+        try(Connection conn = this.connect()){
+            PreparedStatement preparedStatement = conn.prepareStatement(q);
+
+            ResultSet rs = preparedStatement.executeQuery();
+            while(rs.next()){
+                list+= "Reply " + rs.getInt("School_ID") +": "+"\n"+
+                                "School Name: " + rs.getString("School_Name") + "\n\n ";
+
+            }
+
+            if(list.equals("")){
+                list+="Sorry, there are no school registered in this system yet";
+            }
+
+        }catch (SQLException e){
+            System.out.println(e.getMessage());
+        }
+
+
+        return list;
+    }
+
+
+    public boolean checkSchool(String id){
+
+        Integer School_ID = 0;
+        Integer check_ID = 0;
+
+        try{
+            School_ID=Integer.parseInt(id);
+
+        }catch (NumberFormatException e){
+
+            e.printStackTrace();
+            System.out.println("User mis-input school id in incorrect format");
+            return false;
+        }
+
+
+        String q = "SELECT School_ID FROM School WHERE School_ID=?";
+
+
+        try(Connection conn = this.connect()){
+            PreparedStatement preparedStatement = conn.prepareStatement(q);
+
+            preparedStatement.setInt(1,School_ID);
+            ResultSet rs = preparedStatement.executeQuery();
+            while(rs.next()){
+                check_ID = rs.getInt("School_ID");
+                break;
+            }
+
+        }catch (SQLException e){
+            System.out.println(e.getMessage());
+        }
+
+
+        if(check_ID == 0){
+            return false;
+        }
+        else
+            return true;
+    }
+
+    /**
+     * This method will display all rooms from the Room table
+     * @return room list
+     */
+    public String getRoomList(Integer School_ID){
+        String roomList = " ";
+        String q = "SELECT Room_ID, Room_Name, Maximum_Capacity, Room_Type FROM Room WHERE School_ID=?";
+
+        try(Connection conn = this.connect()){
+            PreparedStatement preparedStatement = conn.prepareStatement(q);
+
+            preparedStatement.setInt(1,School_ID);
+            ResultSet rs = preparedStatement.executeQuery();
+            while(rs.next()){
+                roomList+=
+                        "Reply " + rs.getInt("Room_ID") + ":\n" +
+                                "Room Name: " + rs.getString("Room_Name") + "\n"+
+                                "Maximum Capacity: " + rs.getString("Maximum_Capacity") + "\n" +
+                                "Type: " + rs.getString("Room_Type") + "\n\n";
+            }
+
+        }catch (SQLException e){
+            System.out.println(e.getMessage());
+        }
+        return roomList;
+    }
+
 
 
 
