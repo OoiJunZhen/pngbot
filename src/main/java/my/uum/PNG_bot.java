@@ -42,7 +42,7 @@ public class PNG_bot extends TelegramLongPollingBot {
     /**
      * Hashmap for adding booking information
      */
-    //Map<Long, Booking> bookingMap = new HashMap<Long, Booking>();
+    Map<Long, Booking> bookingMap = new HashMap<Long, Booking>();
 
     public void onUpdateReceived(Update update) {
         SendMessage sendMessage = new SendMessage();
@@ -163,22 +163,214 @@ public class PNG_bot extends TelegramLongPollingBot {
                 //Get User State
                 switch (userState.get(message.getChatId())){
                     case "Book:IC":
-                        //save user 在 Book:Book_Y 之后input的内容起来，进object
-                        usersMap.get(message.getChatId()).setName(message.getText());
+                        if(inputFormatChecker.NameFormat(message.getText())){
+                            //save user 在 Book:Book_Y 之后input的内容起来，进object
+                            usersMap.get(message.getChatId()).setName(message.getText());
 
-                        //set新的State
-                        userState.put(message.getChatId(),"Book:Email");
-                        sendMessage.setText("How about your NRIC number?\nExample: 001211080731");
-                        sendMessage.setChatId(message.getChatId());
+                            //set新的State
+                            userState.put(message.getChatId(),"Book:Email");
+                            sendMessage.setText("How about your NRIC number?\nExample: 001211080731");
+                            sendMessage.setChatId(message.getChatId());
+
+                        }else{
+                            sendMessage.setText("Please re-enter your name.");
+                            sendMessage.setChatId(message.getChatId());
+                        }
 
                         break;
 
                     case "Book:Email":
-                        //save user 在 Book:Book_Y 之后input的内容起来，进object
-                        usersMap.get(message.getChatId()).setICNO(message.getText());
+                        if(inputFormatChecker.checkICFormat(message.getText())) {
+                            usersMap.get(message.getChatId()).setICNO(message.getText());
+                            //if database has user
+                            if (databaseManager.checkUser(message.getText())) {
+                                String text = databaseManager.displayUserInfo(usersMap.get(message.getChatId()).getICNO());
+
+                                sendMessage = new SendMessage();
+                                sendMessage.setText(text);
+                                sendMessage.setParseMode(ParseMode.MARKDOWN);
+                                sendMessage.setChatId(message.getChatId());
+
+                                //Inline Keyboard Button
+                                InlineKeyboardMarkup inlineKeyboardMarkup = new InlineKeyboardMarkup();
+                                List<List<InlineKeyboardButton>> inlineButtons = new ArrayList<>();
+                                List<InlineKeyboardButton> inlineKeyboardButtonList1 = new ArrayList<>();
+                                List<InlineKeyboardButton> inlineKeyboardButtonList2 = new ArrayList<>();
+                                InlineKeyboardButton inlineKeyboardButton1 = new InlineKeyboardButton();
+                                InlineKeyboardButton inlineKeyboardButton2 = new InlineKeyboardButton();
+                                inlineKeyboardButton1.setText("Yes");
+                                inlineKeyboardButton2.setText("No this is not me");
+                                inlineKeyboardButton1.setCallbackData("Book:Verification");
+                                inlineKeyboardButton2.setCallbackData("Book:FillIC");
+                                inlineKeyboardButtonList1.add(inlineKeyboardButton1);
+                                inlineKeyboardButtonList2.add(inlineKeyboardButton2);
+                                inlineButtons.add(inlineKeyboardButtonList1);
+                                inlineButtons.add(inlineKeyboardButtonList2);
+                                inlineKeyboardMarkup.setKeyboard(inlineButtons);
+                                sendMessage.setReplyMarkup(inlineKeyboardMarkup);
+                            } else {
+                                //save user 在 Book:Book_Y 之后input的内容起来，进object
+                                usersMap.get(message.getChatId()).setICNO(message.getText());
+                                userState.put(message.getChatId(), "Book:StaffID");
+                                sendMessage.setText("How about your Email?");
+                                sendMessage.setChatId(message.getChatId());
+                            }
+
+                        }else{
+                            sendMessage.setText("Please enter your IC in correct format thank you :).");
+                            sendMessage.setChatId(message.getChatId());
+                        }
 
                         break;
+
+                    case "Book:StaffID":
+                        if(inputFormatChecker.EmailFormat(message.getText())){
+                            usersMap.get(message.getChatId()).setEmail(message.getText());
+                            userState.put(message.getChatId(),"Book:Mobile");
+                            sendMessage.setText("Almost There! How about your Staff ID?\n\nExample: abc123");
+                            sendMessage.setChatId(message.getChatId());
+                        }else{
+                            sendMessage.setText("Please enter your email in correct format, thank you :)");
+                            sendMessage.setChatId(message.getChatId());
+                        }
+
+                        break;
+
+                    case "Book:Mobile":
+                        usersMap.get(message.getChatId()).setStaffID(message.getText());
+                        userState.put(message.getChatId(),"Book:Confirmation");
+
+                        sendMessage.setText("What is the best contact number to reach you? \n\n Example: 0124773579");
+                        sendMessage.setChatId(message.getChatId());
+
+                    break;
+
+                    case "Book:Confirmation":
+                    case "Book:Chan_Name":
+                    case "Book:Chan_IC":
+                    case "Book:Chan_Email":
+                    case "Book:Chan_StaffID":
+                    case "Book:Chan_TelNo":
+
+                        boolean output = false;
+                        if(userState.get(message.getChatId()).equals("Book:Confirmation") || userState.get(message.getChatId()).equals("Book:Chan_TelNo")){
+                            if(inputFormatChecker.TelNumFormat(message.getText())){
+                                usersMap.get(message.getChatId()).setTelNo(message.getText());
+                                output = true;
+                            }else{
+                                sendMessage.setText("Please enter your phone number in correct format thank you.\n\n" +
+                                        "Example: 0124773579");
+                                sendMessage.setChatId(message.getChatId());
+                            }
+                        } else if (userState.get(message.getChatId()).equals("Book:Chan_Name")) {
+                            if(inputFormatChecker.NameFormat(message.getText())){
+                                usersMap.get(message.getChatId()).setName(message.getText());
+                                output = true;
+                            }else{
+                                sendMessage.setText("Please re-enter your name.\n\n" +
+                                        "Example: Ang Toon Phng");
+                                sendMessage.setChatId(message.getChatId());
+                            }
+
+                        } else if (userState.get(message.getChatId()).equals("Book:Chan_IC")) {
+
+                            //check IC format
+                            if(inputFormatChecker.checkICFormat(message.getText())){
+
+                                //check if user exist in the database
+                                if(!databaseManager.checkUser(message.getText())){
+                                    usersMap.get(message.getChatId()).setICNO(message.getText());
+                                    output = true;
+                                }else {
+                                    //if IC already used, then it is invalid
+                                    sendMessage.setText("Sorry, this IC had been used by someone else, please enter another IC number\n\n" +
+                                            "Example: 001211080731");
+                                    sendMessage.setChatId(message.getChatId());
+                                }
+                            }else{
+                                sendMessage.setText("Please re-enter your IC in correct format thank you.\n\n" +
+                                        "Example: 001211080731");
+                                sendMessage.setChatId(message.getChatId());
+                            }
+                        } else if (userState.get(message.getChatId()).equals("Book:Staff_ID")) {
+                            usersMap.get(message.getChatId()).setStaffID(message.getText());
+                            output=true;
+
+                        } else if (userState.get(message.getChatId()).equals("Book:Chan_Email")) {
+
+                            //check email format
+                            if (inputFormatChecker.EmailFormat(message.getText())) {
+                                usersMap.get(message.getChatId()).setEmail(message.getText());
+                                output = true;
+                            } else {
+                                sendMessage.setText("Please re-enter the email in correct format thank you.\n\n" +
+                                        "Example: MyEmail@hotmail.com");
+                                sendMessage.setChatId(message.getChatId());
+                            }
+                        }
+
+                        if(output){
+                            String info = "Are these the correct information?\n" +
+                                    "\nName: " + usersMap.get(message.getChatId()).getName() +
+                                    "\nIC: " + usersMap.get(message.getChatId()).getICNO() +
+                                    "\nEmail: " + usersMap.get(message.getChatId()).getEmail() +
+                                    "\nStaff ID: " + usersMap.get(message.getChatId()).getStaffID() +
+                                    "\nTel No.: " + usersMap.get(message.getChatId()).getTelNo();
+
+
+                            sendMessage = new SendMessage();
+                            sendMessage.setText(info);
+                            sendMessage.setParseMode(ParseMode.MARKDOWN);
+                            sendMessage.setChatId(message.getChatId());
+
+                            //Inline Keyboard Button
+                            InlineKeyboardMarkup inlineKeyboardMarkup = new InlineKeyboardMarkup();
+                            List<List<InlineKeyboardButton>> inlineButtons = new ArrayList<>();
+                            List<InlineKeyboardButton> inlineKeyboardButtonList1 = new ArrayList<>();
+                            List<InlineKeyboardButton> inlineKeyboardButtonList2 = new ArrayList<>();
+                            InlineKeyboardButton inlineKeyboardButton1 = new InlineKeyboardButton();
+                            InlineKeyboardButton inlineKeyboardButton2 = new InlineKeyboardButton();
+                            inlineKeyboardButton1.setText("Yes");
+                            inlineKeyboardButton2.setText("No I would like to change something");
+                            inlineKeyboardButton1.setCallbackData("Book:Conf_Y");
+                            inlineKeyboardButton2.setCallbackData("Book:Conf_N");
+                            inlineKeyboardButtonList1.add(inlineKeyboardButton1);
+                            inlineKeyboardButtonList2.add(inlineKeyboardButton2);
+                            inlineButtons.add(inlineKeyboardButtonList1);
+                            inlineButtons.add(inlineKeyboardButtonList2);
+                            inlineKeyboardMarkup.setKeyboard(inlineButtons);
+                            sendMessage.setReplyMarkup(inlineKeyboardMarkup);
+                        }
+
+                    break;
+
+                    case "Book:School":
+                        if(message.getText().contains("@")){
+                            String[] password = message.getText().split("@", 2);
+                            if(databaseManager.passwordCheck(password[0],password[1])){
+                                usersMap.get(message.getChatId()).setEmail(password[1]);
+
+
+                            }else {
+                                sendMessage.setText("We can't find you in the database. Please re-enter your IC and Email thank you.\n\n" +
+                                        "Example: 990724070661@MyEmail@hotmail.com");
+                                sendMessage.setChatId(message.getChatId());
+                            }
+
+
+                        }else{
+                            sendMessage.setText("Incorrect format, please re-enter your IC and Email thank you.\n\n" +
+                                    "Example: 990724070661@MyEmail@hotmail.com");
+                            sendMessage.setChatId(message.getChatId());
+                        }
+
+
+
+
+
+                    break;
                 }
+
 
                 try{
                     execute(sendMessage);
@@ -186,6 +378,7 @@ public class PNG_bot extends TelegramLongPollingBot {
                     e.printStackTrace();
                 }
             }
+
 
 
             //Go to check state if State have the first word as 'Login'
@@ -202,7 +395,6 @@ public class PNG_bot extends TelegramLongPollingBot {
                                 //先把Password里的IC放进去usersMap
                                 usersMap.get(message.getChatId()).setICNO(password[0]);
 
-                                System.out.println("I'm Here");
                                 //用Assign好的IC来找user ID, 然后放进int userID里面
                                 int userID = databaseManager.getUserID(usersMap.get(message.getChatId()).getICNO());
 
@@ -260,7 +452,6 @@ public class PNG_bot extends TelegramLongPollingBot {
                 }
 
                 try{
-                    System.out.println("I'm There");
                     execute(sendMessage);
                 }catch (TelegramApiException e){
                     e.printStackTrace();
@@ -287,10 +478,96 @@ public class PNG_bot extends TelegramLongPollingBot {
                             "\n\n P.S.:Don't worry, you can edit your information after the information are entered ;)");
 
                 }else if(data.equals("Book:Book_N")){
-                    sendMessage.setText("I'll be here whenever you need me :)");
                     userState.put(message.getChatId(),"Start");
+                    sendMessage.setText("I'll be here whenever you need me :)");
+                    sendMessage.setChatId(message.getChatId());
+
+                }else if(data.equals("Book:Verification")){
+                    userState.put(message.getChatId(),"Book:School");
+                    sendMessage.setText("Please enter your IC and Email for verification purpose.\n\n" +
+                            "Example: 990724070661@MyEmail@hotmail.com");
+                    sendMessage.setChatId(message.getChatId());
+
+                } else if (data.equals("Book:FillIC")) {
+                    userState.put(message.getChatId(),"Book:Email");
+                    sendMessage.setText("This IC had been used by others, please use another IC\n\n" +
+                            "Example: 990724070661");
+                    sendMessage.setChatId(message.getChatId());
+
+                } else if (data.equals("Book:Conf_N")) {
+                    //Display information to double check
+                    String info = "Which information do you want to change\n" +
+                            "\nName: " + usersMap.get(message.getChatId()).getName() +
+                            "\nIC: " + usersMap.get(message.getChatId()).getICNO() +
+                            "\nEmail: " + usersMap.get(message.getChatId()).getEmail() +
+                            "\nStaff ID: " + usersMap.get(message.getChatId()).getStaffID() +
+                            "\nTel No.: " + usersMap.get(message.getChatId()).getTelNo();
+
+
+                    sendMessage = new SendMessage();
+                    sendMessage.setText(info);
+                    sendMessage.setParseMode(ParseMode.MARKDOWN);
+                    sendMessage.setChatId(message.getChatId());
+
+                    //Inline Keyboard Button
+                    InlineKeyboardMarkup inlineKeyboardMarkup = new InlineKeyboardMarkup();
+                    List<List<InlineKeyboardButton>> inlineButtons = new ArrayList<>();
+                    List<InlineKeyboardButton> inlineKeyboardButtonList1 = new ArrayList<>();
+                    List<InlineKeyboardButton> inlineKeyboardButtonList2 = new ArrayList<>();
+                    List<InlineKeyboardButton> inlineKeyboardButtonList3 = new ArrayList<>();
+                    InlineKeyboardButton inlineKeyboardButton1 = new InlineKeyboardButton();
+                    InlineKeyboardButton inlineKeyboardButton2 = new InlineKeyboardButton();
+                    InlineKeyboardButton inlineKeyboardButton3 = new InlineKeyboardButton();
+                    InlineKeyboardButton inlineKeyboardButton4 = new InlineKeyboardButton();
+                    InlineKeyboardButton inlineKeyboardButton5 = new InlineKeyboardButton();
+                    inlineKeyboardButton1.setText("Name");
+                    inlineKeyboardButton2.setText("IC");
+                    inlineKeyboardButton3.setText("Email");
+                    inlineKeyboardButton4.setText("Staff ID");
+                    inlineKeyboardButton5.setText("Tel No.");
+                    inlineKeyboardButton1.setCallbackData("Book:Chan_Name");
+                    inlineKeyboardButton2.setCallbackData("Book:Chan_IC");
+                    inlineKeyboardButton3.setCallbackData("Book:Chan_Email");
+                    inlineKeyboardButton4.setCallbackData("Book:Chan_StaffID");
+                    inlineKeyboardButton5.setCallbackData("Book:Chan_TelNo");
+                    inlineKeyboardButtonList1.add(inlineKeyboardButton1);
+                    inlineKeyboardButtonList1.add(inlineKeyboardButton2);
+                    inlineKeyboardButtonList2.add(inlineKeyboardButton3);
+                    inlineKeyboardButtonList2.add(inlineKeyboardButton4);
+                    inlineKeyboardButtonList3.add(inlineKeyboardButton5);
+                    inlineButtons.add(inlineKeyboardButtonList1);
+                    inlineButtons.add(inlineKeyboardButtonList2);
+                    inlineButtons.add(inlineKeyboardButtonList3);
+                    inlineKeyboardMarkup.setKeyboard(inlineButtons);
+                    sendMessage.setReplyMarkup(inlineKeyboardMarkup);
+
+                }else if(data.equals("Book:Chan_Name") || data.equals("Book:Chan_IC") ||data.equals("Book:Chan_Email") ||data.equals("Book:Chan_StaffID") ||data.equals("Book:Chan_TelNo")) {
+                    if (data.equals("Book:Chan_Name")) {
+                        userState.put(message.getChatId(), "Book:Chan_Name");
+                        sendMessage.setText("What do you want to change your name to?\n\n" +
+                                "Example: Ang Toon Ph'ng");
+                    } else if (data.equals("Book:Chan_IC")) {
+                        userState.put(message.getChatId(), "Book:Chan_IC");
+                        sendMessage.setText("What do you want to change your ic to?\n\n" +
+                                "Example: 990724070661");
+                    } else if (data.equals("Book:Chan_Email")) {
+                        userState.put(message.getChatId(), "Book:Chan_Email");
+                        sendMessage.setText("What do you want to change your email to?\n\n" +
+                                "Example: MyEmail@hotmail.com");
+                    } else if (data.equals("Book:Chan_StaffID")) {
+                        userState.put(message.getChatId(), "Book:Chan_StaffID");
+                        sendMessage.setText("What do you want to change your staff id to?\n\n" +
+                                "Example: abc123");
+                    } else if (data.equals("Book:Chan_TelNo")) {
+                        userState.put(message.getChatId(), "Book:Chan_TelNo");
+                        sendMessage.setText("What do you want to change your mobile number to?\n\n" +
+                                "Example: 0124773579");
+                    }
+
                     sendMessage.setChatId(message.getChatId());
                 }
+
+
             }
 
             else if(buttonData[0].equals("Login")){
@@ -306,4 +583,5 @@ public class PNG_bot extends TelegramLongPollingBot {
 
 
     }
+
 }

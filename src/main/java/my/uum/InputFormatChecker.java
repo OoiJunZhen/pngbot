@@ -73,6 +73,7 @@ public class InputFormatChecker {
             Integer.parseInt(TelNo);
         } catch (NumberFormatException e){
             e.printStackTrace();
+            System.out.println("User input wrong number format");
             //if not, return false
             return false;
         }
@@ -148,7 +149,7 @@ public class InputFormatChecker {
             return false;
         }
 
-        if(day>31||day<1||month>12||month<1||year<1)
+        if(day>31||day<1||month>12||month<1||year<1 )
             return false;
         else
             return true;

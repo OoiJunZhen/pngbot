@@ -8,7 +8,7 @@ public class DatabaseManager {
     Connection connection = null;
 
     public DatabaseManager(){
-        String url = "jdbc:sqlite:databaseproj.db";
+        String url = "jdbc:sqlite:database.db";
         try {
             connection = DriverManager.getConnection(url);
         } catch (SQLException e) {
@@ -19,7 +19,7 @@ public class DatabaseManager {
 
     private Connection connect() {
         // SQLite connection string
-        String url = "jdbc:sqlite:databaseproj.db";
+        String url = "jdbc:sqlite:database.db";
         Connection conn = null;
         try {
             conn = DriverManager.getConnection(url);
@@ -177,5 +177,79 @@ public class DatabaseManager {
         }
         return greeting;
     }
+
+    /**
+     * This method will display User's Info Including Name, Identification Number, and Staff ID
+     * @param ICNO User's Identification Number
+     * @return Return User's Info
+     */
+    public String displayUserInfo(String ICNO){
+        String userInfo = "";
+
+        String q = "SELECT Name, ICNO, Staff_ID FROM Users WHERE ICNO=?";
+
+
+        try(Connection conn = this.connect()){
+            PreparedStatement preparedStatement = conn.prepareStatement(q);
+
+            preparedStatement.setString(1, ICNO);
+            ResultSet rs = preparedStatement.executeQuery();
+            while(rs.next()){
+                userInfo+=
+                        "Oh! I found out that you had made booking through here before.\n\n"+
+                                "Name: " + rs.getString("Name") + "\n"+
+                                "IC Number: " + rs.getString("ICNO") + "\n" +
+                                "Staff ID: " + rs.getString("Staff_ID");
+
+                break;
+            }
+
+            if(userInfo.equals("")){
+                userInfo+="Sorry, this user does not exist.";
+            }else{
+                userInfo+="\n\nIs this you?" + "\nP.S.: For security purpose, email and telephone number are not shown.";
+            }
+
+        }catch (SQLException e){
+            System.out.println(e.getMessage());
+        }
+        return userInfo;
+    }
+
+    /**
+     * This method will check whether user exist in the database based on IC inserted
+     * @param ICNO User's Identification Number
+     * @return return True if the user is successfully found and vise versa
+     */
+    public boolean checkUser(String ICNO){
+        Integer User_ID = 0;
+        String q = "SELECT User_ID FROM Users WHERE ICNO=?";
+
+
+        try(Connection conn = this.connect()){
+            PreparedStatement preparedStatement = conn.prepareStatement(q);
+
+            preparedStatement.setString(1,ICNO);
+            ResultSet rs = preparedStatement.executeQuery();
+            while(rs.next()){
+                User_ID = rs.getInt("User_ID");
+                break;
+            }
+
+        }catch (SQLException e){
+            System.out.println(e.getMessage());
+        }
+
+
+        if(User_ID == 0){
+            return false;
+        }
+        else
+            return true;
+    }
+
+
+
+
 
 }
