@@ -670,6 +670,11 @@ public class DatabaseManager {
 
     }
 
+    /**
+     * Get room name based on room ID
+     * @param Room_ID
+     * @return
+     */
     public String getRoomName(Integer Room_ID){
         String roomName ="";
         String q = "SELECT Room_Name FROM Room WHERE Room_ID=?";
@@ -689,6 +694,28 @@ public class DatabaseManager {
 
 
         return roomName;
+    }
+
+    public void insertBook(String Booking_Purpose, String Book_StartTime, String Book_EndTime, Integer Room_ID, Integer User_ID){
+        //set dynamic query
+        String q = "INSERT INTO Booking (Booking_Purpose, Room_ID, Book_StartTime, Book_EndTime, User_ID)VALUES (?,?,?,?,?)";
+
+        try{
+            //Get the preparedStatement Object
+            PreparedStatement preparedStatement = connection.prepareStatement(q);
+
+            //set the values to query
+            preparedStatement.setString(1,Booking_Purpose);
+            preparedStatement.setInt(2,Room_ID);
+            preparedStatement.setString(3,Book_StartTime);
+            preparedStatement.setString(4,Book_EndTime);
+            preparedStatement.setInt(5,User_ID);
+
+            preparedStatement.executeUpdate();
+
+        } catch(SQLException e) {
+            e.printStackTrace();
+        }
     }
 
 
