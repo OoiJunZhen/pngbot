@@ -250,6 +250,14 @@ public class DatabaseManager {
             return true;
     }
 
+    /**
+     * Save user into the database
+     * @param Name
+     * @param ICNO
+     * @param Email
+     * @param Staff_ID
+     * @param Mobile_TelNo
+     */
     public  void insertUser(String Name, String ICNO, String Email, String Staff_ID, String Mobile_TelNo){
         try{
             //set dynamic query
@@ -274,6 +282,10 @@ public class DatabaseManager {
         }
     }
 
+    /**
+     * Display a list of schools
+     * @return school list
+     */
     public String schoolList(){
         String list = "";
 
@@ -302,7 +314,11 @@ public class DatabaseManager {
         return list;
     }
 
-
+    /**
+     *Check whether the school id inputted by user exist in database
+     * @param id
+     * @return
+     */
     public boolean checkSchool(String id){
 
         Integer School_ID = 0;
@@ -405,6 +421,12 @@ public class DatabaseManager {
         return roomInfo;
     }
 
+    /**
+     * Check whether the room id inputted by user exist in database
+     * @param input
+     * @param School_ID
+     * @return
+     */
     public boolean checkRoom(String input, Integer School_ID){
         Integer Room_ID = 0;
         Integer check_ID = 0;
@@ -446,8 +468,14 @@ public class DatabaseManager {
             return true;
     }
 
+    /**
+     * check whether the there are people who book this room during the day/date
+     * @param Room_ID Room ID
+     * @param input the day
+     * @return true = got booked time, false = no booked time
+     */
     public boolean checkBook(Integer Room_ID, String input) {
-        String date = "";
+        String date ="";
         String date2="";
         Integer check_ID = 0;
         java.sql.Date sqlDate;
@@ -475,8 +503,6 @@ public class DatabaseManager {
 
         // Use the DATE function to compare only the date part of the Book_StartTime column
         String q = "SELECT Booking_ID FROM Booking WHERE (Book_StartTime >=? AND Book_StartTime<?) AND Room_ID=?";
-
-        System.out.println(date + " " + date2);
         try (Connection conn = this.connect()) {
             PreparedStatement preparedStatement = conn.prepareStatement(q);
 
@@ -500,6 +526,12 @@ public class DatabaseManager {
         }
     }
 
+    /**
+     * List out booked time in a room
+     * @param Room_ID
+     * @param input date
+     * @return booked time
+     */
     public String bookedTime(Integer Room_ID,String input){
         String list = "";
 
@@ -535,7 +567,6 @@ public class DatabaseManager {
         // Display booked time within the chosen date/day.
         String q = "SELECT Book_StartTime, Book_EndTime FROM Booking WHERE (Book_StartTime >=? AND Book_StartTime<?) AND Room_ID=?";
 
-        System.out.println(date + " " + date2);
         try (Connection conn = this.connect()) {
             PreparedStatement preparedStatement = conn.prepareStatement(q);
 
@@ -565,8 +596,99 @@ public class DatabaseManager {
         return list;
     }
 
+    /**
+     * Check whether the time contradicted with booked time. If yes, return true. If no, return false
+     * @param Room_ID
+     * @param Date
+     * @param Time
+     * @return
+     */
     public boolean checkTimeDatabase(Integer Room_ID, String Date, String Time){
+
+        java.util.Date dateTemp;
+        String start="";
+        String end="";
+        String date = "";
+        String date2="";
+        java.sql.Date sqlDate;
+        java.sql.Date sqlDate2;
+
+        SimpleDateFormat bookDateFormat = new SimpleDateFormat("dd/MM/yyyy");
+        SimpleDateFormat databaseDateFormat = new SimpleDateFormat("yyyy-MM-dd");
+        SimpleDateFormat combine = new SimpleDateFormat("dd/MM/yyyy HH:mm");
+
+
+
+        try {
+
+            dateTemp = combine.parse(Date + " " + Time);
+
+            java.util.Date utilDate = bookDateFormat.parse(Date);
+            date = databaseDateFormat.format(utilDate);
+
+
+            //add day by 1 to form date2
+            Calendar c = Calendar.getInstance();
+            c.setTime(databaseDateFormat.parse(date));
+            c.add(Calendar.DATE, 1);
+            date2 = databaseDateFormat.format(c.getTime());
+
+            sqlDate = java.sql.Date.valueOf(date);
+            sqlDate2 = java.sql.Date.valueOf(date2);
+
+        } catch (ParseException e) {
+            throw new RuntimeException(e);
+        }
+
+        // Display booked time within the chosen date/day.
+        String q = "SELECT Book_StartTime, Book_EndTime FROM Booking WHERE (Book_StartTime >=? AND Book_StartTime<?) AND Room_ID=?";
+
+        try (Connection conn = this.connect()) {
+            PreparedStatement preparedStatement = conn.prepareStatement(q);
+
+            preparedStatement.setDate(1, sqlDate);
+            preparedStatement.setDate(2, sqlDate2);
+            preparedStatement.setInt(3, Room_ID);
+
+            ResultSet rs = preparedStatement.executeQuery();
+            while (rs.next()) {
+                java.sql.Date startTime = rs.getDate("Book_StartTime");
+                java.sql.Date endTime = rs.getDate("Book_EndTime");
+
+                java.util.Date convertedStart = new java.util.Date(startTime.getTime());
+                java.util.Date convertedEnd = new java.util.Date(endTime.getTime());
+
+                if(dateTemp.before(convertedEnd) && dateTemp.after(convertedStart)){
+                    return true;
+                }
+            }
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+
         return false;
+
+    }
+
+    public String getRoomName(Integer Room_ID){
+        String roomName ="";
+        String q = "SELECT Room_Name FROM Room WHERE Room_ID=?";
+
+
+        try(Connection conn = this.connect()){
+            PreparedStatement preparedStatement = conn.prepareStatement(q);
+
+            preparedStatement.setInt(1, Room_ID);
+            ResultSet rs = preparedStatement.executeQuery();
+            while(rs.next()){
+                roomName = rs.getString("Room_Name");
+            }
+
+        }catch (SQLException e){
+            System.out.println(e.getMessage());       }
+
+
+        return roomName;
     }
 
 

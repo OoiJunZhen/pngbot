@@ -152,7 +152,19 @@ public class InputFormatChecker {
             return false;
         }
 
-        if(day>31||day<1||month>12||month<1||year<1 )
+        if(month == 2 && day >29){
+            return false;
+        }
+
+        else if((month==1||month==3||month==5||month==7||month==8||month==10||month==12) && day> 31){
+            return false;
+        }
+
+        else if((month==4||month==6||month==9||month==11) && day>30){
+            return false;
+        }
+
+        else if(day<1||month>12||month<1||year<1 )
             return false;
         else
             return true;
@@ -206,6 +218,59 @@ public class InputFormatChecker {
             return false;
         }else
             return true;
+
+    }
+
+    public boolean timeFormat(String input){
+
+        int hour;
+        int minutes;
+
+
+        if(!input.contains(":")){
+            return false;
+        }
+
+        String[] time = input.split(":",2);
+
+        /*
+        if(time[0].length()!=2 || time[1].length()!=2)
+            return false;
+        */
+        try{
+            hour = Integer.parseInt(time[0]);
+            minutes = Integer.parseInt(time[1]);
+        }catch(NumberFormatException e){
+            e.printStackTrace();
+            System.out.println("User input time in wrong format");
+            return false;
+        }
+
+        if(hour>23||hour<1||minutes>59||minutes<0)
+            return false;
+        else
+            return true;
+    }
+
+    public boolean timeOpen(String input){
+
+        int hour;
+        int minutes;
+
+        String[] time = input.split(":", 2);
+
+        hour = Integer.parseInt(time[0]);
+        minutes = Integer.parseInt(time[1]);
+
+        if(hour < 8)
+            return false;
+        else if (hour == 20 && minutes > 0)
+            return false;
+        else if (hour > 20)
+            return false;
+        else
+            return true;
+
 
     }
 }

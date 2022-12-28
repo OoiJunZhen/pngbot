@@ -10,9 +10,11 @@ import org.telegram.telegrambots.bots.TelegramLongPollingBot;
         import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
         import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
+import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 
 public class PNG_bot extends TelegramLongPollingBot {
 
@@ -186,11 +188,9 @@ public class PNG_bot extends TelegramLongPollingBot {
                             //set新的State
                             userState.put(message.getChatId(),"Book:Email");
                             sendMessage.setText("How about your NRIC number?\nExample: 001211080731");
-                            sendMessage.setChatId(message.getChatId());
 
                         }else{
                             sendMessage.setText("Please re-enter your name.");
-                            sendMessage.setChatId(message.getChatId());
                         }
 
                         break;
@@ -205,7 +205,6 @@ public class PNG_bot extends TelegramLongPollingBot {
                                 sendMessage = new SendMessage();
                                 sendMessage.setText(text);
                                 sendMessage.setParseMode(ParseMode.MARKDOWN);
-                                sendMessage.setChatId(message.getChatId());
 
                                 //Inline Keyboard Button
                                 InlineKeyboardMarkup inlineKeyboardMarkup = new InlineKeyboardMarkup();
@@ -229,12 +228,10 @@ public class PNG_bot extends TelegramLongPollingBot {
                                 usersMap.get(message.getChatId()).setICNO(message.getText());
                                 userState.put(message.getChatId(), "Book:StaffID");
                                 sendMessage.setText("How about your Email?");
-                                sendMessage.setChatId(message.getChatId());
                             }
 
                         }else{
                             sendMessage.setText("Please enter your IC in correct format thank you :).");
-                            sendMessage.setChatId(message.getChatId());
                         }
 
                         break;
@@ -247,7 +244,6 @@ public class PNG_bot extends TelegramLongPollingBot {
                             sendMessage.setChatId(message.getChatId());
                         }else{
                             sendMessage.setText("Please enter your email in correct format, thank you :)");
-                            sendMessage.setChatId(message.getChatId());
                         }
 
                         break;
@@ -257,7 +253,6 @@ public class PNG_bot extends TelegramLongPollingBot {
                         userState.put(message.getChatId(),"Book:Confirmation");
 
                         sendMessage.setText("What is the best contact number to reach you? \n\n Example: 0124773579");
-                        sendMessage.setChatId(message.getChatId());
 
                     break;
 
@@ -276,7 +271,6 @@ public class PNG_bot extends TelegramLongPollingBot {
                             }else{
                                 sendMessage.setText("Please enter your phone number in correct format thank you.\n\n" +
                                         "Example: 0124773579");
-                                sendMessage.setChatId(message.getChatId());
                             }
                         } else if (userState.get(message.getChatId()).equals("Book:Chan_Name")) {
                             if(inputFormatChecker.NameFormat(message.getText())){
@@ -285,7 +279,6 @@ public class PNG_bot extends TelegramLongPollingBot {
                             }else{
                                 sendMessage.setText("Please re-enter your name.\n\n" +
                                         "Example: Ang Toon Phng");
-                                sendMessage.setChatId(message.getChatId());
                             }
 
                         } else if (userState.get(message.getChatId()).equals("Book:Chan_IC")) {
@@ -301,12 +294,10 @@ public class PNG_bot extends TelegramLongPollingBot {
                                     //if IC already used, then it is invalid
                                     sendMessage.setText("Sorry, this IC had been used by someone else, please enter another IC number\n\n" +
                                             "Example: 001211080731");
-                                    sendMessage.setChatId(message.getChatId());
                                 }
                             }else{
                                 sendMessage.setText("Please re-enter your IC in correct format thank you.\n\n" +
                                         "Example: 001211080731");
-                                sendMessage.setChatId(message.getChatId());
                             }
                         } else if (userState.get(message.getChatId()).equals("Book:Chan_StaffID")) {
                             usersMap.get(message.getChatId()).setStaffID(message.getText());
@@ -321,7 +312,6 @@ public class PNG_bot extends TelegramLongPollingBot {
                             } else {
                                 sendMessage.setText("Please re-enter the email in correct format thank you.\n\n" +
                                         "Example: MyEmail@hotmail.com");
-                                sendMessage.setChatId(message.getChatId());
                             }
                         }
 
@@ -337,7 +327,6 @@ public class PNG_bot extends TelegramLongPollingBot {
                             sendMessage = new SendMessage();
                             sendMessage.setText(info);
                             sendMessage.setParseMode(ParseMode.MARKDOWN);
-                            sendMessage.setChatId(message.getChatId());
 
                             //Inline Keyboard Button
                             InlineKeyboardMarkup inlineKeyboardMarkup = new InlineKeyboardMarkup();
@@ -375,17 +364,14 @@ public class PNG_bot extends TelegramLongPollingBot {
                                 list+="Excellent! Which school do you wish to book in?\nExample reply: 1";
 
                             sendMessage.setText(list);
-                            sendMessage.setChatId(message.getChatId());
 
                             }else {
                                 sendMessage.setText("We can't find you in the database. Please re-enter your IC and Email thank you.\n\n" +
                                         "Example: 990724070661@MyEmail@hotmail.com");
-                                sendMessage.setChatId(message.getChatId());
                             }
                         }else{
                             sendMessage.setText("Incorrect format, please re-enter your IC and Email thank you.\n\n" +
                                     "Example: 990724070661@MyEmail@hotmail.com");
-                            sendMessage.setChatId(message.getChatId());
                         }
 
 
@@ -399,15 +385,12 @@ public class PNG_bot extends TelegramLongPollingBot {
 
                             roomList += "Which room do you want to book?\nExample reply: 1";
                             sendMessage.setText(roomList);
-                            sendMessage.setChatId(message.getChatId());
-
 
                         }else{
                             String list2 = databaseManager.schoolList();
                             list2 += "This school does not exist. Please re-enter the school that you wish to book in.\nExample reply: 1";
 
                             sendMessage.setText(list2);
-                            sendMessage.setChatId(message.getChatId());
                         }
                     break;
 
@@ -422,7 +405,6 @@ public class PNG_bot extends TelegramLongPollingBot {
                             sendMessage = new SendMessage();
                             sendMessage.setText(list1);
                             sendMessage.setParseMode(ParseMode.MARKDOWN);
-                            sendMessage.setChatId(message.getChatId());
 
                             //Inline Keyboard Button
                             InlineKeyboardMarkup inlineKeyboardMarkup = new InlineKeyboardMarkup();
@@ -446,10 +428,9 @@ public class PNG_bot extends TelegramLongPollingBot {
 
                         }else{
                             String list2 = databaseManager.getRoomList(bookingMap.get(message.getChatId()).getRoomID());
-                            list2 += "This room does not exist. Please re-enter the room that you wish to book.\nExample reply: 1";
+                            list2 += "This room does not exist. Please re-enter the room that you wish to book.\n\nExample reply: 1";
 
                             sendMessage.setText(list2);
-                            sendMessage.setChatId(message.getChatId());
                         }
 
                     break;
@@ -473,17 +454,15 @@ public class PNG_bot extends TelegramLongPollingBot {
                                         text += databaseManager.bookedTime(bookingMap.get(message.getChatId()).getRoomID(),message.getText());
                                     }
 
-                                    text += "When do you want to start using the booked room?\nExample: 14:30";
+                                    text += "When do you want to start using the room?\n\nExample: 08:30";
                                     sendMessage.setText(text);
-                                    sendMessage.setChatId(message.getChatId());
 
 
 
                                 }else{
                                     sendMessage.setText("The booking date needs to be at least 1 month prior and also can't be made if that day is over 1 year away.\n" +
                                             "As an example, to book a day in April 1st, booking needs to be made on March 1st or before.\n\n" +
-                                            "Please enter the day you would like to book\nExample: 27/04/2023");
-                                    sendMessage.setChatId(message.getChatId());
+                                            "Please enter the day you would like to book\n\nExample: 27/04/2023");
                                 }
                             }catch(ParseException e){
                                 e.printStackTrace();
@@ -491,14 +470,266 @@ public class PNG_bot extends TelegramLongPollingBot {
 
 
                         }else{
-                            sendMessage.setText("Please enter the date in correct format.\n" +
+                            sendMessage.setText("Please enter the date in correct format.\n\n" +
                                     "Example: 27/04/2023");
-                            sendMessage.setChatId(message.getChatId());
                         }
 
                     break;
 
                     case "Book:EndTime":
+
+                        if(inputFormatChecker.timeFormat(message.getText())){
+
+                            if(inputFormatChecker.timeOpen(message.getText())){
+
+                                //if the time chosen does not contradict with other booked time
+                                if(!databaseManager.checkTimeDatabase(bookingMap.get(message.getChatId()).getRoomID(),bookingMap.get(message.getChatId()).getTemp(),message.getText())){
+
+                                    SimpleDateFormat combine = new SimpleDateFormat("dd/MM/yyyy HH:mm");
+                                    try {
+                                        userState.put(message.getChatId(),"Book:Purpose");
+                                        Date dateTemp = combine.parse(bookingMap.get(message.getChatId()).getTemp() + " " + message.getText());
+
+                                        //save starting time
+                                        bookingMap.get(message.getChatId()).setStartDate(dateTemp);
+                                        sendMessage.setText("When will the booking end?\n\n" +
+                                                "Example: 18:30");
+
+                                    } catch (ParseException e) {
+                                        e.printStackTrace();
+                                        System.out.println("At Book:EndTime");
+                                    }
+
+                            }else{
+                                    sendMessage.setText(databaseManager.bookedTime(bookingMap.get(message.getChatId()).getRoomID(),bookingMap.get(message.getChatId()).getTemp())
+                                            +"Please choose a time that is not booked.");
+                            }
+
+                            }else{
+                                sendMessage.setText("The available booking time is between 8AM to 8PM. Please enter your booking start time.\n\n" +
+                                        "Example: 08:30");
+                            }
+
+                        }else{
+                            sendMessage.setText("Please enter the time in correct format.\n\n" +
+                                    "Example: 08:30");
+                        }
+
+
+                    break;
+
+                    case "Book:Purpose":
+
+                        Date dateTemp = new Date();
+
+                        if(inputFormatChecker.timeFormat(message.getText())){
+
+                            //check whether the time is within 8AM to 8PM
+                            if(inputFormatChecker.timeOpen(message.getText())){
+                                SimpleDateFormat combine = new SimpleDateFormat("dd/MM/yyyy HH:mm");
+                                try {
+                                    dateTemp = combine.parse(bookingMap.get(message.getChatId()).getTemp() + " " + message.getText());
+                                } catch (ParseException e) {
+                                    e.printStackTrace();
+                                }
+
+                                //check whether the end time is before start time
+                                if(dateTemp.after(bookingMap.get(message.getChatId()).getStartDate())){
+
+                                    //check whether the time contradicts with other booked time
+                                    if(!databaseManager.checkTimeDatabase(bookingMap.get(message.getChatId()).getRoomID(),bookingMap.get(message.getChatId()).getTemp(),message.getText())){
+
+                                        bookingMap.get(message.getChatId()).setEndDate(dateTemp);
+                                        userState.put(message.getChatId(),"Book:Booking_Confirmation");
+                                        sendMessage.setText("Excellent! Please state your booking purpose.\n\n" +
+                                                "Example: Club meeting.");
+
+                                    }else{
+                                        sendMessage.setText(databaseManager.bookedTime(bookingMap.get(message.getChatId()).getRoomID(),bookingMap.get(message.getChatId()).getTemp())
+                                                +"Please choose a time that is not booked.");
+                                    }
+
+                                }else {
+                                    sendMessage.setText("The booking end time cannot be before start time. Please enter your end time.\n\n" +
+                                            "Example: 14:30");
+
+                                }
+
+                            }else{
+                                sendMessage.setText("The available booking time is between 8AM to 8PM. Please enter your booking start time.\n\n" +
+                                        "Example: 08:30");
+                            }
+                        }else{
+                            sendMessage.setText("Please enter the time in correct format.\n\n" +
+                                    "Example: 08:30");
+                        }
+
+                    break;
+
+                    case "Book:Booking_Confirmation":
+                    case "Book:Chan_Date":
+                    case "Book:Chan_StartTime":
+                    case "Book:Chan_EndTime":
+                    case "Book:Chan_Purpose":
+                        String info5;
+                        boolean success = false;
+
+
+                        if(userState.get(message.getChatId()).equals("Book:Chan_Date"))
+                        {
+                            if(inputFormatChecker.DateFormat(message.getText())){
+                                //Variables to back up the time
+                                String startTime;
+                                String endTime;
+
+                                //Variables to assign the date
+                                Date dateTemp2 = new Date();
+                                Date date = new Date();
+
+                                //This is for combining String input which is Date and String time which is backed up by Start Time and End Time
+                                SimpleDateFormat startDate=new SimpleDateFormat("dd/MM/yyyy HH:mm");
+
+                                //This is for separating and assign the initial time of Date in hashmap Date object into startTime and endTime
+                                DateFormat dateFormat = new SimpleDateFormat("HH:mm");
+
+                                //Save the original Time as String into both variables
+                                startTime = dateFormat.format(bookingMap.get(message.getChatId()).getStartDate());
+                                endTime = dateFormat.format(bookingMap.get(message.getChatId()).getEndDate());
+
+                                //Combining date from input and startTime into dateTemp
+                                try {
+                                    dateTemp2 = startDate.parse(message.getText() + " " + startTime);
+                                } catch (ParseException e) {
+                                    throw new RuntimeException(e);
+                                }
+
+                                //Check whether the date is prior one month or before a maximum of 1 year
+                                if(inputFormatChecker.bookDate(dateTemp2,date)){
+
+                                    //check whether there are people who book this day
+                                    if(databaseManager.checkBook(bookingMap.get(message.getChatId()).getRoomID(),message.getText())){
+
+                                        //check whether the start and end time contradicts with booked time
+                                        if(!databaseManager.checkTimeDatabase(bookingMap.get(message.getChatId()).getRoomID(),message.getText(),startTime) &&
+                                                !databaseManager.checkTimeDatabase(bookingMap.get(message.getChatId()).getRoomID(),message.getText(),endTime)){
+
+                                            //if no, Save dateTemp2 into start date
+                                            bookingMap.get(message.getChatId()).setStartDate(dateTemp2);
+
+                                            //override dateTemp2 into end date
+                                            try {
+                                                dateTemp2 = startDate.parse(message.getText() + " " +endTime);
+                                            } catch (ParseException e) {
+                                                throw new RuntimeException(e);
+                                            }
+
+                                            //Save dateTemp2 into end date
+                                            bookingMap.get(message.getChatId()).setEndDate(dateTemp2);
+
+                                            success = true;
+
+                                        }else{
+                                            sendMessage.setText(databaseManager.bookedTime(bookingMap.get(message.getChatId()).getRoomID(),bookingMap.get(message.getChatId()).getTemp())
+                                                    +"Please choose a time that is not booked.");
+                                        }
+
+                                    }else{
+                                        //if no, Save dateTemp2 into start date
+                                        bookingMap.get(message.getChatId()).setStartDate(dateTemp2);
+
+                                        //override dateTemp2 into end date
+                                        try {
+                                            dateTemp2 = startDate.parse(message.getText() + " " +endTime);
+                                        } catch (ParseException e) {
+                                            throw new RuntimeException(e);
+                                        }
+
+                                        //Save dateTemp2 into end date
+                                        bookingMap.get(message.getChatId()).setEndDate(dateTemp2);
+
+                                        success = true;
+                                    }
+
+                                }else{
+                                    sendMessage.setText("The booking date needs to be at least 1 month prior and also can't be made if that day is over 1 year away.\n" +
+                                            "As an example, to book a day in April 1st, booking needs to be made on March 1st or before.\n\n" +
+                                            "Please enter the day you would like to book\n\nExample: 27/04/2023");
+                                }
+
+                            }else{
+                                sendMessage.setText("Please enter the date in correct format\n\n" +
+                                        "Example: 27/04/2023");
+                            }
+
+                        } else if (userState.get(message.getChatId()).equals("Book:ChanStartTime")) {
+
+                        }
+
+                        if(userState.get(message.getChatId()).equals("Book:Booking_Confirmation")){
+                            if(inputFormatChecker.NameFormat(message.getText())){
+                                bookingMap.get(message.getChatId()).setBookPurpose(message.getText());
+                            }else{
+                                sendMessage.setText("Please re-enter the booking purpose thank you.");
+                            }
+                        }
+
+                        if(success || userState.get(message.getChatId()).equals("Book:Booking_Confirmation")){
+                            //Display Booking Information for confirmation
+                            SimpleDateFormat ForDay = new SimpleDateFormat("EEEE");
+                            SimpleDateFormat ForDate = new SimpleDateFormat("dd/MM/yyyy");
+                            SimpleDateFormat ForStartTime = new SimpleDateFormat("hh:mm a");
+
+                            //find booking duration
+                            long difference_In_Time = bookingMap.get(message.getChatId()).getEndDate().getTime() - bookingMap.get(message.getChatId()).getStartDate().getTime();
+                            long difference_In_Minutes
+                                    = TimeUnit
+                                    .MILLISECONDS
+                                    .toMinutes(difference_In_Time)
+                                    % 60;
+                            long difference_In_Hours
+                                    = TimeUnit
+                                    .MILLISECONDS
+                                    .toHours(difference_In_Time)
+                                    % 24;
+
+                            info5 = "DotW: " + ForDay.format(bookingMap.get(message.getChatId()).getStartDate());
+                            info5 += "\nRoom: " + databaseManager.getRoomName(bookingMap.get(message.getChatId()).getRoomID());
+                            info5 += "\nDate: " + ForDate.format(bookingMap.get(message.getChatId()).getStartDate());
+                            info5 += "\nStart Time: " + ForStartTime.format(bookingMap.get(message.getChatId()).getStartDate());
+                            info5 += "\nEnd Time: " + ForStartTime.format(bookingMap.get(message.getChatId()).getEndDate()) + "\nDuration: ";
+                            if(difference_In_Hours>=1){
+                                info5 += difference_In_Hours + "hour(s) ";
+                            }
+                            if(difference_In_Minutes>=1){
+                                info5 += difference_In_Minutes + "minute(s)";
+                            }
+                            info5 += "\nBooking Purpose: " + bookingMap.get(message.getChatId()).getBookPurpose();
+                            info5 += "\n\nAre these correct?";
+
+
+                            sendMessage = new SendMessage();
+                            sendMessage.setText(info5);
+                            sendMessage.setChatId(message.getChatId());
+                            sendMessage.setParseMode(ParseMode.MARKDOWN);
+
+                            //Inline Keyboard Button
+                            InlineKeyboardMarkup inlineKeyboardMarkup2 = new InlineKeyboardMarkup();
+                            List<List<InlineKeyboardButton>> inlineButtons2 = new ArrayList<>();
+                            List<InlineKeyboardButton> inlineKeyboardButtonList5 = new ArrayList<>();
+                            List<InlineKeyboardButton> inlineKeyboardButtonList6 = new ArrayList<>();
+                            InlineKeyboardButton inlineKeyboardButton5 = new InlineKeyboardButton();
+                            InlineKeyboardButton inlineKeyboardButton6 = new InlineKeyboardButton();
+                            inlineKeyboardButton5.setText("Yes");
+                            inlineKeyboardButton6.setText("No I would like to change something");
+                            inlineKeyboardButton5.setCallbackData("Book:Booking_Conf_Y");
+                            inlineKeyboardButton6.setCallbackData("Book:Booking_Conf_N");
+                            inlineKeyboardButtonList5.add(inlineKeyboardButton5);
+                            inlineKeyboardButtonList6.add(inlineKeyboardButton6);
+                            inlineButtons2.add(inlineKeyboardButtonList5);
+                            inlineButtons2.add(inlineKeyboardButtonList6);
+                            inlineKeyboardMarkup2.setKeyboard(inlineButtons2);
+                            sendMessage.setReplyMarkup(inlineKeyboardMarkup2);
+                        }
 
 
 
@@ -508,6 +739,7 @@ public class PNG_bot extends TelegramLongPollingBot {
 
 
                 try{
+                    sendMessage.setChatId(message.getChatId());
                     execute(sendMessage);
                 }catch (TelegramApiException e){
                     e.printStackTrace();
@@ -679,7 +911,7 @@ public class PNG_bot extends TelegramLongPollingBot {
                     if (data.equals("Book:Chan_Name")) {
                         userState.put(message.getChatId(), "Book:Chan_Name");
                         sendMessage.setText("What do you want to change your name to?\n\n" +
-                                "Example: Ang Toon Ph'ng");
+                                "Example: Ang Toon Phng");
                     } else if (data.equals("Book:Chan_IC")) {
                         userState.put(message.getChatId(), "Book:Chan_IC");
                         sendMessage.setText("What do you want to change your ic to?\n\n" +
@@ -729,6 +961,65 @@ public class PNG_bot extends TelegramLongPollingBot {
                     userState.put(message.getChatId(), "Book:StartTime");
                     sendMessage.setText("Please enter the date that you want to book this room.\n\n" +
                             "Example: 27/04/2023");
+                    sendMessage.setChatId(message.getChatId());
+
+                } else if (data.equals("Book:Booking_Conf_Y")) {
+
+
+                } else if (data.equals("Book:Booking_Conf_N")) {
+                    //Display information to double check
+                    String info = "Which information do you want to change";
+                    sendMessage = new SendMessage();
+                    sendMessage.setText(info);
+                    sendMessage.setParseMode(ParseMode.MARKDOWN);
+                    sendMessage.setChatId(message.getChatId());
+
+                    //Inline Keyboard Button
+                    InlineKeyboardMarkup inlineKeyboardMarkup = new InlineKeyboardMarkup();
+                    List<List<InlineKeyboardButton>> inlineButtons = new ArrayList<>();
+                    List<InlineKeyboardButton> inlineKeyboardButtonList1 = new ArrayList<>();
+                    List<InlineKeyboardButton> inlineKeyboardButtonList2 = new ArrayList<>();
+                    InlineKeyboardButton inlineKeyboardButton1 = new InlineKeyboardButton();
+                    InlineKeyboardButton inlineKeyboardButton2 = new InlineKeyboardButton();
+                    InlineKeyboardButton inlineKeyboardButton3 = new InlineKeyboardButton();
+                    InlineKeyboardButton inlineKeyboardButton4 = new InlineKeyboardButton();
+                    inlineKeyboardButton1.setText("Date");
+                    inlineKeyboardButton2.setText("Start Time");
+                    inlineKeyboardButton3.setText("End Time");
+                    inlineKeyboardButton4.setText("Purpose");
+                    inlineKeyboardButton1.setCallbackData("Book:Chan_Date");
+                    inlineKeyboardButton2.setCallbackData("Book:Chan_StartTime");
+                    inlineKeyboardButton3.setCallbackData("Book:Chan_EndTime");
+                    inlineKeyboardButton4.setCallbackData("Book:Chan_Purpose");
+                    inlineKeyboardButtonList1.add(inlineKeyboardButton1);
+                    inlineKeyboardButtonList1.add(inlineKeyboardButton2);
+                    inlineKeyboardButtonList2.add(inlineKeyboardButton3);
+                    inlineKeyboardButtonList2.add(inlineKeyboardButton4);
+                    inlineButtons.add(inlineKeyboardButtonList1);
+                    inlineButtons.add(inlineKeyboardButtonList2);
+                    inlineKeyboardMarkup.setKeyboard(inlineButtons);
+                    sendMessage.setReplyMarkup(inlineKeyboardMarkup);
+
+                }else if(data.equals("Book:Chan_Date") || data.equals("Book:Chan_StartTime") ||data.equals("Book:Chan_EndTime") ||data.equals("Book:Chan_Purpose")) {
+                    if (data.equals("Book:Chan_Date")) {
+                        userState.put(message.getChatId(), "Book:Chan_Date");
+                        sendMessage.setText("When do you want to change your date to?\n\n" +
+                                "Example: 27/04/2023");
+                    } else if (data.equals("Book:Chan_StartTime")) {
+                        userState.put(message.getChatId(), "Book:Chan_StartTime");
+                        sendMessage.setText("When do you want to change your start time to?\n\n" +
+                                "Example: 08:30");
+                    } else if (data.equals("Book:Chan_EndTime")) {
+                        userState.put(message.getChatId(), "Book:Chan_EndTime");
+                        sendMessage.setText("When do you want to change your end time to?\n\n" +
+                                "Example: 18:30");
+                    } else if (data.equals("Book:Chan_Purpose")) {
+                        userState.put(message.getChatId(), "Book:Chan_Purpose");
+                        sendMessage.setText("What do you want to change your booking purpose to?\n\n" +
+                                "Example: Club meeting.");
+                    }
+
+
                     sendMessage.setChatId(message.getChatId());
                 }
 
