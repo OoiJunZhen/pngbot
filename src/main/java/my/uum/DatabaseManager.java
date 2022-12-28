@@ -369,6 +369,81 @@ public class DatabaseManager {
         return roomList;
     }
 
+    /**
+     * This method will display room's details based on the Room ID
+     * @param Room_ID Room ID
+     * @return Room's Details
+     */
+    public String getRoomInfo(Integer Room_ID){
+        String roomInfo = "";
+        String q = "SELECT Room_Name, Room_Description, Maximum_Capacity, Room_Type FROM Room WHERE Room_ID=?";
+
+
+        try(Connection conn = this.connect()){
+            PreparedStatement preparedStatement = conn.prepareStatement(q);
+
+            preparedStatement.setInt(1, Room_ID);
+            ResultSet rs = preparedStatement.executeQuery();
+            while(rs.next()){
+                roomInfo+=
+                        "Room Name: " + rs.getString("Room_Name") + "\n"+
+                                "Description: " + rs.getString("Room_Description") + "\n" +
+                                "Maximum Capacity: " + rs.getString("Maximum_Capacity") + "\n" +
+                                "Type: " + rs.getString("Room_Type");
+            }
+
+            if(roomInfo.equals("")){
+                roomInfo+="Sorry, this room does not exist. Please try to reply another number :)";
+            }else{
+                roomInfo+="\n\nAre you sure you want to book this room?";
+            }
+
+        }catch (SQLException e){
+            System.out.println(e.getMessage());       }
+        return roomInfo;
+    }
+
+    public boolean checkRoom(String input, Integer School_ID){
+        Integer Room_ID = 0;
+        Integer check_ID = 0;
+
+        try{
+            Room_ID=Integer.parseInt(input);
+
+        }catch (NumberFormatException e){
+
+            e.printStackTrace();
+            System.out.println("User mis-input room id in incorrect format");
+            return false;
+        }
+
+
+        String q = "SELECT Room_ID FROM Room WHERE Room_ID=? AND School_ID=?";
+
+
+        try(Connection conn = this.connect()){
+            PreparedStatement preparedStatement = conn.prepareStatement(q);
+
+            preparedStatement.setInt(1,Room_ID);
+            preparedStatement.setInt(2,School_ID);
+            ResultSet rs = preparedStatement.executeQuery();
+            while(rs.next()){
+                check_ID = rs.getInt("Room_ID");
+                break;
+            }
+
+        }catch (SQLException e){
+            System.out.println(e.getMessage());
+        }
+
+
+        if(check_ID == 0){
+            return false;
+        }
+        else
+            return true;
+    }
+
 
 
 

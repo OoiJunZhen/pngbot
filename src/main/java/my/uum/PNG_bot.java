@@ -131,7 +131,7 @@ public class PNG_bot extends TelegramLongPollingBot {
                     usersMap.put(message.getChatId(), new Users("","","","",""));
                     userState.put(message.getChatId(), "Test:Input");
                     sendMessage = new SendMessage();
-                    sendMessage.setText("Enter Email");
+                    sendMessage.setText("Enter Date\n\nExample: 23/02/2023");
                     sendMessage.setChatId(message.getChatId().toString());
 
                     try {
@@ -146,12 +146,23 @@ public class PNG_bot extends TelegramLongPollingBot {
 
             //Go to check state if State have the first word as 'Test:'
             if(!String.valueOf(message.getText().charAt(0)).equals("/") && userState.get(message.getChatId()).contains("Test:")){
-                if(inputFormatChecker.EmailFormat(message.getText())){
-                    sendMessage.setText("True");
+
+                SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+                Date date = new Date();
+
+                try{
+                    Date bookDate = sdf.parse(message.getText());
+
+
+                    if(inputFormatChecker.bookDate(bookDate,date)){
+                        sendMessage.setText("True");
+                    } else{
+                        sendMessage.setText("False");
+                    }
+                } catch (ParseException e){
+                    e.printStackTrace();
                 }
-                else{
-                    sendMessage.setText("False");
-                }
+
                 sendMessage.setChatId(message.getChatId());
                 try{
                     execute(sendMessage);
@@ -294,7 +305,7 @@ public class PNG_bot extends TelegramLongPollingBot {
                                         "Example: 001211080731");
                                 sendMessage.setChatId(message.getChatId());
                             }
-                        } else if (userState.get(message.getChatId()).equals("Book:Staff_ID")) {
+                        } else if (userState.get(message.getChatId()).equals("Book:Chan_StaffID")) {
                             usersMap.get(message.getChatId()).setStaffID(message.getText());
                             output=true;
 
@@ -351,9 +362,10 @@ public class PNG_bot extends TelegramLongPollingBot {
                             String[] password = message.getText().split("@", 2);
 
                             if(databaseManager.passwordCheck(password[0],password[1])){
+
+                                Integer userID = databaseManager.getUserID(password[0]);
                                 Date date = new Date();
-                                bookingMap.put(message.getChatId(),new Booking(date, date, date, 0, "", "", 0));
-                                usersMap.get(message.getChatId()).setEmail(password[1]);
+                                bookingMap.put(message.getChatId(),new Booking(date, date, date, 0, "", "", 0, userID));
                                 userState.put(message.getChatId(),"Book:Room");
 
                                 String list = databaseManager.schoolList();
@@ -378,8 +390,9 @@ public class PNG_bot extends TelegramLongPollingBot {
 
                     case "Book:Room":
                         if(databaseManager.checkSchool(message.getText())){
-                            bookingMap.get(message.getChatId()).setBookID(Integer.parseInt(message.getText()));
-                            String roomList = databaseManager.getRoomList(bookingMap.get(message.getChatId()).getBookID());
+                            userState.put(message.getChatId(),"Book:RoomDetails");
+                            bookingMap.get(message.getChatId()).setRoomID(Integer.parseInt(message.getText()));
+                            String roomList = databaseManager.getRoomList(bookingMap.get(message.getChatId()).getRoomID());
 
                             roomList += "Which room do you want to book?\nExample reply: 1";
                             sendMessage.setText(roomList);
@@ -394,6 +407,60 @@ public class PNG_bot extends TelegramLongPollingBot {
                             sendMessage.setChatId(message.getChatId());
                         }
                     break;
+
+                    case "Book:RoomDetails":
+                        if(databaseManager.checkRoom(message.getText(),bookingMap.get(message.getChatId()).getBookID())){
+                            //update roomID in hashmap to actual room ID (Initially it is School ID)
+                            bookingMap.get(message.getChatId()).setRoomID(Integer.parseInt(message.getText()));
+
+                            //display room information in details
+                            String list1 = databaseManager.getRoomInfo(bookingMap.get(message.getChatId()).getRoomID());
+
+                            sendMessage = new SendMessage();
+                            sendMessage.setText(list1);
+                            sendMessage.setParseMode(ParseMode.MARKDOWN);
+                            sendMessage.setChatId(message.getChatId());
+
+                            //Inline Keyboard Button
+                            InlineKeyboardMarkup inlineKeyboardMarkup = new InlineKeyboardMarkup();
+                            List<List<InlineKeyboardButton>> inlineButtons = new ArrayList<>();
+                            List<InlineKeyboardButton> inlineKeyboardButtonList1 = new ArrayList<>();
+                            List<InlineKeyboardButton> inlineKeyboardButtonList2 = new ArrayList<>();
+                            InlineKeyboardButton inlineKeyboardButton1 = new InlineKeyboardButton();
+                            InlineKeyboardButton inlineKeyboardButton2 = new InlineKeyboardButton();
+                            inlineKeyboardButton1.setText("Yes");
+                            inlineKeyboardButton2.setText("No, choose another room");
+                            inlineKeyboardButton1.setCallbackData("Book:Room_Conf_Y");
+                            inlineKeyboardButton2.setCallbackData("Book:Room_Conf_N");
+                            inlineKeyboardButtonList1.add(inlineKeyboardButton1);
+                            inlineKeyboardButtonList2.add(inlineKeyboardButton2);
+                            inlineButtons.add(inlineKeyboardButtonList1);
+                            inlineButtons.add(inlineKeyboardButtonList2);
+                            inlineKeyboardMarkup.setKeyboard(inlineButtons);
+                            sendMessage.setReplyMarkup(inlineKeyboardMarkup);
+
+
+
+                        }else{
+                            String list2 = databaseManager.getRoomList(bookingMap.get(message.getChatId()).getBookID());
+                            list2 += "This room does not exist. Please re-enter the room that you wish to book.\nExample reply: 1";
+
+                            sendMessage.setText(list2);
+                            sendMessage.setChatId(message.getChatId());
+                        }
+
+                    break;
+                    case "Book:StartTime":
+                        if(inputFormatChecker.DateFormat(message.getText())){
+
+
+                        }else{
+                            sendMessage.setText("Please enter the date in correct format.");
+                            sendMessage.setChatId(message.getChatId());
+                        }
+
+                    break;
+
                 }
 
 
@@ -403,7 +470,6 @@ public class PNG_bot extends TelegramLongPollingBot {
                     e.printStackTrace();
                 }
             }
-
 
 
             //Go to check state if State have the first word as 'Login'
@@ -594,7 +660,7 @@ public class PNG_bot extends TelegramLongPollingBot {
                     databaseManager.insertUser(usersMap.get(message.getChatId()).getName(), usersMap.get(message.getChatId()).getICNO(), usersMap.get(message.getChatId()).getEmail(), usersMap.get(message.getChatId()).getStaffID(), usersMap.get(message.getChatId()).getTelNo());
 
                     Date date = new Date();
-                    bookingMap.put(message.getChatId(),new Booking(date, date, date, 0, "", "", 0));
+                    bookingMap.put(message.getChatId(),new Booking(date, date, date, 0, "", "", 0, databaseManager.getUserID(usersMap.get(message.getChatId()).getICNO())));
 
                     userState.put(message.getChatId(),"Book:Room");
 
@@ -604,6 +670,23 @@ public class PNG_bot extends TelegramLongPollingBot {
                     sendMessage.setText(list);
                     sendMessage.setChatId(message.getChatId());
 
+                } else if (data.equals("Book:Room_Conf_N")) {
+
+                    Date date = new Date();
+                    bookingMap.put(message.getChatId(),new Booking(date, date, date, 0, "", "", 0, databaseManager.getUserID(usersMap.get(message.getChatId()).getICNO())));
+                    userState.put(message.getChatId(),"Book:Room");
+
+                    String list = databaseManager.schoolList();
+                    list+="Alright! Which school do you wish to book in?\nExample reply: 1";
+
+                    sendMessage.setText(list);
+                    sendMessage.setChatId(message.getChatId());
+
+                } else if (data.equals("Book:Room_Conf_Y")) {
+                    userState.put(message.getChatId(), "Book:StartTime");
+                    sendMessage.setText("Please enter the date that you want to book this room.\n\n" +
+                            "Example: 27/04/2023");
+                    sendMessage.setChatId(message.getChatId());
                 }
 
 

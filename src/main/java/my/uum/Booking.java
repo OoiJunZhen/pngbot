@@ -10,18 +10,20 @@ public class Booking {
     private Integer bookID;
     private String bookPurpose;
     private String temp;
-
+    private Integer roomID;
     private Integer userID;
 
 
 
-    public Booking(Date startDate, Date endDate, Date timeStamp, Integer bookID, String bookPurpose, String temp, Integer userID){
+
+    public Booking(Date startDate, Date endDate, Date timeStamp, Integer bookID, String bookPurpose, String temp, Integer roomID, Integer userID){
         this.startDate = startDate;
         this.endDate = endDate;
         this.timeStamp = timeStamp;
         this.bookID = bookID;
         this.bookPurpose = bookPurpose;
         this.temp = temp;
+        this.roomID = roomID;
         this.userID = userID;
     }
 
@@ -79,6 +81,14 @@ public class Booking {
 
     public void setUserID(Integer userID) {
         this.userID = userID;
+    }
+
+    public Integer getRoomID() {
+        return roomID;
+    }
+
+    public void setRoomID(Integer roomID) {
+        this.roomID = roomID;
     }
 
 }

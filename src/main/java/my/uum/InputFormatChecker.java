@@ -1,5 +1,8 @@
 package my.uum;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -17,7 +20,7 @@ public class InputFormatChecker {
 
         //2. Check whether the input is numbers
         try{
-            Integer.parseInt(ICNO);
+            Long.parseLong(ICNO);
         } catch (NumberFormatException e){
             e.printStackTrace();
             //if not, return false
@@ -152,6 +155,56 @@ public class InputFormatChecker {
         if(day>31||day<1||month>12||month<1||year<1 )
             return false;
         else
+            return true;
+    }
+
+    /**
+     * THe purpose of this method is to ensure that the booking made is between 1 month to 1 year when booking is made
+     * @param bookDate
+     * @param bookMadeDate
+     * @return
+     */
+    public boolean bookDate(Date bookDate, Date bookMadeDate){
+        //bookDate = the date that user want to use the room
+        //bookMadeDate = the date that user make the booking
+
+        long difference_In_Time = bookDate.getTime() - bookMadeDate.getTime();
+
+
+        long difference_In_Years
+                = (difference_In_Time
+                / (1000l * 60 * 60 * 24 * 365));
+
+        long difference_In_Days
+                = (difference_In_Time
+                / (1000 * 60 * 60 * 24))
+                % 365;
+
+        if(difference_In_Years>1)
+            return false;
+
+        else if (difference_In_Days<31)
+            return false;
+
+        else
+            return true;
+
+    }
+
+    /**
+     * the purpose of this method is to ensure that the booking made is not before the current time
+     * @param bookDate the new date that user wants to book
+     * @return
+     */
+    public boolean bookDateCurrent(Date bookDate){
+
+        //this represents the current time(like a timestamp)
+        Date date = new Date();
+
+        //if the booking time set is before the current time, return false
+        if(bookDate.before(date)){
+            return false;
+        }else
             return true;
 
     }
