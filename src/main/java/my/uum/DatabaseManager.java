@@ -696,9 +696,9 @@ public class DatabaseManager {
         return roomName;
     }
 
-    public void insertBook(String Booking_Purpose, String Book_StartTime, String Book_EndTime, Integer Room_ID, Integer User_ID){
+    public void insertBook(String Booking_Purpose, String Book_StartTime, String Book_EndTime, Integer Room_ID, Integer User_ID, String Timestamp){
         //set dynamic query
-        String q = "INSERT INTO Booking (Booking_Purpose, Room_ID, Book_StartTime, Book_EndTime, User_ID)VALUES (?,?,?,?,?)";
+        String q = "INSERT INTO Booking (Booking_Purpose, Room_ID, Book_StartTime, Book_EndTime, User_ID, Timestamp)VALUES (?,?,?,?,?,?)";
 
         try{
             //Get the preparedStatement Object
@@ -710,6 +710,7 @@ public class DatabaseManager {
             preparedStatement.setString(3,Book_StartTime);
             preparedStatement.setString(4,Book_EndTime);
             preparedStatement.setInt(5,User_ID);
+            preparedStatement.setString(6, Timestamp);
 
             preparedStatement.executeUpdate();
 

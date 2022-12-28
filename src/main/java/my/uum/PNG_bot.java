@@ -1076,14 +1076,14 @@ public class PNG_bot extends TelegramLongPollingBot {
                     String endDate = sdf.format(bookingMap.get(message.getChatId()).getEndDate());
                     String bookTime = sdf.format(timeStamp);
                     bookingMap.get(message.getChatId()).setUserID(databaseManager.getUserID(usersMap.get(message.getChatId()).getICNO()));
-                    databaseManager.insertBook(bookingMap.get(message.getChatId()).getBookPurpose(), startDate, endDate, bookingMap.get(message.getChatId()).getRoomID(),bookingMap.get(message.getChatId()).getUserID());
+                    databaseManager.insertBook(bookingMap.get(message.getChatId()).getBookPurpose(), startDate, endDate, bookingMap.get(message.getChatId()).getRoomID(),bookingMap.get(message.getChatId()).getUserID(), bookTime);
 
                     sendMessage.setText("You have successfully booked the room!" +
                             "\n\nYou can review the booked room(s) by using /room");
                     sendMessage.setChatId(message.getChatId());
 
                 } else if (data.equals("Book:Booking_Conf_N")) {
-                    //Display information to double check
+                    //Display information to double-check
                     String info = "Which information do you want to change";
                     sendMessage = new SendMessage();
                     sendMessage.setText(info);
