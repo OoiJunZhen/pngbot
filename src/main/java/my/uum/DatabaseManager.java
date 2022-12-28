@@ -500,6 +500,75 @@ public class DatabaseManager {
         }
     }
 
+    public String bookedTime(Integer Room_ID,String input){
+        String list = "";
+
+        String start="";
+        String end="";
+        String date = "";
+        String date2="";
+        java.sql.Date sqlDate;
+        java.sql.Date sqlDate2;
+
+        SimpleDateFormat bookDateFormat = new SimpleDateFormat("dd/MM/yyyy");
+        SimpleDateFormat databaseDateFormat = new SimpleDateFormat("yyyy-MM-dd");
+        SimpleDateFormat timeFormat = new SimpleDateFormat("hh:mm a");
+
+        try {
+            java.util.Date utilDate = bookDateFormat.parse(input);
+            date = databaseDateFormat.format(utilDate);
+
+
+            //add day by 1 to form date2
+            Calendar c = Calendar.getInstance();
+            c.setTime(databaseDateFormat.parse(date));
+            c.add(Calendar.DATE, 1);
+            date2 = databaseDateFormat.format(c.getTime());
+
+            sqlDate = java.sql.Date.valueOf(date);
+            sqlDate2 = java.sql.Date.valueOf(date2);
+
+        } catch (ParseException e) {
+            throw new RuntimeException(e);
+        }
+
+        // Display booked time within the chosen date/day.
+        String q = "SELECT Book_StartTime, Book_EndTime FROM Booking WHERE (Book_StartTime >=? AND Book_StartTime<?) AND Room_ID=?";
+
+        System.out.println(date + " " + date2);
+        try (Connection conn = this.connect()) {
+            PreparedStatement preparedStatement = conn.prepareStatement(q);
+
+            preparedStatement.setDate(1, sqlDate);
+            preparedStatement.setDate(2, sqlDate2);
+            preparedStatement.setInt(3, Room_ID);
+
+            ResultSet rs = preparedStatement.executeQuery();
+            while (rs.next()) {
+                java.sql.Date startTime = rs.getDate("Book_StartTime");
+                java.sql.Date endTime = rs.getDate("Book_EndTime");
+
+                java.util.Date convertedStart = new java.util.Date(startTime.getTime());
+                java.util.Date convertedEnd = new java.util.Date(endTime.getTime());
+
+                start = timeFormat.format(convertedStart);
+                end = timeFormat.format(convertedEnd);
+
+                list+=start + " - " + end + "\n\n";
+
+
+            }
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+
+        return list;
+    }
+
+    public boolean checkTimeDatabase(Integer Room_ID, String Date, String Time){
+        return false;
+    }
+
 
 
 

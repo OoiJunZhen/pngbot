@@ -454,6 +454,7 @@ public class PNG_bot extends TelegramLongPollingBot {
 
                     break;
                     case "Book:StartTime":
+                        String text = "";
                         if(inputFormatChecker.DateFormat(message.getText())){
 
                             SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
@@ -463,8 +464,18 @@ public class PNG_bot extends TelegramLongPollingBot {
                                 Date bookDate = sdf.parse(message.getText());
 
                                 if(inputFormatChecker.bookDate(bookDate, date)){
+                                    userState.put(message.getChatId(),"Book:EndTime");
+                                    bookingMap.get(message.getChatId()).setTemp(message.getText());
 
-                                   bookingMap.get(message.getChatId()).setTemp(message.getText());
+                                    if(databaseManager.checkBook(bookingMap.get(message.getChatId()).getRoomID(),message.getText())){
+                                        text += "Booked time:\n";
+                                        //display booked Time
+                                        text += databaseManager.bookedTime(bookingMap.get(message.getChatId()).getRoomID(),message.getText());
+                                    }
+
+                                    text += "When do you want to start using the booked room?\nExample: 14:30";
+                                    sendMessage.setText(text);
+                                    sendMessage.setChatId(message.getChatId());
 
 
 
@@ -484,6 +495,12 @@ public class PNG_bot extends TelegramLongPollingBot {
                                     "Example: 27/04/2023");
                             sendMessage.setChatId(message.getChatId());
                         }
+
+                    break;
+
+                    case "Book:EndTime":
+
+
 
                     break;
 
