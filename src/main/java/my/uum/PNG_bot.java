@@ -148,17 +148,20 @@ public class PNG_bot extends TelegramLongPollingBot {
             if(!String.valueOf(message.getText().charAt(0)).equals("/") && userState.get(message.getChatId()).contains("Test:")){
 
                 SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+                SimpleDateFormat simple = new SimpleDateFormat("yyyy-MM-dd");
+
                 Date date = new Date();
 
                 try{
                     Date bookDate = sdf.parse(message.getText());
 
 
-                    if(inputFormatChecker.bookDate(bookDate,date)){
-                        sendMessage.setText("True");
-                    } else{
-                        sendMessage.setText("False");
-                    }
+                        if(databaseManager.checkBook(2, message.getText())){
+                            sendMessage.setText("True");
+                        } else{
+                            sendMessage.setText("I'm here");
+                        }
+
                 } catch (ParseException e){
                     e.printStackTrace();
                 }
@@ -409,7 +412,7 @@ public class PNG_bot extends TelegramLongPollingBot {
                     break;
 
                     case "Book:RoomDetails":
-                        if(databaseManager.checkRoom(message.getText(),bookingMap.get(message.getChatId()).getBookID())){
+                        if(databaseManager.checkRoom(message.getText(),bookingMap.get(message.getChatId()).getRoomID())){
                             //update roomID in hashmap to actual room ID (Initially it is School ID)
                             bookingMap.get(message.getChatId()).setRoomID(Integer.parseInt(message.getText()));
 
@@ -442,7 +445,7 @@ public class PNG_bot extends TelegramLongPollingBot {
 
 
                         }else{
-                            String list2 = databaseManager.getRoomList(bookingMap.get(message.getChatId()).getBookID());
+                            String list2 = databaseManager.getRoomList(bookingMap.get(message.getChatId()).getRoomID());
                             list2 += "This room does not exist. Please re-enter the room that you wish to book.\nExample reply: 1";
 
                             sendMessage.setText(list2);
@@ -453,9 +456,32 @@ public class PNG_bot extends TelegramLongPollingBot {
                     case "Book:StartTime":
                         if(inputFormatChecker.DateFormat(message.getText())){
 
+                            SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+                            Date date = new Date();
+
+                            try {
+                                Date bookDate = sdf.parse(message.getText());
+
+                                if(inputFormatChecker.bookDate(bookDate, date)){
+
+                                   bookingMap.get(message.getChatId()).setTemp(message.getText());
+
+
+
+                                }else{
+                                    sendMessage.setText("The booking date needs to be at least 1 month prior and also can't be made if that day is over 1 year away.\n" +
+                                            "As an example, to book a day in April 1st, booking needs to be made on March 1st or before.\n\n" +
+                                            "Please enter the day you would like to book\nExample: 27/04/2023");
+                                    sendMessage.setChatId(message.getChatId());
+                                }
+                            }catch(ParseException e){
+                                e.printStackTrace();
+                            }
+
 
                         }else{
-                            sendMessage.setText("Please enter the date in correct format.");
+                            sendMessage.setText("Please enter the date in correct format.\n" +
+                                    "Example: 27/04/2023");
                             sendMessage.setChatId(message.getChatId());
                         }
 
@@ -677,7 +703,7 @@ public class PNG_bot extends TelegramLongPollingBot {
                     userState.put(message.getChatId(),"Book:Room");
 
                     String list = databaseManager.schoolList();
-                    list+="Alright! Which school do you wish to book in?\nExample reply: 1";
+                    list+="Which school do you wish to book in?\nExample reply: 1";
 
                     sendMessage.setText(list);
                     sendMessage.setChatId(message.getChatId());

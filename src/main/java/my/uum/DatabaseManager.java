@@ -1,7 +1,9 @@
 package my.uum;
 
 import java.sql.*;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 
 public class DatabaseManager {
 
@@ -442,6 +444,60 @@ public class DatabaseManager {
         }
         else
             return true;
+    }
+
+    public boolean checkBook(Integer Room_ID, String input) {
+        String date = "";
+        String date2="";
+        Integer check_ID = 0;
+        java.sql.Date sqlDate;
+        java.sql.Date sqlDate2;
+
+        SimpleDateFormat bookDateFormat = new SimpleDateFormat("dd/MM/yyyy");
+        SimpleDateFormat databaseDateFormat = new SimpleDateFormat("yyyy-MM-dd");
+
+        try {
+            java.util.Date utilDate = bookDateFormat.parse(input);
+            date = databaseDateFormat.format(utilDate);
+
+
+            Calendar c = Calendar.getInstance();
+            c.setTime(databaseDateFormat.parse(date));
+            c.add(Calendar.DATE, 1);
+            date2 = databaseDateFormat.format(c.getTime());
+
+            sqlDate = java.sql.Date.valueOf(date);
+            sqlDate2 = java.sql.Date.valueOf(date2);
+
+        } catch (ParseException e) {
+            throw new RuntimeException(e);
+        }
+
+        // Use the DATE function to compare only the date part of the Book_StartTime column
+        String q = "SELECT Booking_ID FROM Booking WHERE (Book_StartTime >=? AND Book_StartTime<?) AND Room_ID=?";
+
+        System.out.println(date + " " + date2);
+        try (Connection conn = this.connect()) {
+            PreparedStatement preparedStatement = conn.prepareStatement(q);
+
+            preparedStatement.setDate(1, sqlDate);
+            preparedStatement.setDate(2, sqlDate2);
+            preparedStatement.setInt(3, Room_ID);
+
+            ResultSet rs = preparedStatement.executeQuery();
+            while (rs.next()) {
+                check_ID = rs.getInt("Booking_ID");
+                break;
+            }
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+
+        if (check_ID == 0) {
+            return false;
+        } else {
+            return true;
+        }
     }
 
 
