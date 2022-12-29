@@ -961,17 +961,23 @@ public class PNG_bot extends TelegramLongPollingBot {
                     case "Login:EditProfile_Mobile":
 
                         boolean editOutput = false;
-                        if (userState.get(message.getChatId()).equals("Login:EditProfile_Name") || userState.get(message.getChatId()).equals("Login:EditProfile_ICNO") || userState.get(message.getChatId()).equals("Login:EditProfile_Email") || userState.get(message.getChatId()).equals("Login:EditProfile_StaffID") || userState.get(message.getChatId()).equals("Login:EditProfile_Mobile")) {
+                        if (userState.get(message.getChatId()).equals("Login:EditProfile_Name") || userState.get(message.getChatId()).equals("Login:EditProfile_ICNO")) {
                             if (inputFormatChecker.NameFormat(message.getText())) {
                                 usersMap.get(message.getChatId()).setName(message.getText());
                                 int userID = databaseManager.getUserID(usersMap.get(message.getChatId()).getICNO());
                                 databaseManager.editProfileName(userID, usersMap.get(message.getChatId()).getName());
                                 editOutput = true;
-                            }else if (inputFormatChecker.checkICFormat(message.getText())) {
-                                usersMap.get(message.getChatId()).setName(message.getText());
+                            }
+
+                        }else if (userState.get(message.getChatId()).equals("Login:EditProfile_ICNO")) {
+                            if (inputFormatChecker.checkICFormat(message.getText())) {
+                                usersMap.get(message.getChatId()).setICNO(message.getText());
                                 int userID = databaseManager.getUserID(usersMap.get(message.getChatId()).getICNO());
-//                                databaseManager.editProfile(userID, usersMap.get(message.getChatId()).getName());
+                                databaseManager.editProfileICNO(userID, usersMap.get(message.getChatId()).getICNO());
                                 editOutput = true;
+                            }else {
+                                sendMessage.setText("Please re-enter your IC in correct format thank you.\n\n" +
+                                        "Example: 001211080731");
                             }
                         }
 
@@ -1345,7 +1351,6 @@ public class PNG_bot extends TelegramLongPollingBot {
                     if (data.equals("Login:EditProfile_Name")) {
                         userState.put(message.getChatId(), "Login:EditProfile_Name");
                         sendMessage.setText("What do you want to change your Name to?");
-
                     } else if (data.equals("Login:EditProfile_ICNO")) {
                         userState.put(message.getChatId(), "Login:EditProfile_ICNO");
                         sendMessage.setText("What do you want to change your IC Number to?");

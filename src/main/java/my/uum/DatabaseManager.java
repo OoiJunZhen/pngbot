@@ -805,8 +805,8 @@ public class DatabaseManager {
         return userInfo;
     }
 
-    public String editProfileName (Integer User_ID, String Name){
-        String roomInfo = "";
+    public void editProfileName (Integer User_ID, String Name){
+
         String q = "UPDATE Users SET Name=? WHERE User_ID=?";
 
         try(Connection conn = this.connect()){
@@ -819,7 +819,21 @@ public class DatabaseManager {
 
         }catch (SQLException e){
             System.out.println(e.getMessage());       }
-        return roomInfo;
+    }
+
+    public void editProfileICNO (Integer User_ID, String ICNo){
+        String q = "UPDATE Users SET ICNO=? WHERE User_ID=?";
+
+        try(Connection conn = this.connect()){
+            PreparedStatement preparedStatement = conn.prepareStatement(q);
+
+            preparedStatement.setString(1, ICNo);
+            preparedStatement.setInt(2, User_ID);
+            preparedStatement.executeUpdate();
+
+
+        }catch (SQLException e){
+            System.out.println(e.getMessage());       }
     }
 
 
