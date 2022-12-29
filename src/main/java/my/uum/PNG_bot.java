@@ -961,7 +961,7 @@ public class PNG_bot extends TelegramLongPollingBot {
                     case "Login:EditProfile_Mobile":
 
                         boolean editOutput = false;
-                        if (userState.get(message.getChatId()).equals("Login:EditProfile_Name") || userState.get(message.getChatId()).equals("Login:EditProfile_ICNO")) {
+                        if (userState.get(message.getChatId()).equals("Login:EditProfile_Name") ) {
                             if (inputFormatChecker.NameFormat(message.getText())) {
                                 usersMap.get(message.getChatId()).setName(message.getText());
                                 int userID = databaseManager.getUserID(usersMap.get(message.getChatId()).getICNO());
