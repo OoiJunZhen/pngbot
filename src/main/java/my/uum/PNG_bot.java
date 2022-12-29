@@ -965,7 +965,12 @@ public class PNG_bot extends TelegramLongPollingBot {
                             if (inputFormatChecker.NameFormat(message.getText())) {
                                 usersMap.get(message.getChatId()).setName(message.getText());
                                 int userID = databaseManager.getUserID(usersMap.get(message.getChatId()).getICNO());
-                                databaseManager.editProfile(userID, usersMap.get(message.getChatId()).getName());
+                                databaseManager.editProfileName(userID, usersMap.get(message.getChatId()).getName());
+                                editOutput = true;
+                            }else if (inputFormatChecker.checkICFormat(message.getText())) {
+                                usersMap.get(message.getChatId()).setName(message.getText());
+                                int userID = databaseManager.getUserID(usersMap.get(message.getChatId()).getICNO());
+//                                databaseManager.editProfile(userID, usersMap.get(message.getChatId()).getName());
                                 editOutput = true;
                             }
                         }

@@ -805,9 +805,8 @@ public class DatabaseManager {
         return userInfo;
     }
 
-    public String editProfile (Integer User_ID, String Name){
+    public String editProfileName (Integer User_ID, String Name){
         String roomInfo = "";
-//        String ICNo ="", Email="", Staff_ID="", TelNo="";
         String q = "UPDATE Users SET Name=? WHERE User_ID=?";
 
         try(Connection conn = this.connect()){
@@ -817,71 +816,12 @@ public class DatabaseManager {
             preparedStatement.setInt(2, User_ID);
             preparedStatement.executeUpdate();
 
-//            ResultSet rs = preparedStatement.executeQuery();
-//            while(rs.next()){
-//                String name = rs.getString("Name");
-//                String ic = rs.getString("ICNO");
-//                String email = rs.getString("Email");
-//                String staffId = rs.getString("Staff_ID");
-//                String telNo = rs.getString("Mobile_TelNo");
-//
-//
-
-
-//            }
-
 
         }catch (SQLException e){
             System.out.println(e.getMessage());       }
         return roomInfo;
     }
 
-//    public String editProfile (Integer User_ID, String Name){
-//        String info="";
-//
-//        String q = "UPDATE Users SET Name=?  WHERE User_ID=?";
-//        String q1 = "SELECT * FROM Users WHERE User_ID=?";
-//        try(Connection conn = this.connect()){
-//            PreparedStatement preparedStatement = conn.prepareStatement(q);
-//
-//            preparedStatement.setString(1, Name);
-//            preparedStatement.setInt(2, User_ID);
-//            preparedStatement.executeUpdate();
-//
-//
-//
-//
-//                PreparedStatement preparedStatement1 = conn.prepareStatement(q1);
-//
-//                preparedStatement1.setInt(1, User_ID);
-//                ResultSet rs = preparedStatement1.executeQuery();
-//
-//
-//
-//                while(rs.next()){
-//
-//                    String name = rs.getString("Name");
-//                    String ic = rs.getString("ICNO");
-//                    String email = rs.getString("Email");
-//                    String staffId = rs.getString("Staff_ID");
-//                    String telNo = rs.getString("Mobile_TelNo");
-//
-//
-//                    info+=
-//                            "Name: " + name +
-//                                    "\nNRIC: " + ic +
-//                                    "\nEmail: " + email +
-//                                    "\nStaff ID: " + staffId +
-//                                    "\nMobile Tel.Number: " + telNo +
-//                                    "\n\nWhat do you want to change?";
-//
-//                }
-//
-//
-//        }catch (SQLException e){
-//            System.out.println(e.getMessage());       }
-//        return info;
-//    }
 
 
 
