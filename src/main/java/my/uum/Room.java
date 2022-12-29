@@ -2,22 +2,13 @@ package my.uum;
 
 public class Room {
 
-    private String BuildingLoc, RoomName, RoomDesc, RoomMaxCap, RoomType;
+    private String RoomName, RoomDesc, RoomMaxCap, RoomType;
 
-    public Room(String BuildingLoc, String RoomName, String RoomDesc, String RoomMaxCap, String RoomType) {
-        this.BuildingLoc = BuildingLoc;
+    public Room(String RoomName, String RoomDesc, String RoomMaxCap, String RoomType) {
         this.RoomName = RoomName;
         this.RoomDesc = RoomDesc;
         this.RoomMaxCap = RoomMaxCap;
         this.RoomType = RoomType;
-    }
-
-    public String getBuildingLoc(){
-        return BuildingLoc;
-    }
-
-    public void setBuildingLoc(String BuildingLoc) {
-        this.BuildingLoc = BuildingLoc;
     }
 
     public String getRoomName(){
