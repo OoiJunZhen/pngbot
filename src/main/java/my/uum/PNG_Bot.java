@@ -128,8 +128,8 @@ public class PNG_Bot extends TelegramLongPollingBot {
                     break;
                  */
                 case "/registerschoolad":
-                    schoolAdminMap.put(message.getChatId(), new SchoolAdmin("", "", "", "", "", "", ""));// String name, String ICNO, String email, String staffID, String telNo, String schoolName
-                    RegisterRoomMap.put(message.getChatId(), new Room("", "", "", "", ""));
+                    schoolAdminMap.put(message.getChatId(), new SchoolAdmin("", "", "", "", "", "", "",""));// String name, String ICNO, String email, String staffID, String telNo, String schoolName
+                    RegisterRoomMap.put(message.getChatId(), new Room("", "", "", ""));
                     userState.put(message.getChatId(), "Register");
                     String msg10 = "Do you want register to become the school admin";
                     sendMessage = new SendMessage();
@@ -208,7 +208,7 @@ public class PNG_Bot extends TelegramLongPollingBot {
 
                     case "Register:RoomName":
                         // save building location
-                        RegisterRoomMap.get(message.getChatId()).setBuildingLoc(message.getText());
+                        schoolAdminMap.get(message.getChatId()).setBuildingLoc(message.getText());
 
                         //set新的State
                         userState.put(message.getChatId(), "Register:RoomDescription");
@@ -270,7 +270,7 @@ public class PNG_Bot extends TelegramLongPollingBot {
                                 schoolAdminMap.get(message.getChatId()).setOfficeTelNo(message.getText());
                                 msg1 = true;
                             } else if (userState.get(message.getChatId()).equals("Register:Chan_BuildingLoc")) {
-                                RegisterRoomMap.get(message.getChatId()).setBuildingLoc(message.getText());
+                                schoolAdminMap.get(message.getChatId()).setBuildingLoc(message.getText());
                                 msg1 = true;
                             } else if (userState.get(message.getChatId()).equals("Register:Chan_RoomName")) {
                                 RegisterRoomMap.get(message.getChatId()).setRoomName(message.getText());
@@ -291,7 +291,7 @@ public class PNG_Bot extends TelegramLongPollingBot {
                             String RoomInfo = "Are these the correct information to register the room?\n" +
                                     "\nSchool: " + schoolAdminMap.get(message.getChatId()).getSchoolName() +
                                     "\nOffice Number: " + schoolAdminMap.get(message.getChatId()).getOfficeTelNo() +
-                                    "\nBuilding Location: " + RegisterRoomMap.get(message.getChatId()).getBuildingLoc() +
+                                    "\nBuilding Location: " + schoolAdminMap.get(message.getChatId()).getBuildingLoc() +
                                     "\nRoom Name: " + RegisterRoomMap.get(message.getChatId()).getRoomName() +
                                     "\nRoom Description: " + RegisterRoomMap.get(message.getChatId()).getRoomDesc() +
                                     "\nMaximum Capacity: " + RegisterRoomMap.get(message.getChatId()).getRoomMaxCap() +
@@ -370,7 +370,7 @@ public class PNG_Bot extends TelegramLongPollingBot {
                 String RoomInfo = "Are these the correct information to register the room?\n" +
                         "\nSchool: " + schoolAdminMap.get(message.getChatId()).getSchoolName() +
                         "\nOffice Number: " + schoolAdminMap.get(message.getChatId()).getOfficeTelNo() +
-                        "\nBuilding Location: " + RegisterRoomMap.get(message.getChatId()).getBuildingLoc() +
+                        "\nBuilding Location: " + schoolAdminMap.get(message.getChatId()).getBuildingLoc() +
                         "\nRoom Name: " + RegisterRoomMap.get(message.getChatId()).getRoomName() +
                         "\nRoom Description: " + RegisterRoomMap.get(message.getChatId()).getRoomDesc() +
                         "\nMaximum Capacity: " + RegisterRoomMap.get(message.getChatId()).getRoomMaxCap() +
