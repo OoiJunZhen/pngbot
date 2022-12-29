@@ -78,7 +78,7 @@
 <li>Date format in java: Java simple date format. Edureka. (2022, November 29). Retrieved December 14, 2022, from https://www.edureka.co/blog/date-format-in-java/#:~:text=The%20DateFormat%20class%20in%20Java,Format%20classes%20are%20not%20synchronized. </li>
 <li>JavaTPoint. (n.d.). Java convert string to date - javatpoint. www.javatpoint.com. Retrieved December 14, 2022, from https://www.javatpoint.com/java-string-to-date </li>
 <li>Refsnes Data. (n.d.). Javascript string split(). JavaScript String split() Method. Retrieved December 11, 2022, from https://www.w3schools.com/jsref/jsref_split.asp </li>
-</li>SendPulse Team. (2022, November 18). How to Create and Connect a Telegram Chatbot. SendPulse. Retrieved December 10, 2022, from https://sendpulse.com/knowledge-base/chatbot/telegram/create-telegram-chatbot </li>
+<li>SendPulse Team. (2022, November 18). How to Create and Connect a Telegram Chatbot. SendPulse. Retrieved December 10, 2022, from https://sendpulse.com/knowledge-base/chatbot/telegram/create-telegram-chatbot </li>
 <li>SQLite java: Select data. SQLite Tutorial. (2022, August 28). Retrieved December 13, 2022, from https://www.sqlitetutorial.net/sqlite-java/select/ </li>
 <li>Using SimpleDateFormat for custom date formatting and parsing. (n.d.). Retrieved December 17, 2022, from http://web.cs.ucla.edu/classes/winter15/cs144/projects/java/simpledateformat.html </li>
 </ol>
