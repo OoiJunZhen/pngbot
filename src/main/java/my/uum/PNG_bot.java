@@ -963,71 +963,20 @@ public class PNG_bot extends TelegramLongPollingBot {
                         boolean editOutput = false;
                         if (userState.get(message.getChatId()).equals("Login:EditProfile_Name") || userState.get(message.getChatId()).equals("Login:EditProfile_ICNO") || userState.get(message.getChatId()).equals("Login:EditProfile_Email") || userState.get(message.getChatId()).equals("Login:EditProfile_StaffID") || userState.get(message.getChatId()).equals("Login:EditProfile_Mobile")) {
                             if (inputFormatChecker.NameFormat(message.getText())) {
-
                                 usersMap.get(message.getChatId()).setName(message.getText());
                                 int userID = databaseManager.getUserID(usersMap.get(message.getChatId()).getICNO());
-
-                               databaseManager.editProfile(userID, usersMap.get(message.getChatId()).getName());
-//                                sendMessage = new SendMessage();
-//                                sendMessage.setChatId(message.getChatId());
-//                               sendMessage.setText(editP);
+                                databaseManager.editProfile(userID, usersMap.get(message.getChatId()).getName());
                                 editOutput = true;
                             }
-//                            else {
-//                                sendMessage.setText("Please enter your phone number in correct format thank you.\n\n" +
-//                                        "Example: 0124773579");
-//                            }
                         }
-//                        else if (userState.get(message.getChatId()).equals("Book:Chan_Name")) {
-//                            if (inputFormatChecker.NameFormat(message.getText())) {
-//                                usersMap.get(message.getChatId()).setName(message.getText());
-//                                output = true;
-//                            } else {
-//                                sendMessage.setText("Please re-enter your name.\n\n" +
-//                                        "Example: Ang Toon Phng");
-//                            }
-//
-//                        } else if (userState.get(message.getChatId()).equals("Book:Chan_IC")) {
-//
-//                            //check IC format
-//                            if (inputFormatChecker.checkICFormat(message.getText())) {
-//
-//                                //check if user exist in the database
-//                                if (!databaseManager.checkUser(message.getText())) {
-//                                    usersMap.get(message.getChatId()).setICNO(message.getText());
-//                                    output = true;
-//                                } else {
-//                                    //if IC already used, then it is invalid
-//                                    sendMessage.setText("Sorry, this IC had been used by someone else, please enter another IC number\n\n" +
-//                                            "Example: 001211080731");
-//                                }
-//                            } else {
-//                                sendMessage.setText("Please re-enter your IC in correct format thank you.\n\n" +
-//                                        "Example: 001211080731");
-//                            }
-//                        } else if (userState.get(message.getChatId()).equals("Book:Chan_StaffID")) {
-//                            usersMap.get(message.getChatId()).setStaffID(message.getText());
-//                            output = true;
-//
-//                        } else if (userState.get(message.getChatId()).equals("Book:Chan_Email")) {
-//
-//                            //check email format
-//                            if (inputFormatChecker.EmailFormat(message.getText())) {
-//                                usersMap.get(message.getChatId()).setEmail(message.getText());
-//                                output = true;
-//                            } else {
-//                                sendMessage.setText("Please re-enter the email in correct format thank you.\n\n" +
-//                                        "Example: MyEmail@hotmail.com");
-//                            }
-//                        }
 
                         if (editOutput) {
-                            String info = "Are these the correct information?\n" +
-                                    "\nName: " + usersMap.get(message.getChatId()).getName() +
-                                    "\nIC: " + usersMap.get(message.getChatId()).getICNO() +
-                                    "\nEmail: " + usersMap.get(message.getChatId()).getEmail() +
-                                    "\nStaff ID: " + usersMap.get(message.getChatId()).getStaffID() +
-                                    "\nTel No.: " + usersMap.get(message.getChatId()).getTelNo();
+                            String info =   "Name: " + usersMap.get(message.getChatId()).getName() +
+                                            "\nIC: " + usersMap.get(message.getChatId()).getICNO() +
+                                            "\nEmail: " + usersMap.get(message.getChatId()).getEmail() +
+                                            "\nStaff ID: " + usersMap.get(message.getChatId()).getStaffID() +
+                                            "\nTel No.: " + usersMap.get(message.getChatId()).getTelNo() +
+                                            "\nYour Information is updated! Do you still have something that you want to change?";
 
 
                             sendMessage = new SendMessage();
@@ -1043,9 +992,9 @@ public class PNG_bot extends TelegramLongPollingBot {
                             InlineKeyboardButton inlineKeyboardButton1 = new InlineKeyboardButton();
                             InlineKeyboardButton inlineKeyboardButton2 = new InlineKeyboardButton();
                             inlineKeyboardButton1.setText("Yes");
-                            inlineKeyboardButton2.setText("No I would like to change something");
-                            inlineKeyboardButton1.setCallbackData("Book:Conf_Y");
-                            inlineKeyboardButton2.setCallbackData("Book:Conf_N");
+                            inlineKeyboardButton2.setText("No, Return to Main Menu");
+                            inlineKeyboardButton1.setCallbackData("Login:EditProfile");
+                            inlineKeyboardButton2.setCallbackData("Login:Main");
                             inlineKeyboardButtonList1.add(inlineKeyboardButton1);
                             inlineKeyboardButtonList2.add(inlineKeyboardButton2);
                             inlineButtons.add(inlineKeyboardButtonList1);
