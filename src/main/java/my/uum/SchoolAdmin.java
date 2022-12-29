@@ -15,5 +15,6 @@ public class SchoolAdmin extends Users {
     public String getSchoolName() {
         return schoolName;
     }
+
 }
 
