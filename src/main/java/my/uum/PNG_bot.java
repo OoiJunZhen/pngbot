@@ -158,7 +158,7 @@ public class PNG_bot extends TelegramLongPollingBot {
                     Date bookDate = sdf.parse(message.getText());
 
 
-                    if (databaseManager.checkBook(2, message.getText())) {
+                    if (databaseManager.checkBook(7, message.getText())) {
                         sendMessage.setText("True");
                     } else {
                         sendMessage.setText("I'm here");
@@ -447,7 +447,8 @@ public class PNG_bot extends TelegramLongPollingBot {
                                     userState.put(message.getChatId(), "Book:EndTime");
                                     bookingMap.get(message.getChatId()).setTemp(message.getText());
 
-                                    if (databaseManager.checkBook(bookingMap.get(message.getChatId()).getRoomID(), message.getText())) {
+                                    //if that day, the room got booking
+                                    if (databaseManager.checkBook(bookingMap.get(message.getChatId()).getRoomID(), bookingMap.get(message.getChatId()).getTemp())){
                                         text += "Booked time:\n";
                                         //display booked Time
                                         text += databaseManager.bookedTime(bookingMap.get(message.getChatId()).getRoomID(), message.getText());
@@ -480,11 +481,38 @@ public class PNG_bot extends TelegramLongPollingBot {
 
                             if (inputFormatChecker.timeOpen(message.getText())) {
 
-                                //if the time chosen does not contradict with other booked time
-                                if (!databaseManager.checkTimeDatabase(bookingMap.get(message.getChatId()).getRoomID(), bookingMap.get(message.getChatId()).getTemp(), message.getText())) {
+                                //if that day got booking
+                                if(databaseManager.checkBook(bookingMap.get(message.getChatId()).getRoomID(),bookingMap.get(message.getChatId()).getTemp())){
+                                    System.out.println("this date got time booked in this room");
+
+                                    //if the time chosen does not contradict with other booked time
+                                    if (!databaseManager.checkTimeDatabase(bookingMap.get(message.getChatId()).getRoomID(), bookingMap.get(message.getChatId()).getTemp(), message.getText())) {
+
+                                        SimpleDateFormat combine = new SimpleDateFormat("dd/MM/yyyy HH:mm");
+                                        try {
+                                            userState.put(message.getChatId(), "Book:Purpose");
+                                            Date dateTemp = combine.parse(bookingMap.get(message.getChatId()).getTemp() + " " + message.getText());
+
+                                            //save starting time
+                                            bookingMap.get(message.getChatId()).setStartDate(dateTemp);
+                                            sendMessage.setText("When will the booking end?\n\n" +
+                                                    "Example: 18:30");
+
+                                        } catch (ParseException e) {
+                                            e.printStackTrace();
+                                            System.out.println("At Book:EndTime");
+                                        }
+
+                                    } else {
+
+                                        sendMessage.setText("Booked time:\n" + databaseManager.bookedTime(bookingMap.get(message.getChatId()).getRoomID(), bookingMap.get(message.getChatId()).getTemp())
+                                                + "Please choose a time that is not booked.");
+                                    }
+                                }else{
 
                                     SimpleDateFormat combine = new SimpleDateFormat("dd/MM/yyyy HH:mm");
                                     try {
+                                        System.out.println("this date doesn't have time booked");
                                         userState.put(message.getChatId(), "Book:Purpose");
                                         Date dateTemp = combine.parse(bookingMap.get(message.getChatId()).getTemp() + " " + message.getText());
 
@@ -498,10 +526,9 @@ public class PNG_bot extends TelegramLongPollingBot {
                                         System.out.println("At Book:EndTime");
                                     }
 
-                                } else {
-                                    sendMessage.setText(databaseManager.bookedTime(bookingMap.get(message.getChatId()).getRoomID(), bookingMap.get(message.getChatId()).getTemp())
-                                            + "Please choose a time that is not booked.");
                                 }
+
+
 
                             } else {
                                 sendMessage.setText("The available booking time is between 8AM to 8PM. Please enter your booking start time.\n\n" +
@@ -543,7 +570,7 @@ public class PNG_bot extends TelegramLongPollingBot {
                                                 "Example: Club meeting.");
 
                                     } else {
-                                        sendMessage.setText(databaseManager.bookedTime(bookingMap.get(message.getChatId()).getRoomID(), bookingMap.get(message.getChatId()).getTemp())
+                                        sendMessage.setText("Booked time:\n" + databaseManager.bookedTime(bookingMap.get(message.getChatId()).getRoomID(), bookingMap.get(message.getChatId()).getTemp())
                                                 + "Please choose a time that is not booked.");
                                     }
 
@@ -626,7 +653,7 @@ public class PNG_bot extends TelegramLongPollingBot {
                                             success = true;
 
                                         } else {
-                                            sendMessage.setText(databaseManager.bookedTime(bookingMap.get(message.getChatId()).getRoomID(), bookingMap.get(message.getChatId()).getTemp())
+                                            sendMessage.setText("Booked time:\n" + databaseManager.bookedTime(bookingMap.get(message.getChatId()).getRoomID(), bookingMap.get(message.getChatId()).getTemp())
                                                     + "Please choose a date that does not contradict the booking time.\n If you still wish to book this day, you can change the time first.");
                                         }
 
@@ -687,7 +714,7 @@ public class PNG_bot extends TelegramLongPollingBot {
                                                     success = true;
 
                                                 } else {
-                                                    sendMessage.setText(databaseManager.bookedTime(bookingMap.get(message.getChatId()).getRoomID(), bookingMap.get(message.getChatId()).getTemp())
+                                                    sendMessage.setText("Booked time:\n" + databaseManager.bookedTime(bookingMap.get(message.getChatId()).getRoomID(), bookingMap.get(message.getChatId()).getTemp())
                                                             + "Please choose a time that is not booked.");
                                                 }
                                             } else {
@@ -745,7 +772,7 @@ public class PNG_bot extends TelegramLongPollingBot {
                                                 success = true;
 
                                             } else {
-                                                sendMessage.setText(databaseManager.bookedTime(bookingMap.get(message.getChatId()).getRoomID(), bookingMap.get(message.getChatId()).getTemp())
+                                                sendMessage.setText("Booked time:\n" + databaseManager.bookedTime(bookingMap.get(message.getChatId()).getRoomID(), bookingMap.get(message.getChatId()).getTemp())
                                                         + "Please choose a time that is not booked.");
                                             }
                                         } else {
@@ -1064,6 +1091,7 @@ public class PNG_bot extends TelegramLongPollingBot {
                     sendMessage.setChatId(message.getChatId());
 
                 } else if (data.equals("Book:Room_Conf_Y")) {
+
                     userState.put(message.getChatId(), "Book:StartTime");
                     sendMessage.setText("Please enter the date that you want to book this room.\n\n" +
                             "Example: 27/04/2023");

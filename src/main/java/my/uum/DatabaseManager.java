@@ -471,13 +471,13 @@ public class DatabaseManager {
     /**
      * check whether the there are people who book this room during the day/date
      * @param Room_ID Room ID
-     * @param input the day
+     * @param inputDate the day
      * @return true = got booked time, false = no booked time
      */
-    public boolean checkBook(Integer Room_ID, String input) {
+    public boolean checkBook(Integer Room_ID, String inputDate) {
         String date ="";
         String date2="";
-        Integer check_ID = 0;
+        Integer check = 0;
         java.sql.Date sqlDate;
         java.sql.Date sqlDate2;
 
@@ -485,10 +485,12 @@ public class DatabaseManager {
         SimpleDateFormat databaseDateFormat = new SimpleDateFormat("yyyy-MM-dd");
 
         try {
-            java.util.Date utilDate = bookDateFormat.parse(input);
+            //convert input date from dd/MM/yyyy to yyyy-MM-dd
+            java.util.Date utilDate = bookDateFormat.parse(inputDate);
             date = databaseDateFormat.format(utilDate);
 
 
+            //add the date by one day and save it into date2
             Calendar c = Calendar.getInstance();
             c.setTime(databaseDateFormat.parse(date));
             c.add(Calendar.DATE, 1);
@@ -497,33 +499,29 @@ public class DatabaseManager {
             sqlDate = java.sql.Date.valueOf(date);
             sqlDate2 = java.sql.Date.valueOf(date2);
 
+            // Find room which is chosen by user
+            String q = "SELECT * FROM Booking WHERE Room_ID=?";
+            try (Connection conn = this.connect()) {
+                PreparedStatement preparedStatement = conn.prepareStatement(q);
+                preparedStatement.setInt(1, Room_ID);
+
+                ResultSet rs = preparedStatement.executeQuery();
+                while (rs.next()) {
+                    // Use the DATE function to compare only the date part of the Book_StartTime column
+                    if(rs.getDate("Book_StartTime").after(sqlDate) && rs.getDate("Book_StartTime").before(sqlDate2))
+                        return true;
+
+                }
+            } catch (SQLException e) {
+                System.out.println(e.getMessage());
+            }
+
         } catch (ParseException e) {
             throw new RuntimeException(e);
         }
 
-        // Use the DATE function to compare only the date part of the Book_StartTime column
-        String q = "SELECT Booking_ID FROM Booking WHERE (Book_StartTime >=? AND Book_StartTime<?) AND Room_ID=?";
-        try (Connection conn = this.connect()) {
-            PreparedStatement preparedStatement = conn.prepareStatement(q);
+        return false;
 
-            preparedStatement.setDate(1, sqlDate);
-            preparedStatement.setDate(2, sqlDate2);
-            preparedStatement.setInt(3, Room_ID);
-
-            ResultSet rs = preparedStatement.executeQuery();
-            while (rs.next()) {
-                check_ID = rs.getInt("Booking_ID");
-                break;
-            }
-        } catch (SQLException e) {
-            System.out.println(e.getMessage());
-        }
-
-        if (check_ID == 0) {
-            return false;
-        } else {
-            return true;
-        }
     }
 
     /**
@@ -565,29 +563,27 @@ public class DatabaseManager {
         }
 
         // Display booked time within the chosen date/day.
-        String q = "SELECT Book_StartTime, Book_EndTime FROM Booking WHERE (Book_StartTime >=? AND Book_StartTime<?) AND Room_ID=?";
+        String q = "SELECT Book_StartTime, Book_EndTime FROM Booking WHERE Room_ID=?";
 
         try (Connection conn = this.connect()) {
             PreparedStatement preparedStatement = conn.prepareStatement(q);
 
-            preparedStatement.setDate(1, sqlDate);
-            preparedStatement.setDate(2, sqlDate2);
-            preparedStatement.setInt(3, Room_ID);
+            preparedStatement.setInt(1, Room_ID);
 
             ResultSet rs = preparedStatement.executeQuery();
             while (rs.next()) {
-                java.sql.Date startTime = rs.getDate("Book_StartTime");
-                java.sql.Date endTime = rs.getDate("Book_EndTime");
+                if(rs.getDate("Book_StartTime").after(sqlDate) && rs.getDate("Book_StartTime").before(sqlDate2)){
+                    java.sql.Date startTime = rs.getDate("Book_StartTime");
+                    java.sql.Date endTime = rs.getDate("Book_EndTime");
 
-                java.util.Date convertedStart = new java.util.Date(startTime.getTime());
-                java.util.Date convertedEnd = new java.util.Date(endTime.getTime());
+                    java.util.Date convertedStart = new java.util.Date(startTime.getTime());
+                    java.util.Date convertedEnd = new java.util.Date(endTime.getTime());
 
-                start = timeFormat.format(convertedStart);
-                end = timeFormat.format(convertedEnd);
+                    start = timeFormat.format(convertedStart);
+                    end = timeFormat.format(convertedEnd);
 
-                list+=start + " - " + end + "\n\n";
-
-
+                    list+=start + " - " + end + "\n";
+                }
             }
         } catch (SQLException e) {
             System.out.println(e.getMessage());
@@ -641,26 +637,29 @@ public class DatabaseManager {
         }
 
         // Display booked time within the chosen date/day.
-        String q = "SELECT Book_StartTime, Book_EndTime FROM Booking WHERE (Book_StartTime >=? AND Book_StartTime<?) AND Room_ID=?";
+        //String q = "SELECT Book_StartTime, Book_EndTime FROM Booking WHERE (Book_StartTime >=? AND Book_StartTime<?) AND Room_ID=?";
+        String q = "SELECT Book_StartTime, Book_EndTime FROM Booking WHERE Room_ID=?";
 
         try (Connection conn = this.connect()) {
             PreparedStatement preparedStatement = conn.prepareStatement(q);
-
-            preparedStatement.setDate(1, sqlDate);
-            preparedStatement.setDate(2, sqlDate2);
-            preparedStatement.setInt(3, Room_ID);
+            ;
+            preparedStatement.setInt(1, Room_ID);
 
             ResultSet rs = preparedStatement.executeQuery();
             while (rs.next()) {
-                java.sql.Date startTime = rs.getDate("Book_StartTime");
-                java.sql.Date endTime = rs.getDate("Book_EndTime");
 
-                java.util.Date convertedStart = new java.util.Date(startTime.getTime());
-                java.util.Date convertedEnd = new java.util.Date(endTime.getTime());
+                if(rs.getDate("Book_StartTime").after(sqlDate) && rs.getDate("Book_StartTime").before(sqlDate2)){
+                    java.sql.Date startTime = rs.getDate("Book_StartTime");
+                    java.sql.Date endTime = rs.getDate("Book_EndTime");
 
-                if(dateTemp.before(convertedEnd) && dateTemp.after(convertedStart)){
-                    return true;
+                    java.util.Date convertedStart = new java.util.Date(startTime.getTime());
+                    java.util.Date convertedEnd = new java.util.Date(endTime.getTime());
+
+                    if(dateTemp.before(convertedEnd) && dateTemp.after(convertedStart)){
+                        return true;
+                    }
                 }
+
             }
         } catch (SQLException e) {
             System.out.println(e.getMessage());
