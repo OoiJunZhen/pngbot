@@ -1,4 +1,4 @@
-package my.uum;
+package  my.uum;
 
 import org.telegram.telegrambots.meta.TelegramBotsApi;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
@@ -9,11 +9,10 @@ public class App {
 
         //A part for Telegram Bot registration
         try {
-
             App app = new App();
 
             TelegramBotsApi botApi = new TelegramBotsApi(DefaultBotSession.class);
-            botApi.registerBot(new PNG_Bot());
+            botApi.registerBot(new PNG_bot());
         } catch (TelegramApiException e) {
             e.printStackTrace();
         }
