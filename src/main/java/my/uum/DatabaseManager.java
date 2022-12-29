@@ -91,6 +91,8 @@ public class DatabaseManager {
         return User_ID;
     }
 
+
+
     /**
      * This method is to loop and display a list of booked rooms made by the user
      * @param User_ID User's ID
@@ -718,7 +720,7 @@ public class DatabaseManager {
         }
     }
 
-    public String viewBooked (Integer User_ID, String view){
+    public String viewBooked (Integer User_ID, String viewordetails){
         String roomInfo = "";
         String q = "SELECT Room_Name,Booking_ID,Book_StartTime,Book_EndTime,Booking_Purpose FROM Room INNER JOIN Booking ON" +
                 " Booking.Room_ID=Room.Room_ID AND Booking.User_ID=?";
@@ -747,22 +749,29 @@ public class DatabaseManager {
                 String DotW = ForDay.format(convertedEnd);
                 String BookingPurpose = rs.getString("Booking_Purpose");
 
-                roomInfo+=
-                        "Room Name: " + rs.getString("Room_Name") + "\n" +
-                                "Booking Date: " + date +
-                                "\nBooking Start Time: " + startTime +
-                                "\nBooking End Time: " + endTime +
-                                "\nDotW: " + DotW + "\n" +
-                                "Booking Purpose: " + BookingPurpose + "\n\n";
+//                roomInfo+="Reply " + rs.getInt("Booking_ID") +":\n"+
+//                        "Room Name: " + rs.getString("Room_Name") + "\n" +
+//                        "Booking Date: " + date +
+//                        "\nBooking Start Time: " + startTime + "\n" +
+//                        "Booking End Time: " + endTime + "\n" ;
 
-            }
 
-            if(roomInfo.equals("")){
-                roomInfo+="You currently have no booked rooms";
-            }else{
-                if(view.equals("start")){
-                    roomInfo+="";
-                }
+                    if(viewordetails.equals("viewDetails")){
+                        roomInfo+=
+                                "Room Name: " + rs.getString("Room_Name") + "\n" +
+                                        "Booking Date: " + date +
+                                        "\nBooking Start Time: " + startTime +
+                                        "\nBooking End Time: " + endTime +
+                                        "\nDotW: " + DotW + "\n" +
+                                        "Booking Purpose: " + BookingPurpose + "\n\n";
+                    } else if (viewordetails.equals("view")) {
+                        roomInfo+=
+                                "Room Name: " + rs.getString("Room_Name") + "\n" +
+                                        "Booking Date: " + date +
+                                        "\nBooking Start Time: " + startTime + "\n" +
+                                        "Booking End Time: " + endTime + "\n\n";
+                    }
+
             }
 
         }catch (SQLException e){
@@ -770,7 +779,55 @@ public class DatabaseManager {
         return roomInfo;
     }
 
-    public String userProfile (Integer User_ID){
+    public String viewBookedDel (Integer User_ID){
+        String roomInfo = "";
+        String q = "SELECT Room_Name,Booking_ID,Book_StartTime,Book_EndTime,Booking_Purpose FROM Room INNER JOIN Booking ON" +
+                " Booking.Room_ID=Room.Room_ID AND Booking.User_ID=?";
+
+
+        try(Connection conn = this.connect()){
+            PreparedStatement preparedStatement = conn.prepareStatement(q);
+
+            preparedStatement.setInt(1, User_ID);
+            ResultSet rs = preparedStatement.executeQuery();
+
+            while(rs.next()){
+
+                java.sql.Date startDate = rs.getDate("Book_StartTime");
+                java.sql.Date endDate = rs.getDate("Book_EndTime");
+
+                java.util.Date convertedStart = new java.util.Date(startDate.getTime());
+                java.util.Date convertedEnd = new java.util.Date(endDate.getTime());
+
+                SimpleDateFormat ForDay = new SimpleDateFormat("EEEE");
+                SimpleDateFormat bookDateFormat = new SimpleDateFormat("dd/MM/yyyy");
+                SimpleDateFormat bookTimeFormat = new SimpleDateFormat("hh:mm a");
+                String date = bookDateFormat.format(convertedStart);
+                String startTime = bookTimeFormat.format(convertedStart);
+                String endTime = bookTimeFormat.format(convertedEnd);
+                String DotW = ForDay.format(convertedEnd);
+                String BookingPurpose = rs.getString("Booking_Purpose");
+
+                roomInfo+="Reply " + rs.getInt("Booking_ID") +":\n"+
+                        "Room Name: " + rs.getString("Room_Name") + "\n" +
+                        "Booking Date: " + date +
+                        "\nBooking Start Time: " + startTime + "\n" +
+                        "Booking End Time: " + endTime + "\n\n" ;
+
+
+//                if(del.equals("delete")){
+//
+//
+//                }
+
+            }
+            roomInfo+="Which room do you want to Delete?\n\n";
+        }catch (SQLException e){
+            System.out.println(e.getMessage());       }
+        return roomInfo;
+    }
+
+    public String userProfile (Integer User_ID, String vieworedit){
         String userInfo = "";
         String q = "SELECT * FROM Users WHERE User_ID=?";
 
@@ -789,15 +846,27 @@ public class DatabaseManager {
                 String telNo = rs.getString("Mobile_TelNo");
 
 
-                userInfo+=
-                                "Name: " + name +
-                                "\nNRIC: " + ic +
-                                "\nEmail: " + email +
-                                "\nStaff ID: " + staffId +
-                                "\nMobile Tel.Number: " + telNo +
-                                "\n\nWhat do you want to change?";
+                if(vieworedit.equals("view")){
+                    userInfo+=
+                                    "Name: " + name +
+                                    "\nNRIC: " + ic +
+                                    "\nEmail: " + email +
+                                    "\nStaff ID: " + staffId +
+                                    "\nMobile Tel.Number: " + telNo +
+                                    "\n\nWhat do you want to change?";;
+                } else if (vieworedit.equals("edit")) {
+                    userInfo+=
+                                    "Name: " + name +
+                                    "\nNRIC: " + ic +
+                                    "\nEmail: " + email +
+                                    "\nStaff ID: " + staffId +
+                                    "\nMobile Tel.Number: " + telNo +
+                                    "\n\nYour Information is updated! Do you still have something that you want to change?";
+                }
+
 
             }
+
 
 
         }catch (SQLException e){
@@ -821,19 +890,183 @@ public class DatabaseManager {
             System.out.println(e.getMessage());       }
     }
 
-    public void editProfileICNO (Integer User_ID, String ICNo){
-        String q = "UPDATE Users SET ICNO=? WHERE User_ID=?";
+    public void editProfileICNO (Integer User_ID, String ICNO){
+        String q = "UPDATE Users SET ICNO=? WHERE ICNO=? AND User_ID=?";
 
         try(Connection conn = this.connect()){
             PreparedStatement preparedStatement = conn.prepareStatement(q);
 
-            preparedStatement.setString(1, ICNo);
+            preparedStatement.setString(1, ICNO);
+            preparedStatement.setString(2, ICNO);
+            preparedStatement.setInt(3, User_ID);
+            preparedStatement.executeUpdate();
+
+
+        }catch (SQLException e){
+            System.out.println(e.getMessage());       }
+    }
+
+    public void editProfileEmail (Integer User_ID, String Email){
+        String q = "UPDATE Users SET Email=? WHERE User_ID=?";
+
+        try(Connection conn = this.connect()){
+            PreparedStatement preparedStatement = conn.prepareStatement(q);
+
+            preparedStatement.setString(1, Email);
             preparedStatement.setInt(2, User_ID);
             preparedStatement.executeUpdate();
 
 
         }catch (SQLException e){
             System.out.println(e.getMessage());       }
+    }
+
+    public void editProfileStaffID (Integer User_ID, String SatffID){
+        String q = "UPDATE Users SET Staff_ID=? WHERE User_ID=?";
+
+        try(Connection conn = this.connect()){
+            PreparedStatement preparedStatement = conn.prepareStatement(q);
+
+            preparedStatement.setString(1, SatffID);
+            preparedStatement.setInt(2, User_ID);
+            preparedStatement.executeUpdate();
+
+
+        }catch (SQLException e){
+            System.out.println(e.getMessage());       }
+    }
+
+    public void editProfileTelNo (Integer User_ID, String TelNo){
+        String q = "UPDATE Users SET Mobile_TelNo=? WHERE User_ID=?";
+
+        try(Connection conn = this.connect()){
+            PreparedStatement preparedStatement = conn.prepareStatement(q);
+
+            preparedStatement.setString(1, TelNo);
+            preparedStatement.setInt(2, User_ID);
+            preparedStatement.executeUpdate();
+
+
+        }catch (SQLException e){
+            System.out.println(e.getMessage());       }
+    }
+
+    public String deleteBook (Integer User_ID, Integer BookId){
+        String del="";
+        String q = "DELETE Booking WHERE User_ID=? AND Booking_ID=?";
+
+        try(Connection conn = this.connect()){
+            PreparedStatement preparedStatement = conn.prepareStatement(q);
+
+            preparedStatement.setInt(1, User_ID);
+            preparedStatement.setInt(2, BookId);
+            int deleted = preparedStatement.executeUpdate();
+            if(deleted == 0){
+                return del ="The booking id is not correct, please enter again";
+            }else
+                return del ="The booking is successfully cancelled. Would you like to delete another room?";
+
+
+        }catch (SQLException e){
+            System.out.println(e.getMessage());       }
+        return del;
+    }
+
+    public String getBookList(Integer Booking_ID) {
+        String roomInfo = "";
+        String q = "SELECT Room_Name,Booking_ID,Book_StartTime,Book_EndTime,Booking_Purpose FROM Booking INNER JOIN Room ON" +
+                " Booking.Room_ID=Room.Room_ID WHERE Booking.Booking_ID = ?";
+
+
+        try (Connection conn = this.connect()) {
+            PreparedStatement preparedStatement = conn.prepareStatement(q);
+
+            preparedStatement.setInt(1, Booking_ID);
+            ResultSet rs = preparedStatement.executeQuery();
+
+            while (rs.next()) {
+
+                java.sql.Date startDate = rs.getDate("Book_StartTime");
+                java.sql.Date endDate = rs.getDate("Book_EndTime");
+
+                java.util.Date convertedStart = new java.util.Date(startDate.getTime());
+                java.util.Date convertedEnd = new java.util.Date(endDate.getTime());
+
+                SimpleDateFormat ForDay = new SimpleDateFormat("EEEE");
+                SimpleDateFormat bookDateFormat = new SimpleDateFormat("dd/MM/yyyy");
+                SimpleDateFormat bookTimeFormat = new SimpleDateFormat("hh:mm a");
+                String date = bookDateFormat.format(convertedStart);
+                String startTime = bookTimeFormat.format(convertedStart);
+                String endTime = bookTimeFormat.format(convertedEnd);
+                String DotW = ForDay.format(convertedEnd);
+                String BookingPurpose = rs.getString("Booking_Purpose");
+
+                roomInfo +=
+                        "Booking ID: " + rs.getString("Booking_ID") + "\n" +
+                                "Room Name: " + rs.getString("Room_Name") + "\n" +
+                                "Booking Date: " + date +
+                                "\nBooking Start Time: " + startTime +
+                                "\nBooking End Time: " + endTime +
+                                "\nDotW: " + DotW + "\n" +
+                                "Booking Purpose: " + BookingPurpose + "\n\n";
+
+            }
+
+//            if (roomInfo.equals("")) {
+//                roomInfo += "Booking Id Not Found!";
+//            }
+
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+        return roomInfo;
+    }
+
+    /**
+     * Check whether the booking id inputted by user exist in database
+     *
+     * @param input
+     * @return
+     */
+    public boolean checkBookId(Integer User_ID, String input) {
+
+        Integer Booking_ID = 0;
+        Integer check_ID = 0;
+
+        try {
+            Booking_ID = Integer.parseInt(input);
+
+        } catch (NumberFormatException e) {
+
+            e.printStackTrace();
+            System.out.println("User mis-input booking id in incorrect format");
+            return false;
+        }
+
+
+        String q = "SELECT Booking_ID FROM Booking INNER JOIN Users ON Users.User_ID = Booking.User_ID WHERE Booking.User_ID = ? AND Booking.Booking_ID=?";
+
+
+        try (Connection conn = this.connect()) {
+            PreparedStatement preparedStatement = conn.prepareStatement(q);
+
+            preparedStatement.setInt(1, User_ID);
+            preparedStatement.setInt(2, Booking_ID);
+            ResultSet rs = preparedStatement.executeQuery();
+            while (rs.next()) {
+                check_ID = rs.getInt("Booking_ID");
+                break;
+            }
+
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+
+
+        if (check_ID == 0) {
+            return false;
+        } else
+            return true;
     }
 
 

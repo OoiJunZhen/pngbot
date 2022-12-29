@@ -6,7 +6,6 @@ public class Users {
     private String Email;
     private String StaffID;
     private String TelNo;
-
     public Users(String name, String ICNO, String Email, String StaffID, String TelNo){
         this.name = name;
         this.ICNO = ICNO;
@@ -14,6 +13,7 @@ public class Users {
         this.StaffID = StaffID;
         this.TelNo = TelNo;
     }
+
 
     public String getName(){
         return name;
