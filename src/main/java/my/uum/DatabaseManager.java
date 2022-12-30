@@ -875,6 +875,7 @@ public class DatabaseManager {
      */
     public String getBookedRoomList(Integer School_ID, Integer User_ID, Integer Booking_ID) {
         String book = "";
+        String book2 = "";
         String roomList = " ";
         String q = "SELECT Room_ID, Room_Name, Maximum_Capacity, Room_Type FROM Room WHERE School_ID=?";
 
@@ -888,6 +889,9 @@ public class DatabaseManager {
             while (rs.next()) {
                 if (checkBookedRoomList(rs.getInt("Room_ID"), User_ID, Booking_ID)) {
                     book = " <book>";
+                    book2 = "<book>: There might have some time which is unavailable, due to someone has booked" +
+                            "this room.\n\n";
+
                 } else {
                     book = "";
                 }
@@ -896,9 +900,7 @@ public class DatabaseManager {
                         "Reply " + rs.getInt("Room_ID") + ":\n" +
                                 "Room Name: " + rs.getString("Room_Name") + book + "\n" +
                                 "Maximum Capacity: " + rs.getString("Maximum_Capacity") + "\n" +
-                                "Type: " + rs.getString("Room_Type") + "\n\n";
-
-
+                                "Type: " + rs.getString("Room_Type") + "\n\n" + book2;
             }
         } catch (SQLException e) {
             System.out.println(e.getMessage());
@@ -1021,5 +1023,23 @@ public class DatabaseManager {
         }
 
         return list;
+    }
+
+
+    public void editBookingLocation(Integer User_ID, Integer Room_ID, Integer Booking_ID) {
+        String q = "UPDATE Booking SET Room_ID=? WHERE User_ID=? AND Booking_ID =?";
+
+        try (Connection conn = this.connect()) {
+            PreparedStatement preparedStatement = conn.prepareStatement(q);
+
+            preparedStatement.setInt(1, Room_ID);
+            preparedStatement.setInt(2, User_ID);
+            preparedStatement.setInt(3, Booking_ID);
+            preparedStatement.executeUpdate();
+
+
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
     }
 }

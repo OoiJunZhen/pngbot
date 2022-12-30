@@ -1003,8 +1003,7 @@ public class PNG_Bot extends TelegramLongPollingBot {
                             int user_ID = databaseManager.getUserID(usersMap.get(message.getChatId()).getICNO());
                             int bookID = bookingMap.get(message.getChatId()).getBookID();
                             String roomList = databaseManager.getBookedRoomList(bookingMap.get(message.getChatId()).getRoomID(), user_ID, bookID);
-                            roomList += "<book>: There might have some time which is unavailable, due to someone has booked" +
-                                    "this room.\n\nWhich room do you want to change to?\nExample reply: 1";
+                            roomList += "Which room do you want to change to?\nExample reply: 1";
                             sendMessage = new SendMessage();
                             sendMessage.setChatId(message.getChatId());
                             sendMessage.setText(roomList);
@@ -1395,7 +1394,25 @@ public class PNG_Bot extends TelegramLongPollingBot {
                     list += "\n\n" + "Which School do you want to book from?";
                     sendMessage.setText(list);
                     System.out.println("BOOK ID" + bookingMap.get(message.getChatId()).getBookID());
-                } else if (data.equals("Login:EditBook_Location_Time")) {
+                } else if (data.equals("Login:EditBook_Location_Update3")) {
+                    System.out.println(bookingMap.get(message.getChatId()).getRoomID());
+                    int userID = databaseManager.getUserID(usersMap.get(message.getChatId()).getICNO());
+                    int bookID = bookingMap.get(message.getChatId()).getBookID();
+                    databaseManager.editBookingLocation(userID, bookingMap.get(message.getChatId()).getRoomID(), bookID);
+                    String list = databaseManager.getBookList(bookID);
+                    list += "Excellent! Your new Booking information has been updated";
+                    sendMessage.setText(list);
+
+                    InlineKeyboardMarkup inlineKeyboardMarkup2 = new InlineKeyboardMarkup();
+                    List<List<InlineKeyboardButton>> inlineButtons2 = new ArrayList<>();
+                    List<InlineKeyboardButton> inlineKeyboardButtonList = new ArrayList<>();
+                    InlineKeyboardButton inlineKeyboardButtonBack = new InlineKeyboardButton();
+                    inlineKeyboardButtonBack.setText("Back to main menu");
+                    inlineKeyboardButtonBack.setCallbackData("Login:Main");
+                    inlineKeyboardButtonList.add(inlineKeyboardButtonBack);
+                    inlineButtons2.add(inlineKeyboardButtonList);
+                    inlineKeyboardMarkup2.setKeyboard(inlineButtons2);
+                    sendMessage.setReplyMarkup(inlineKeyboardMarkup2);
 
                 }
 
