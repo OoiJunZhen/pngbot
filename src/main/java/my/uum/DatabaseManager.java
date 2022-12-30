@@ -91,7 +91,7 @@ public class DatabaseManager {
         return User_ID;
     }
 
-    public Integer getUserEmailID(String Email){
+    public Integer getUserId(String Email){
         Integer User_ID = 0;
         String q = "SELECT User_ID FROM Users WHERE Email=?";
 
@@ -773,7 +773,9 @@ public class DatabaseManager {
 //                        "Booking End Time: " + endTime + "\n" ;
 
 
-                    if(viewordetails.equals("viewDetails")){
+                if(roomInfo.equals("")){
+                    roomInfo+="You currently have no booked rooms";
+                }else if(viewordetails.equals("viewDetails")){
                         roomInfo+=
                                 "Room Name: " + rs.getString("Room_Name") + "\n" +
                                         "Booking Date: " + date +
@@ -1030,6 +1032,31 @@ public class DatabaseManager {
 
 
         if (check_ID == 0) {
+            return false;
+        }else
+            return true;
+    }
+
+    public boolean checkUserId(Integer User_ID, String input) {
+        String q = "SELECT Booking_ID FROM Booking INNER JOIN Users ON Users.User_ID = Booking.User_ID WHERE Booking.User_ID = ? AND Booking.Booking_ID=?";
+
+
+        try (Connection conn = this.connect()) {
+            PreparedStatement preparedStatement = conn.prepareStatement(q);
+
+            preparedStatement.setInt(1, User_ID);
+            ResultSet rs = preparedStatement.executeQuery();
+            while (rs.next()) {
+                User_ID = rs.getInt("Booking_ID");
+                break;
+            }
+
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+
+
+        if (User_ID == 0) {
             return false;
         } else
             return true;

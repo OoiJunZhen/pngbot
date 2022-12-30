@@ -39,11 +39,6 @@ public class PNG_bot extends TelegramLongPollingBot {
     Map<Long, Users> usersMap = new HashMap<Long, Users>();
 
     /**
-     * Hashmap for edit user information
-     */
-    Map<Long, Users> editProfileMap = new HashMap<Long, Users>();
-
-    /**
      * Hashmap for adding school admin information
      */
     //Map<Long, SchoolAdmin> schoolAdminMap = new HashMap<Long, SchoolAdmin>();
@@ -966,45 +961,48 @@ public class PNG_bot extends TelegramLongPollingBot {
                                 usersMap.get(message.getChatId()).setName(message.getText());
                                 int userID = databaseManager.getUserID(usersMap.get(message.getChatId()).getICNO());
                                 databaseManager.editProfileName(userID, usersMap.get(message.getChatId()).getName());
-                                System.out.println(userID);
                                 editOutput = true;
+                            } else {
+                                sendMessage.setText("Please re-enter your name.\n\n" +
+                                        "Example: Ang Toon Phng");
                             }
 
-                        }else if (userState.get(message.getChatId()).equals("Login:EditProfile_ICNO")) {
+                        } else if (userState.get(message.getChatId()).equals("Login:EditProfile_ICNO")) {
                             if (inputFormatChecker.checkICFormat(message.getText())) {
                                 usersMap.get(message.getChatId()).setICNO(message.getText());
-                                System.out.println(usersMap.get(message.getChatId()).getICNO());
-                               // int userID = databaseManager.getUserID(usersMap.get(message.getChatId()).getICNO());
-
-                                System.out.println(databaseManager.getUserEmailID(usersMap.get(message.getChatId()).getEmail()));
-                                int userEmailID = databaseManager.getUserEmailID(usersMap.get(message.getChatId()).getEmail());
-                                databaseManager.editProfileICNO(userEmailID, usersMap.get(message.getChatId()).getICNO());
+                                int userID = databaseManager.getUserId(usersMap.get(message.getChatId()).getEmail());
+                                databaseManager.editProfileICNO(userID, usersMap.get(message.getChatId()).getICNO());
                                 editOutput = true;
+                            } else {
+                                sendMessage.setText("Please re-enter your IC in correct format thank you.\n\n" +
+                                        "Example: 001211080731");
                             }
-//                            else {
-//                                sendMessage.setText("Please re-enter your IC in correct format thank you.\n\n" +
-//                                        "Example: 001211080731");
-//                            }
-                        }else if (userState.get(message.getChatId()).equals("Login:EditProfile_Email")) {
+                        } else if (userState.get(message.getChatId()).equals("Login:EditProfile_Email")) {
                             if (inputFormatChecker.EmailFormat(message.getText())) {
                                 usersMap.get(message.getChatId()).setEmail(message.getText());
                                 int userID = databaseManager.getUserID(usersMap.get(message.getChatId()).getICNO());
                                 databaseManager.editProfileEmail(userID, usersMap.get(message.getChatId()).getEmail());
                                 editOutput = true;
+                            } else {
+                                sendMessage.setText("Please re-enter the email in correct format thank you.\n\n" +
+                                        "Example: MyEmail@hotmail.com");
                             }
-                        }else if (userState.get(message.getChatId()).equals("Login:EditProfile_StaffID")) {
+                        } else if (userState.get(message.getChatId()).equals("Login:EditProfile_StaffID")) {
 
                                 usersMap.get(message.getChatId()).setStaffID(message.getText());
                                 int userID = databaseManager.getUserID(usersMap.get(message.getChatId()).getICNO());
                                 databaseManager.editProfileStaffID(userID, usersMap.get(message.getChatId()).getStaffID());
                                 editOutput = true;
 
-                        }else if (userState.get(message.getChatId()).equals("Login:EditProfile_Mobile")) {
+                        } else if (userState.get(message.getChatId()).equals("Login:EditProfile_Mobile")) {
                             if (inputFormatChecker.TelNumFormat(message.getText())) {
                                 usersMap.get(message.getChatId()).setTelNo(message.getText());
                                 int userID = databaseManager.getUserID(usersMap.get(message.getChatId()).getICNO());
                                 databaseManager.editProfileTelNo(userID, usersMap.get(message.getChatId()).getTelNo());
                                 editOutput = true;
+                            } else {
+                                sendMessage.setText("Please enter your phone number in correct format thank you.\n\n" +
+                                        "Example: 0124773579");
                             }
                         }
 
@@ -1071,13 +1069,7 @@ public class PNG_bot extends TelegramLongPollingBot {
                                 inlineButtons.add(inlineKeyboardButtonList2);
                                 inlineKeyboardMarkup.setKeyboard(inlineButtons);
                                 sendMessage.setReplyMarkup(inlineKeyboardMarkup);
-
-//                            sendMessage = new SendMessage();
-//                            sendMessage.setText(del);
-//                            sendMessage.setChatId(message.getChatId());
-//                            int userID = databaseManager.getUserID(usersMap.get(message.getChatId()).getICNO());
-//                            databaseManager.editProfileStaffID(userID, usersMap.get(message.getChatId()).getStaffID());
-                            }else {
+                            } else {
 
                                 String list = databaseManager.viewBookedList(userID, "start");
                                 list += "This booking id does not exist. Please re-enter the booking id that you wish to delete.\n\nExample reply: 1";
@@ -1312,29 +1304,38 @@ public class PNG_bot extends TelegramLongPollingBot {
             else if(buttonData[0].equals("Login")){
                 if(data.equals("Login:ViewBook")){
                     int userID = databaseManager.getUserID(usersMap.get(message.getChatId()).getICNO());
-                    String bookDetails = databaseManager.viewBooked(userID, "viewDetails");
-                    sendMessage.setText(bookDetails);
-                    sendMessage.setParseMode(ParseMode.MARKDOWN);
-                    sendMessage.setChatId(message.getChatId());
+                    if (databaseManager.checkUserId(userID, message.getText())) {
+                        userID = databaseManager.getUserID(usersMap.get(message.getChatId()).getICNO());
+                        String bookDetails = databaseManager.viewBooked(userID, "viewDetails");
+                        sendMessage.setText(bookDetails);
+                        sendMessage.setParseMode(ParseMode.MARKDOWN);
+                        sendMessage.setChatId(message.getChatId());
 
-                    //Inline Keyboard Button
-                    InlineKeyboardMarkup inlineKeyboardMarkup = new InlineKeyboardMarkup();
-                    List<List<InlineKeyboardButton>> inlineButtons = new ArrayList<>();
-                    List<InlineKeyboardButton> inlineKeyboardButtonList1 = new ArrayList<>();
-                    InlineKeyboardButton inlineKeyboardButton1 = new InlineKeyboardButton();
-                    inlineKeyboardButton1.setText("Go back");
-                    inlineKeyboardButton1.setCallbackData("Login:Main");
-                    inlineKeyboardButtonList1.add(inlineKeyboardButton1);
-                    inlineButtons.add(inlineKeyboardButtonList1);
-                    inlineKeyboardMarkup.setKeyboard(inlineButtons);
-                    sendMessage.setReplyMarkup(inlineKeyboardMarkup);
-                    //打招呼和问user要做什么
+                        //Inline Keyboard Button
+                        InlineKeyboardMarkup inlineKeyboardMarkup = new InlineKeyboardMarkup();
+                        List<List<InlineKeyboardButton>> inlineButtons = new ArrayList<>();
+                        List<InlineKeyboardButton> inlineKeyboardButtonList1 = new ArrayList<>();
+                        InlineKeyboardButton inlineKeyboardButton1 = new InlineKeyboardButton();
+                        inlineKeyboardButton1.setText("Go back");
+                        inlineKeyboardButton1.setCallbackData("Login:Main");
+                        inlineKeyboardButtonList1.add(inlineKeyboardButton1);
+                        inlineButtons.add(inlineKeyboardButtonList1);
+                        inlineKeyboardMarkup.setKeyboard(inlineButtons);
+                        sendMessage.setReplyMarkup(inlineKeyboardMarkup);
+                        //打招呼和问user要做什么
 //                    bookDetails += "\n\n" + databaseManager.greetings(usersMap.get(message.getChatId()).getICNO());
 
 //                    //记得在save东西之后换state,可以看Book:IC做example
 //                    userState.put(message.getChatId(),"Book:IC");
 //                    sendMessage.setText("May I have the your NAME (as per NRIC/PASSPORT) please?" +
 //                            "\n\n P.S.:Don't worry, you can edit your information after the information are entered ;)");
+                    }else {
+                        String list = databaseManager.viewBooked(userID, "");
+//                        list += "This booking id does not exist. Please re-enter the booking id that you wish to delete.\n\nExample reply: 1";
+                        sendMessage = new SendMessage();
+                        sendMessage.setChatId(message.getChatId());
+                        sendMessage.setText(list);
+                    }
 
                 } else if (data.equals("Login:Main")){
                     int userID = databaseManager.getUserID(usersMap.get(message.getChatId()).getICNO());
