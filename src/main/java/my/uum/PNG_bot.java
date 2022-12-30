@@ -898,7 +898,7 @@ public class PNG_bot extends TelegramLongPollingBot {
 
                                 //先把Password里的IC放进去usersMap
                                 usersMap.get(message.getChatId()).setICNO(password[0]);
-
+                                usersMap.get(message.getChatId()).setEmail(password[1]);
                                 //用Assign好的IC来找user ID, 然后放进int userID里面
                                 int userID = databaseManager.getUserID(usersMap.get(message.getChatId()).getICNO());
 
@@ -966,6 +966,7 @@ public class PNG_bot extends TelegramLongPollingBot {
                                 usersMap.get(message.getChatId()).setName(message.getText());
                                 int userID = databaseManager.getUserID(usersMap.get(message.getChatId()).getICNO());
                                 databaseManager.editProfileName(userID, usersMap.get(message.getChatId()).getName());
+                                System.out.println(userID);
                                 editOutput = true;
                             }
 
@@ -973,8 +974,11 @@ public class PNG_bot extends TelegramLongPollingBot {
                             if (inputFormatChecker.checkICFormat(message.getText())) {
                                 usersMap.get(message.getChatId()).setICNO(message.getText());
                                 System.out.println(usersMap.get(message.getChatId()).getICNO());
-                                int userID = databaseManager.getUserID(usersMap.get(message.getChatId()).getICNO());
-                                databaseManager.editProfileICNO(userID, usersMap.get(message.getChatId()).getICNO());
+                               // int userID = databaseManager.getUserID(usersMap.get(message.getChatId()).getICNO());
+
+                                System.out.println(databaseManager.getUserEmailID(usersMap.get(message.getChatId()).getEmail()));
+                                int userEmailID = databaseManager.getUserEmailID(usersMap.get(message.getChatId()).getEmail());
+                                databaseManager.editProfileICNO(userEmailID, usersMap.get(message.getChatId()).getICNO());
                                 editOutput = true;
                             }
 //                            else {

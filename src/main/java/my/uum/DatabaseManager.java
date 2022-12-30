@@ -91,7 +91,24 @@ public class DatabaseManager {
         return User_ID;
     }
 
+    public Integer getUserEmailID(String Email){
+        Integer User_ID = 0;
+        String q = "SELECT User_ID FROM Users WHERE Email=?";
 
+
+        try(Connection conn = this.connect()){
+            PreparedStatement preparedStatement = conn.prepareStatement(q);
+
+            preparedStatement.setString(1,Email);
+            ResultSet rs = preparedStatement.executeQuery();
+            while(rs.next()){
+                return User_ID = rs.getInt("User_ID");
+            }
+
+        }catch (SQLException e){
+            System.out.println(e.getMessage());       }
+        return User_ID;
+    }
 
     /**
      * This method is to loop and display a list of booked rooms made by the user
