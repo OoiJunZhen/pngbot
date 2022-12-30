@@ -351,21 +351,26 @@ public class PNG_Bot extends TelegramLongPollingBot {
                 }
             }
 
-//            if (buttonData[0].equals("Register")) {
-//                if (data.equals("Register:Register_Y")) {
-//
-//                    userState.put(message.getChatId(), "Register:IC");
-//                    sendMessage.setText("May I have the your NAME (as per NRIC/PASSPORT) please?");
-//                } else if (data.equals("Register:Register_N")) {
-//                    sendMessage.setText("I'll be here whenever you need me :)");
-//                    sendMessage.setChatId(message.getChatId());
-//                }
-//
-//            }
+            if (buttonData[0].equals("Register")) {
+                if (data.equals("Register:Register_Y")) {
+
+                    userState.put(message.getChatId(), "Register:IC");
+                    sendMessage.setText("May I have the your NAME (as per NRIC/PASSPORT) please?");
+                } else if (data.equals("Register:Register_N")) {
+                    sendMessage.setText("I'll be here whenever you need me :)");
+                    sendMessage.setChatId(message.getChatId());
+                }
+
+            }
 
             else if (data.equals("Register:Apply")) {
 
+                databaseManager.insertResRoom(schoolAdminMap.get(message.getChatId()).getSchoolName(), schoolAdminMap.get(message.getChatId()).getOfficeTelNo(),
+                        schoolAdminMap.get(message.getChatId()).getBuildingLoc(), RegisterRoomMap.get(message.getChatId()).getRoomName(),
+                        RegisterRoomMap.get(message.getChatId()).getRoomDesc(), RegisterRoomMap.get(message.getChatId()).getRoomMaxCap(), RegisterRoomMap.get(message.getChatId()).getRoomType());
+
             }
+
             else if(data.equals("Register:ChangeSchoolData")){
                 String RoomInfo = "Are these the correct information to register the room?\n" +
                         "\nSchool: " + schoolAdminMap.get(message.getChatId()).getSchoolName() +
