@@ -779,54 +779,6 @@ public class DatabaseManager {
         return roomInfo;
     }
 
-    public String viewBookedDel (Integer User_ID){
-        String roomInfo = "";
-        String q = "SELECT Room_Name,Booking_ID,Book_StartTime,Book_EndTime,Booking_Purpose FROM Room INNER JOIN Booking ON" +
-                " Booking.Room_ID=Room.Room_ID AND Booking.User_ID=?";
-
-
-        try(Connection conn = this.connect()){
-            PreparedStatement preparedStatement = conn.prepareStatement(q);
-
-            preparedStatement.setInt(1, User_ID);
-            ResultSet rs = preparedStatement.executeQuery();
-
-            while(rs.next()){
-
-                java.sql.Date startDate = rs.getDate("Book_StartTime");
-                java.sql.Date endDate = rs.getDate("Book_EndTime");
-
-                java.util.Date convertedStart = new java.util.Date(startDate.getTime());
-                java.util.Date convertedEnd = new java.util.Date(endDate.getTime());
-
-                SimpleDateFormat ForDay = new SimpleDateFormat("EEEE");
-                SimpleDateFormat bookDateFormat = new SimpleDateFormat("dd/MM/yyyy");
-                SimpleDateFormat bookTimeFormat = new SimpleDateFormat("hh:mm a");
-                String date = bookDateFormat.format(convertedStart);
-                String startTime = bookTimeFormat.format(convertedStart);
-                String endTime = bookTimeFormat.format(convertedEnd);
-                String DotW = ForDay.format(convertedEnd);
-                String BookingPurpose = rs.getString("Booking_Purpose");
-
-                roomInfo+="Reply " + rs.getInt("Booking_ID") +":\n"+
-                        "Room Name: " + rs.getString("Room_Name") + "\n" +
-                        "Booking Date: " + date +
-                        "\nBooking Start Time: " + startTime + "\n" +
-                        "Booking End Time: " + endTime + "\n\n" ;
-
-
-//                if(del.equals("delete")){
-//
-//
-//                }
-
-            }
-            roomInfo+="Which room do you want to Delete?\n\n";
-        }catch (SQLException e){
-            System.out.println(e.getMessage());       }
-        return roomInfo;
-    }
-
     public String userProfile (Integer User_ID, String vieworedit){
         String userInfo = "";
         String q = "SELECT * FROM Users WHERE User_ID=?";
@@ -950,15 +902,15 @@ public class DatabaseManager {
             System.out.println(e.getMessage());       }
     }
 
-    public String deleteBook (Integer User_ID, Integer BookId){
+    public String deleteBook (Integer User_ID, Integer Booking_ID){
         String del="";
-        String q = "DELETE Booking WHERE User_ID=? AND Booking_ID=?";
+        String q = "DELETE From Booking WHERE User_ID=? AND Booking_ID=?";
 
         try(Connection conn = this.connect()){
             PreparedStatement preparedStatement = conn.prepareStatement(q);
 
             preparedStatement.setInt(1, User_ID);
-            preparedStatement.setInt(2, BookId);
+            preparedStatement.setInt(2, Booking_ID);
             preparedStatement.executeUpdate();
 
             del ="The booking is successfully cancelled. Would you like to delete another room?";

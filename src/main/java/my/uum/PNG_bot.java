@@ -1005,12 +1005,14 @@ public class PNG_bot extends TelegramLongPollingBot {
                         }
 
                         if (editOutput) {
+
                             int userID = databaseManager.getUserID(usersMap.get(message.getChatId()).getICNO());
                             String info = databaseManager.userProfile(userID, "edit");
-                            sendMessage = new SendMessage();
+
                             sendMessage.setText(info);
                             sendMessage.setChatId(message.getChatId());
                             sendMessage.setParseMode(ParseMode.MARKDOWN);
+
 
                             //Inline Keyboard Button
                             InlineKeyboardMarkup inlineKeyboardMarkup = new InlineKeyboardMarkup();
@@ -1038,8 +1040,11 @@ public class PNG_bot extends TelegramLongPollingBot {
                         if (userState.get(message.getChatId()).equals("Login:CancelBook") ) {
 
                             if (databaseManager.checkBookId(userID, message.getText())) {
+                                Date date = new Date();
+                                bookingMap.put(message.getChatId(), new Booking(date, date, date, 0, "", "", 0, databaseManager.getUserID(usersMap.get(message.getChatId()).getICNO())));
 //                                String del = databaseManager.getBookList(bookingMap.get(message.getChatId()).getBookID());
-                                String del = databaseManager.getBookList(Integer.parseInt(message.getText()));
+                                bookingMap.get(message.getChatId()).setBookID(Integer.parseInt(message.getText()));
+                                String del = databaseManager.getBookList(bookingMap.get(message.getChatId()).getBookID());
                                 sendMessage = new SendMessage();
                                 sendMessage.setText(del);
                                 sendMessage.setChatId(message.getChatId());
@@ -1436,8 +1441,6 @@ public class PNG_bot extends TelegramLongPollingBot {
                     sendMessage.setText(bookDetails);
                     userState.put(message.getChatId(), "Login:CancelBook");
                 } else if (data.equals("Login:CancelBook_confirm")){
-//                    bookingMap.get(message.getChatId()).setBookID(Integer.valueOf(message.getText()));
-//                    System.out.println(Integer.valueOf(message.getText()));
                     int userID = databaseManager.getUserID(usersMap.get(message.getChatId()).getICNO());
                     String delDetails = databaseManager.deleteBook(userID, bookingMap.get(message.getChatId()).getBookID());
                     sendMessage = new SendMessage();

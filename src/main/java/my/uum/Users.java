@@ -14,7 +14,6 @@ public class Users {
         this.TelNo = TelNo;
     }
 
-
     public String getName(){
         return name;
     }
