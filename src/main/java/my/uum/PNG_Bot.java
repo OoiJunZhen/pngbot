@@ -47,10 +47,7 @@ public class PNG_Bot extends TelegramLongPollingBot {
      * Hashmap for adding booking information
      */
     Map<Long, Booking> bookingMap = new HashMap<Long, Booking>();
-    /**
-     * Hashmap for editing booking information
-     */
-    Map<Long, Booking> loginEditMap = new HashMap<Long, Booking>();
+
 
     public void onUpdateReceived(Update update) {
         SendMessage sendMessage = new SendMessage();
@@ -996,6 +993,68 @@ public class PNG_Bot extends TelegramLongPollingBot {
                         break;
 
 
+                    case "Login:EditBook_Location_Room":
+                        if (databaseManager.checkSchool(message.getText())) {
+                            userState.put(message.getChatId(), "Login:EditBook_Location_Check");
+                            Date date = new Date();
+                            bookingMap.put(message.getChatId(), new Booking(date, date, date, 0, "", "", 0, databaseManager.getUserID(usersMap.get(message.getChatId()).getICNO())));
+                            bookingMap.get(message.getChatId()).setRoomID(Integer.parseInt(message.getText()));
+                            String roomList = databaseManager.getBookedRoomList(bookingMap.get(message.getChatId()).getRoomID());
+                            roomList += "<book>: There might have some time which is unavailable, due to someone has booked" +
+                                    "this room.\n\nWhich room do you want to change to?\nExample reply: 1";
+                            sendMessage = new SendMessage();
+                            sendMessage.setChatId(message.getChatId());
+                            sendMessage.setText(roomList);
+
+                        } else {
+                            String list2 = databaseManager.schoolList();
+                            list2 += "This school does not exist. Please re-enter the school that you wish to book in.\nExample reply: 1";
+                            sendMessage = new SendMessage();
+                            sendMessage.setChatId(message.getChatId());
+                            sendMessage.setText(list2);
+                        }
+                        break;
+
+                    case "Login:EditBook_Location_Check":
+                        if (databaseManager.checkRoom(message.getText(), bookingMap.get(message.getChatId()).getRoomID())) {
+                            bookingMap.get(message.getChatId()).setRoomID(Integer.parseInt(message.getText()));
+                            //display room information in details
+                            String list = databaseManager.getRoomInfo(bookingMap.get(message.getChatId()).getRoomID());
+
+                            sendMessage = new SendMessage();
+                            sendMessage.setChatId(message.getChatId());
+                            sendMessage.setText(list);
+
+
+                            //Inline Keyboard Button
+                            InlineKeyboardMarkup inlineKeyboardMarkup = new InlineKeyboardMarkup();
+                            List<List<InlineKeyboardButton>> inlineButtons = new ArrayList<>();
+                            List<InlineKeyboardButton> inlineKeyboardButtonList1 = new ArrayList<>();
+                            List<InlineKeyboardButton> inlineKeyboardButtonList2 = new ArrayList<>();
+                            InlineKeyboardButton inlineKeyboardButton1 = new InlineKeyboardButton();
+                            InlineKeyboardButton inlineKeyboardButton2 = new InlineKeyboardButton();
+                            inlineKeyboardButton1.setText("Yes. I want to change booking time");
+                            inlineKeyboardButton2.setText("No, change room");
+                            inlineKeyboardButton1.setCallbackData("Login:EditBook_Location_Time");
+                            inlineKeyboardButton2.setCallbackData("Login:EditBook_Location_Room");
+                            inlineKeyboardButtonList1.add(inlineKeyboardButton1);
+                            inlineKeyboardButtonList2.add(inlineKeyboardButton2);
+                            inlineButtons.add(inlineKeyboardButtonList1);
+                            inlineButtons.add(inlineKeyboardButtonList2);
+                            inlineKeyboardMarkup.setKeyboard(inlineButtons);
+                            sendMessage.setReplyMarkup(inlineKeyboardMarkup);
+
+                        } else {
+                            String list = databaseManager.getRoomList(bookingMap.get(message.getChatId()).getRoomID());
+                            list += "This room does not exist. Please re-enter the room that you wish to book.\n\nExample reply: 1";
+                            sendMessage = new SendMessage();
+                            sendMessage.setText(list);
+                            sendMessage.setChatId(message.getChatId());
+                        }
+
+
+                        break;
+
                 }
 
                 try {
@@ -1280,11 +1339,16 @@ public class PNG_Bot extends TelegramLongPollingBot {
                 } else if (data.equals("Login:EditBook")) {
                     userState.put(message.getChatId(), "Login:EditBook_Menu");
                     int userID = databaseManager.getUserID(usersMap.get(message.getChatId()).getICNO());
-                    String bookedRooms = databaseManager.viewBookedList(userID, "Start");
-                    bookedRooms += "\n\n" + "Which booking id do you wish to edit?\n\n" +
+                    String list = databaseManager.viewBookedList(userID, "Start");
+                    list += "\n\n" + "Which booking id do you wish to edit?\n\n" +
                             "Example reply: 1";
-                    sendMessage.setText(bookedRooms);
+                    sendMessage.setText(list);
 
+                } else if (data.equals("Login:EditBook_Location")) {
+                    userState.put(message.getChatId(), "Login:EditBook_Location_Room");
+                    String list = databaseManager.schoolList();
+                    list += "\n\n" + "Which School do you want to book from?";
+                    sendMessage.setText(list);
                 }
 
             }

@@ -6,7 +6,6 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 
 public class DatabaseManager {
-
     Connection connection = null;
 
     public DatabaseManager(){
@@ -832,5 +831,76 @@ public class DatabaseManager {
         }
     }
 
+    /**
+     * Check whether the room is booked. If yes, return true. If no, return false
+     *
+     * @param Room_ID
+     * @return
+     */
+    public boolean checkBookedRoomList(Integer Room_ID) {
+        Integer id = 0;
+        String q = "SELECT Room_ID FROM Booking WHERE Room_ID=?";
 
+        try (Connection conn = this.connect()) {
+            PreparedStatement preparedStatement = conn.prepareStatement(q);
+
+            preparedStatement.setInt(1, Room_ID);
+
+            ResultSet rs = preparedStatement.executeQuery();
+
+            while (rs.next()) {
+                id = rs.getInt("Room_ID");
+                break;
+            }
+
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+
+        if (id == 0) {
+            return false;
+        } else
+            return true;
+    }
+
+
+    /**
+     * List out all available room
+     *
+     * @param School_ID
+     * @return
+     */
+    public String getBookedRoomList(Integer School_ID) {
+        String book = "";
+        String roomList = " ";
+        String q = "SELECT Room_ID, Room_Name, Maximum_Capacity, Room_Type FROM Room WHERE School_ID=?";
+
+        try (Connection conn = this.connect()) {
+            PreparedStatement preparedStatement = conn.prepareStatement(q);
+
+            preparedStatement.setInt(1, School_ID);
+
+            ResultSet rs = preparedStatement.executeQuery();
+
+            while (rs.next()) {
+                if (checkBookedRoomList(rs.getInt("Room_ID"))) {
+                    book = " <book>";
+                } else {
+                    book = "";
+                }
+
+                roomList +=
+                        "Reply " + rs.getInt("Room_ID") + ":\n" +
+                                "Room Name: " + rs.getString("Room_Name") + book + "\n" +
+                                "Maximum Capacity: " + rs.getString("Maximum_Capacity") + "\n" +
+                                "Type: " + rs.getString("Room_Type") + "\n\n";
+
+
+            }
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+
+        return roomList;
+    }
 }
