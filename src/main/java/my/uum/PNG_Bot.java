@@ -951,7 +951,10 @@ public class PNG_Bot extends TelegramLongPollingBot {
 
                     case "Login:EditBook_Menu":
                         int userID = databaseManager.getUserID(usersMap.get(message.getChatId()).getICNO());
+
                         if (databaseManager.checkBookId(userID, message.getText())) {
+                            bookingMap.get(message.getChatId()).setBookID(Integer.parseInt(message.getText()));
+                            System.out.println("BOOK ID" + bookingMap.get(message.getChatId()).getBookID());
                             String bookingList = databaseManager.getBookList(Integer.parseInt(message.getText()));
 
                             bookingList += "What do you want to edit?";
@@ -996,15 +999,16 @@ public class PNG_Bot extends TelegramLongPollingBot {
                     case "Login:EditBook_Location_Room":
                         if (databaseManager.checkSchool(message.getText())) {
                             userState.put(message.getChatId(), "Login:EditBook_Location_Check");
-                            Date date = new Date();
-                            bookingMap.put(message.getChatId(), new Booking(date, date, date, 0, "", "", 0, databaseManager.getUserID(usersMap.get(message.getChatId()).getICNO())));
                             bookingMap.get(message.getChatId()).setRoomID(Integer.parseInt(message.getText()));
-                            String roomList = databaseManager.getBookedRoomList(bookingMap.get(message.getChatId()).getRoomID());
+                            int user_ID = databaseManager.getUserID(usersMap.get(message.getChatId()).getICNO());
+                            int bookID = bookingMap.get(message.getChatId()).getBookID();
+                            String roomList = databaseManager.getBookedRoomList(bookingMap.get(message.getChatId()).getRoomID(), user_ID, bookID);
                             roomList += "<book>: There might have some time which is unavailable, due to someone has booked" +
                                     "this room.\n\nWhich room do you want to change to?\nExample reply: 1";
                             sendMessage = new SendMessage();
                             sendMessage.setChatId(message.getChatId());
                             sendMessage.setText(roomList);
+                            System.out.println("BOOK ID" + bookingMap.get(message.getChatId()).getBookID());
 
                         } else {
                             String list2 = databaseManager.schoolList();
@@ -1016,36 +1020,75 @@ public class PNG_Bot extends TelegramLongPollingBot {
                         break;
 
                     case "Login:EditBook_Location_Check":
+                        String list = "";
                         if (databaseManager.checkRoom(message.getText(), bookingMap.get(message.getChatId()).getRoomID())) {
                             bookingMap.get(message.getChatId()).setRoomID(Integer.parseInt(message.getText()));
                             //display room information in details
-                            String list = databaseManager.getRoomInfo(bookingMap.get(message.getChatId()).getRoomID());
+                            list = databaseManager.getRoomDetail(bookingMap.get(message.getChatId()).getRoomID());
+                            int user_ID = databaseManager.getUserID(usersMap.get(message.getChatId()).getICNO());
+                            int bookID = bookingMap.get(message.getChatId()).getBookID();
+                            System.out.println(user_ID);
+                            System.out.println(bookID);
+                            String dateTemp = databaseManager.getBookedRoomDate(user_ID, bookID);
+                            System.out.println(dateTemp);
+                            System.out.println(databaseManager.checkBook(bookingMap.get(message.getChatId()).getRoomID(), dateTemp));
+                            if (databaseManager.checkBook(bookingMap.get(message.getChatId()).getRoomID(), dateTemp)) {
+                                list += "\nDate: " + dateTemp + "\nBooked time:\n";
+                                //display booked Time
+                                list += databaseManager.checkbookedRoomTime(bookingMap.get(message.getChatId()).getRoomID(), user_ID, bookID);
 
-                            sendMessage = new SendMessage();
-                            sendMessage.setChatId(message.getChatId());
-                            sendMessage.setText(list);
+                                sendMessage = new SendMessage();
+                                sendMessage.setChatId(message.getChatId());
+                                sendMessage.setText(list);
 
 
-                            //Inline Keyboard Button
-                            InlineKeyboardMarkup inlineKeyboardMarkup = new InlineKeyboardMarkup();
-                            List<List<InlineKeyboardButton>> inlineButtons = new ArrayList<>();
-                            List<InlineKeyboardButton> inlineKeyboardButtonList1 = new ArrayList<>();
-                            List<InlineKeyboardButton> inlineKeyboardButtonList2 = new ArrayList<>();
-                            InlineKeyboardButton inlineKeyboardButton1 = new InlineKeyboardButton();
-                            InlineKeyboardButton inlineKeyboardButton2 = new InlineKeyboardButton();
-                            inlineKeyboardButton1.setText("Yes. I want to change booking time");
-                            inlineKeyboardButton2.setText("No, change room");
-                            inlineKeyboardButton1.setCallbackData("Login:EditBook_Location_Time");
-                            inlineKeyboardButton2.setCallbackData("Login:EditBook_Location_Room");
-                            inlineKeyboardButtonList1.add(inlineKeyboardButton1);
-                            inlineKeyboardButtonList2.add(inlineKeyboardButton2);
-                            inlineButtons.add(inlineKeyboardButtonList1);
-                            inlineButtons.add(inlineKeyboardButtonList2);
-                            inlineKeyboardMarkup.setKeyboard(inlineButtons);
-                            sendMessage.setReplyMarkup(inlineKeyboardMarkup);
+                                //Inline Keyboard Button
+                                InlineKeyboardMarkup inlineKeyboardMarkup = new InlineKeyboardMarkup();
+                                List<List<InlineKeyboardButton>> inlineButtons = new ArrayList<>();
+                                List<InlineKeyboardButton> inlineKeyboardButtonList1 = new ArrayList<>();
+                                List<InlineKeyboardButton> inlineKeyboardButtonList2 = new ArrayList<>();
+                                InlineKeyboardButton inlineKeyboardButton1 = new InlineKeyboardButton();
+                                InlineKeyboardButton inlineKeyboardButton2 = new InlineKeyboardButton();
+                                inlineKeyboardButton1.setText("Yes. I want to change booking time");
+                                inlineKeyboardButton2.setText("No, change room");
+                                inlineKeyboardButton1.setCallbackData("Login:EditBook_Location_Time");
+                                inlineKeyboardButton2.setCallbackData("Login:EditBook_Location");
+                                inlineKeyboardButtonList1.add(inlineKeyboardButton1);
+                                inlineKeyboardButtonList2.add(inlineKeyboardButton2);
+                                inlineButtons.add(inlineKeyboardButtonList1);
+                                inlineButtons.add(inlineKeyboardButtonList2);
+                                inlineKeyboardMarkup.setKeyboard(inlineButtons);
+                                sendMessage.setReplyMarkup(inlineKeyboardMarkup);
+
+                            } else {
+                                sendMessage = new SendMessage();
+                                sendMessage.setChatId(message.getChatId());
+                                sendMessage.setText(list);
+
+
+                                //Inline Keyboard Button
+                                InlineKeyboardMarkup inlineKeyboardMarkup = new InlineKeyboardMarkup();
+                                List<List<InlineKeyboardButton>> inlineButtons = new ArrayList<>();
+                                List<InlineKeyboardButton> inlineKeyboardButtonList1 = new ArrayList<>();
+                                List<InlineKeyboardButton> inlineKeyboardButtonList2 = new ArrayList<>();
+                                InlineKeyboardButton inlineKeyboardButton1 = new InlineKeyboardButton();
+                                InlineKeyboardButton inlineKeyboardButton2 = new InlineKeyboardButton();
+                                inlineKeyboardButton1.setText("Yes. Change this room");
+                                inlineKeyboardButton2.setText("No. Change other room");
+                                inlineKeyboardButton1.setCallbackData("Login:EditBook_Location_Update3");
+                                inlineKeyboardButton2.setCallbackData("Login:EditBook_Location");
+                                inlineKeyboardButtonList1.add(inlineKeyboardButton1);
+                                inlineKeyboardButtonList2.add(inlineKeyboardButton2);
+                                inlineButtons.add(inlineKeyboardButtonList1);
+                                inlineButtons.add(inlineKeyboardButtonList2);
+                                inlineKeyboardMarkup.setKeyboard(inlineButtons);
+                                sendMessage.setReplyMarkup(inlineKeyboardMarkup);
+
+                            }
+
 
                         } else {
-                            String list = databaseManager.getRoomList(bookingMap.get(message.getChatId()).getRoomID());
+                            list = databaseManager.getRoomList(bookingMap.get(message.getChatId()).getRoomID());
                             list += "This room does not exist. Please re-enter the room that you wish to book.\n\nExample reply: 1";
                             sendMessage = new SendMessage();
                             sendMessage.setText(list);
@@ -1337,6 +1380,8 @@ public class PNG_Bot extends TelegramLongPollingBot {
                     sendMessage.setReplyMarkup(inlineKeyboardMarkup);
 
                 } else if (data.equals("Login:EditBook")) {
+                    Date date = new Date();
+                    bookingMap.put(message.getChatId(), new Booking(date, date, date, 0, "", "", 0, databaseManager.getUserID(usersMap.get(message.getChatId()).getICNO())));
                     userState.put(message.getChatId(), "Login:EditBook_Menu");
                     int userID = databaseManager.getUserID(usersMap.get(message.getChatId()).getICNO());
                     String list = databaseManager.viewBookedList(userID, "Start");
@@ -1349,6 +1394,9 @@ public class PNG_Bot extends TelegramLongPollingBot {
                     String list = databaseManager.schoolList();
                     list += "\n\n" + "Which School do you want to book from?";
                     sendMessage.setText(list);
+                    System.out.println("BOOK ID" + bookingMap.get(message.getChatId()).getBookID());
+                } else if (data.equals("Login:EditBook_Location_Time")) {
+
                 }
 
             }

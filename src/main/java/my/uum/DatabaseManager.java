@@ -8,7 +8,7 @@ import java.util.Calendar;
 public class DatabaseManager {
     Connection connection = null;
 
-    public DatabaseManager(){
+    public DatabaseManager() {
         String url = "jdbc:sqlite:database.db";
         try {
             connection = DriverManager.getConnection(url);
@@ -90,6 +90,7 @@ public class DatabaseManager {
         }
         return User_ID;
     }
+
 
     /**
      * This method is to loop and display a list of booked rooms made by the user
@@ -837,14 +838,16 @@ public class DatabaseManager {
      * @param Room_ID
      * @return
      */
-    public boolean checkBookedRoomList(Integer Room_ID) {
+    public boolean checkBookedRoomList(Integer Room_ID, Integer User_ID, Integer Booking_ID) {
         Integer id = 0;
-        String q = "SELECT Room_ID FROM Booking WHERE Room_ID=?";
+        String q = "SELECT Room_ID FROM Booking WHERE Room_ID=? AND User_ID = ? AND Booking_ID = ?";
 
         try (Connection conn = this.connect()) {
             PreparedStatement preparedStatement = conn.prepareStatement(q);
 
             preparedStatement.setInt(1, Room_ID);
+            preparedStatement.setInt(2, User_ID);
+            preparedStatement.setInt(3, Booking_ID);
 
             ResultSet rs = preparedStatement.executeQuery();
 
@@ -870,7 +873,7 @@ public class DatabaseManager {
      * @param School_ID
      * @return
      */
-    public String getBookedRoomList(Integer School_ID) {
+    public String getBookedRoomList(Integer School_ID, Integer User_ID, Integer Booking_ID) {
         String book = "";
         String roomList = " ";
         String q = "SELECT Room_ID, Room_Name, Maximum_Capacity, Room_Type FROM Room WHERE School_ID=?";
@@ -883,7 +886,7 @@ public class DatabaseManager {
             ResultSet rs = preparedStatement.executeQuery();
 
             while (rs.next()) {
-                if (checkBookedRoomList(rs.getInt("Room_ID"))) {
+                if (checkBookedRoomList(rs.getInt("Room_ID"), User_ID, Booking_ID)) {
                     book = " <book>";
                 } else {
                     book = "";
@@ -902,5 +905,121 @@ public class DatabaseManager {
         }
 
         return roomList;
+    }
+
+    public String getBookedRoomDate(Integer userID, Integer bookingID) {
+        String getDate = "";
+        String q = "SELECT Booking.Book_StartTime FROM Booking WHERE User_ID = ? AND Booking_ID = ?";
+
+        try (Connection conn = this.connect()) {
+            PreparedStatement preparedStatement = conn.prepareStatement(q);
+
+            preparedStatement.setInt(1, userID);
+            preparedStatement.setInt(2, bookingID);
+            ResultSet rs = preparedStatement.executeQuery();
+
+            while (rs.next()) {
+                java.sql.Date startDate = rs.getDate("Book_StartTime");
+                java.util.Date convertedStart = new java.util.Date(startDate.getTime());
+                SimpleDateFormat bookDateFormat = new SimpleDateFormat("dd/MM/yyyy");
+                String date = bookDateFormat.format(convertedStart);
+
+                getDate += date;
+            }
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+
+        }
+        return getDate;
+    }
+
+    public String getRoomDetail(Integer Room_ID) {
+        String roomInfo = "";
+        String q = "SELECT Room_Name, Room_Description, Maximum_Capacity, Room_Type FROM Room WHERE Room_ID=?";
+
+
+        try (Connection conn = this.connect()) {
+            PreparedStatement preparedStatement = conn.prepareStatement(q);
+
+            preparedStatement.setInt(1, Room_ID);
+            ResultSet rs = preparedStatement.executeQuery();
+            while (rs.next()) {
+                roomInfo +=
+                        "Room Name: " + rs.getString("Room_Name") + "\n" +
+                                "Description: " + rs.getString("Room_Description") + "\n" +
+                                "Maximum Capacity: " + rs.getString("Maximum_Capacity") + "\n" +
+                                "Type: " + rs.getString("Room_Type");
+            }
+
+            if (roomInfo.equals("")) {
+                roomInfo += "Sorry, this room does not exist. Please try to reply another number :)";
+            }
+
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+        return roomInfo;
+    }
+
+    public String checkbookedRoomTime(Integer Room_ID, Integer userID, Integer bookID) {
+        String input = getBookedRoomDate(userID, bookID);
+        String list = "";
+        String start = "";
+        String end = "";
+        String date = "";
+        String date2 = "";
+        java.sql.Date sqlDate;
+        java.sql.Date sqlDate2;
+
+        SimpleDateFormat bookDateFormat = new SimpleDateFormat("dd/MM/yyyy");
+        SimpleDateFormat databaseDateFormat = new SimpleDateFormat("yyyy-MM-dd");
+        SimpleDateFormat timeFormat = new SimpleDateFormat("hh:mm a");
+
+        try {
+            java.util.Date utilDate = bookDateFormat.parse(input);
+            date = databaseDateFormat.format(utilDate);
+
+
+            //add day by 1 to form date2
+            Calendar c = Calendar.getInstance();
+            c.setTime(databaseDateFormat.parse(date));
+            c.add(Calendar.DATE, 1);
+            date2 = databaseDateFormat.format(c.getTime());
+
+            sqlDate = java.sql.Date.valueOf(date);
+            sqlDate2 = java.sql.Date.valueOf(date2);
+
+        } catch (ParseException e) {
+            throw new RuntimeException(e);
+        }
+
+        // Display booked time within the chosen date/day.
+        String q = "SELECT Book_StartTime, Book_EndTime FROM Booking WHERE Room_ID=?";
+
+        try (Connection conn = this.connect()) {
+            PreparedStatement preparedStatement = conn.prepareStatement(q);
+
+            preparedStatement.setInt(1, Room_ID);
+
+            ResultSet rs = preparedStatement.executeQuery();
+            while (rs.next()) {
+                if (rs.getDate("Book_StartTime").after(sqlDate) && rs.getDate("Book_StartTime").before(sqlDate2)) {
+                    java.sql.Date startTime = rs.getDate("Book_StartTime");
+                    java.sql.Date endTime = rs.getDate("Book_EndTime");
+
+                    java.util.Date convertedStart = new java.util.Date(startTime.getTime());
+                    java.util.Date convertedEnd = new java.util.Date(endTime.getTime());
+
+                    start = timeFormat.format(convertedStart);
+                    end = timeFormat.format(convertedEnd);
+
+                    list += start + " - " + end + "\n";
+                }
+            }
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+
+        return list;
     }
 }
