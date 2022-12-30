@@ -891,14 +891,13 @@ public class DatabaseManager {
     }
 
     public void editProfileICNO (Integer User_ID, String ICNO){
-        String q = "UPDATE Users SET ICNO=? WHERE ICNO=? AND User_ID=?";
+        String q = "UPDATE Users SET ICNO=? WHERE User_ID=?";
 
         try(Connection conn = this.connect()){
             PreparedStatement preparedStatement = conn.prepareStatement(q);
 
             preparedStatement.setString(1, ICNO);
-            preparedStatement.setString(2, ICNO);
-            preparedStatement.setInt(3, User_ID);
+            preparedStatement.setInt(2, User_ID);
             preparedStatement.executeUpdate();
 
 
@@ -960,11 +959,9 @@ public class DatabaseManager {
 
             preparedStatement.setInt(1, User_ID);
             preparedStatement.setInt(2, BookId);
-            int deleted = preparedStatement.executeUpdate();
-            if(deleted == 0){
-                return del ="The booking id is not correct, please enter again";
-            }else
-                return del ="The booking is successfully cancelled. Would you like to delete another room?";
+            preparedStatement.executeUpdate();
+
+            del ="The booking is successfully cancelled. Would you like to delete another room?";
 
 
         }catch (SQLException e){

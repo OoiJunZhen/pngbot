@@ -1038,7 +1038,7 @@ public class PNG_bot extends TelegramLongPollingBot {
                         if (userState.get(message.getChatId()).equals("Login:CancelBook") ) {
 
                             if (databaseManager.checkBookId(userID, message.getText())) {
-
+//                                String del = databaseManager.getBookList(bookingMap.get(message.getChatId()).getBookID());
                                 String del = databaseManager.getBookList(Integer.parseInt(message.getText()));
                                 sendMessage = new SendMessage();
                                 sendMessage.setText(del);
@@ -1436,9 +1436,12 @@ public class PNG_bot extends TelegramLongPollingBot {
                     sendMessage.setText(bookDetails);
                     userState.put(message.getChatId(), "Login:CancelBook");
                 } else if (data.equals("Login:CancelBook_confirm")){
+//                    bookingMap.get(message.getChatId()).setBookID(Integer.valueOf(message.getText()));
+//                    System.out.println(Integer.valueOf(message.getText()));
                     int userID = databaseManager.getUserID(usersMap.get(message.getChatId()).getICNO());
-                    String bookDetails = databaseManager.deleteBook(userID, bookingMap.get(message.getChatId()).getBookID());
-                    sendMessage.setText(bookDetails);
+                    String delDetails = databaseManager.deleteBook(userID, bookingMap.get(message.getChatId()).getBookID());
+                    sendMessage = new SendMessage();
+                    sendMessage.setText(delDetails);
                     sendMessage.setParseMode(ParseMode.MARKDOWN);
                     sendMessage.setChatId(message.getChatId());
 
