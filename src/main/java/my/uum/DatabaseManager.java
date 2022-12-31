@@ -1128,4 +1128,24 @@ public class DatabaseManager {
             System.out.println(e.getMessage());
         }
     }
+
+    public void editBookingDateTimeLoc(Integer User_ID, Integer Room_ID, String Book_StartTime, String Book_EndTime, Integer Booking_ID) {
+        String q = "UPDATE Booking SET Room_ID=?, Book_StartTime =?, Book_EndTime =? WHERE User_ID=? AND Booking_ID =?";
+
+        try (Connection conn = this.connect()) {
+            PreparedStatement preparedStatement = conn.prepareStatement(q);
+
+            preparedStatement.setInt(1, Room_ID);
+            preparedStatement.setString(2, Book_StartTime);
+            preparedStatement.setString(3, Book_EndTime);
+            preparedStatement.setInt(4, User_ID);
+            preparedStatement.setInt(5, Booking_ID);
+            preparedStatement.executeUpdate();
+
+
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+    }
+
 }
