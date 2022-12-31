@@ -1026,45 +1026,75 @@ public class PNG_Bot extends TelegramLongPollingBot {
                             list = databaseManager.getRoomDetail(bookingMap.get(message.getChatId()).getRoomID());
                             int user_ID = databaseManager.getUserID(usersMap.get(message.getChatId()).getICNO());
                             int bookID = bookingMap.get(message.getChatId()).getBookID();
+                            int roomID = bookingMap.get(message.getChatId()).getRoomID();
                             System.out.println(user_ID);
                             System.out.println(bookID);
                             String dateTemp = databaseManager.getBookedRoomDate(user_ID, bookID);
                             System.out.println(dateTemp);
-                            System.out.println(databaseManager.checkBook(bookingMap.get(message.getChatId()).getRoomID(), dateTemp));
+                            System.out.println(databaseManager.checkBook(roomID, dateTemp));
                             if (databaseManager.checkBook(bookingMap.get(message.getChatId()).getRoomID(), dateTemp)) {
                                 list += "\nDate: " + dateTemp + "\nBooked time:\n";
                                 //display booked Time
                                 list += databaseManager.checkbookedRoomTime(bookingMap.get(message.getChatId()).getRoomID(), user_ID, bookID);
+                                // System.out.println(databaseManager.getBookedRoomDate(user_ID, bookID));
 
-                                sendMessage = new SendMessage();
-                                sendMessage.setChatId(message.getChatId());
-                                sendMessage.setText(list);
+                                String timeStartTemp = databaseManager.getBookedRoomTime(user_ID, bookID);
+                                System.out.println(timeStartTemp);
+                                //if the time chosen contradict with other booked time
+                                if (!databaseManager.checkTimeDatabase(bookingMap.get(message.getChatId()).getRoomID(), dateTemp, timeStartTemp)) {
+                                    String list2 = "\nYour current booking time: \n" + databaseManager.viewBookedRoomTime(user_ID, bookID)
+                                            + "\nAre you sure you want to book this room?";
 
+                                    sendMessage = new SendMessage();
+                                    sendMessage.setChatId(message.getChatId());
+                                    sendMessage.setText(list + list2);
 
-                                //Inline Keyboard Button
-                                InlineKeyboardMarkup inlineKeyboardMarkup = new InlineKeyboardMarkup();
-                                List<List<InlineKeyboardButton>> inlineButtons = new ArrayList<>();
-                                List<InlineKeyboardButton> inlineKeyboardButtonList1 = new ArrayList<>();
-                                List<InlineKeyboardButton> inlineKeyboardButtonList2 = new ArrayList<>();
-                                InlineKeyboardButton inlineKeyboardButton1 = new InlineKeyboardButton();
-                                InlineKeyboardButton inlineKeyboardButton2 = new InlineKeyboardButton();
-                                inlineKeyboardButton1.setText("Yes. I want to change booking time");
-                                inlineKeyboardButton2.setText("No, change room");
-                                inlineKeyboardButton1.setCallbackData("Login:EditBook_Location_Time");
-                                inlineKeyboardButton2.setCallbackData("Login:EditBook_Location");
-                                inlineKeyboardButtonList1.add(inlineKeyboardButton1);
-                                inlineKeyboardButtonList2.add(inlineKeyboardButton2);
-                                inlineButtons.add(inlineKeyboardButtonList1);
-                                inlineButtons.add(inlineKeyboardButtonList2);
-                                inlineKeyboardMarkup.setKeyboard(inlineButtons);
-                                sendMessage.setReplyMarkup(inlineKeyboardMarkup);
+                                    //Inline Keyboard Button
+                                    InlineKeyboardMarkup inlineKeyboardMarkup = new InlineKeyboardMarkup();
+                                    List<List<InlineKeyboardButton>> inlineButtons = new ArrayList<>();
+                                    List<InlineKeyboardButton> inlineKeyboardButtonList1 = new ArrayList<>();
+                                    List<InlineKeyboardButton> inlineKeyboardButtonList2 = new ArrayList<>();
+                                    InlineKeyboardButton inlineKeyboardButton1 = new InlineKeyboardButton();
+                                    InlineKeyboardButton inlineKeyboardButton2 = new InlineKeyboardButton();
+                                    inlineKeyboardButton1.setText("Yes");
+                                    inlineKeyboardButton2.setText("No, I want to choose another room");
+                                    inlineKeyboardButton1.setCallbackData("Login:EditBook_Location_Update3");
+                                    inlineKeyboardButton2.setCallbackData("Login:EditBook_Location");
+                                    inlineKeyboardButtonList1.add(inlineKeyboardButton1);
+                                    inlineKeyboardButtonList2.add(inlineKeyboardButton2);
+                                    inlineButtons.add(inlineKeyboardButtonList1);
+                                    inlineButtons.add(inlineKeyboardButtonList2);
+                                    inlineKeyboardMarkup.setKeyboard(inlineButtons);
+                                    sendMessage.setReplyMarkup(inlineKeyboardMarkup);
+
+                                } else {
+                                    sendMessage = new SendMessage();
+                                    sendMessage.setChatId(message.getChatId());
+                                    sendMessage.setText("You cannot book this room with your initial booking time, if you want to book this room you can change your booking time");
+                                    //Inline Keyboard Button
+                                    InlineKeyboardMarkup inlineKeyboardMarkup = new InlineKeyboardMarkup();
+                                    List<List<InlineKeyboardButton>> inlineButtons = new ArrayList<>();
+                                    List<InlineKeyboardButton> inlineKeyboardButtonList1 = new ArrayList<>();
+                                    List<InlineKeyboardButton> inlineKeyboardButtonList2 = new ArrayList<>();
+                                    InlineKeyboardButton inlineKeyboardButton1 = new InlineKeyboardButton();
+                                    InlineKeyboardButton inlineKeyboardButton2 = new InlineKeyboardButton();
+                                    inlineKeyboardButton1.setText("Yes. I want to change booking time");
+                                    inlineKeyboardButton2.setText("No, change room");
+                                    inlineKeyboardButton1.setCallbackData("Login:EditBook_Location_Time");
+                                    inlineKeyboardButton2.setCallbackData("Login:EditBook_Location");
+                                    inlineKeyboardButtonList1.add(inlineKeyboardButton1);
+                                    inlineKeyboardButtonList2.add(inlineKeyboardButton2);
+                                    inlineButtons.add(inlineKeyboardButtonList1);
+                                    inlineButtons.add(inlineKeyboardButtonList2);
+                                    inlineKeyboardMarkup.setKeyboard(inlineButtons);
+                                    sendMessage.setReplyMarkup(inlineKeyboardMarkup);
+                                }
 
                             } else {
                                 sendMessage = new SendMessage();
                                 sendMessage.setChatId(message.getChatId());
                                 sendMessage.setText(list);
 
-
                                 //Inline Keyboard Button
                                 InlineKeyboardMarkup inlineKeyboardMarkup = new InlineKeyboardMarkup();
                                 List<List<InlineKeyboardButton>> inlineButtons = new ArrayList<>();
@@ -1072,8 +1102,8 @@ public class PNG_Bot extends TelegramLongPollingBot {
                                 List<InlineKeyboardButton> inlineKeyboardButtonList2 = new ArrayList<>();
                                 InlineKeyboardButton inlineKeyboardButton1 = new InlineKeyboardButton();
                                 InlineKeyboardButton inlineKeyboardButton2 = new InlineKeyboardButton();
-                                inlineKeyboardButton1.setText("Yes. Change this room");
-                                inlineKeyboardButton2.setText("No. Change other room");
+                                inlineKeyboardButton1.setText("Yes");
+                                inlineKeyboardButton2.setText("No, I want to choose another room");
                                 inlineKeyboardButton1.setCallbackData("Login:EditBook_Location_Update3");
                                 inlineKeyboardButton2.setCallbackData("Login:EditBook_Location");
                                 inlineKeyboardButtonList1.add(inlineKeyboardButton1);

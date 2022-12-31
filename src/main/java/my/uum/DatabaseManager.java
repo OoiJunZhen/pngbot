@@ -833,28 +833,46 @@ public class DatabaseManager {
     }
 
     /**
-     * Check whether the room is booked. If yes, return true. If no, return false
+     * Check whether the room is booked on the initial date. If yes, return true. If no, return false
      *
      * @param Room_ID
      * @return
      */
-    public boolean checkBookedRoomList(Integer Room_ID, Integer User_ID, Integer Booking_ID) {
+    public boolean checkBookedRoomList(Integer Room_ID, String input) {
         Integer id = 0;
-        String q = "SELECT Room_ID FROM Booking WHERE Room_ID=? AND User_ID = ? AND Booking_ID = ?";
+        String date = "";
+        java.sql.Date sqlDate;
+        SimpleDateFormat bookDateFormat = new SimpleDateFormat("dd/MM/yyyy");
+        SimpleDateFormat databaseDateFormat = new SimpleDateFormat("yyyy-MM-dd");
+        //  SimpleDateFormat combine = new SimpleDateFormat("dd/MM/yyyy HH:mm");
+        try {
+
+            //convert input date from dd/MM/yyyy to yyyy-MM-dd
+            java.util.Date utilDate = bookDateFormat.parse(input);
+            date = databaseDateFormat.format(utilDate);
+            Calendar c = Calendar.getInstance();
+            c.setTime(databaseDateFormat.parse(date));
+            c.add(Calendar.DATE, 1);
+            sqlDate = java.sql.Date.valueOf(date);
+        } catch (ParseException e) {
+            throw new RuntimeException(e);
+        }
+        String q = "SELECT Room_ID FROM Booking WHERE Room_ID=? AND Book_StartTime = ?";
 
         try (Connection conn = this.connect()) {
             PreparedStatement preparedStatement = conn.prepareStatement(q);
 
             preparedStatement.setInt(1, Room_ID);
-            preparedStatement.setInt(2, User_ID);
-            preparedStatement.setInt(3, Booking_ID);
-
+            preparedStatement.setDate(2, sqlDate);
+            System.out.println("NIHAOMA1  " + Room_ID);
+            System.out.println("NIHAOMA2  " + sqlDate);
             ResultSet rs = preparedStatement.executeQuery();
 
             while (rs.next()) {
                 id = rs.getInt("Room_ID");
                 break;
             }
+            System.out.println("NIHAOMA3  " + id);
 
         } catch (SQLException e) {
             System.out.println(e.getMessage());
@@ -885,15 +903,17 @@ public class DatabaseManager {
             preparedStatement.setInt(1, School_ID);
 
             ResultSet rs = preparedStatement.executeQuery();
-
+            String input = getBookedRoomDate(User_ID, Booking_ID);
+            System.out.println(input);
             while (rs.next()) {
-                if (checkBookedRoomList(rs.getInt("Room_ID"), User_ID, Booking_ID)) {
+                if (checkBookedRoomList(rs.getInt("Room_ID"), input)) {
                     book = " <book>";
                     book2 = "<book>: There might have some time which is unavailable, due to someone has booked" +
                             "this room.\n\n";
 
                 } else {
                     book = "";
+                    book2 = "";
                 }
 
                 roomList +=
@@ -902,6 +922,8 @@ public class DatabaseManager {
                                 "Maximum Capacity: " + rs.getString("Maximum_Capacity") + "\n" +
                                 "Type: " + rs.getString("Room_Type") + "\n\n" + book2;
             }
+
+
         } catch (SQLException e) {
             System.out.println(e.getMessage());
         }
@@ -933,6 +955,70 @@ public class DatabaseManager {
 
         }
         return getDate;
+    }
+
+    public String getBookedRoomTime(Integer userID, Integer bookingID) {
+        String getTime = "";
+        String q = "SELECT Booking.Book_StartTime FROM Booking WHERE User_ID = ? AND Booking_ID = ?";
+
+        try (Connection conn = this.connect()) {
+            PreparedStatement preparedStatement = conn.prepareStatement(q);
+
+            preparedStatement.setInt(1, userID);
+            preparedStatement.setInt(2, bookingID);
+            ResultSet rs = preparedStatement.executeQuery();
+
+            while (rs.next()) {
+
+                java.sql.Date startDate = rs.getDate("Book_StartTime");
+                java.util.Date convertedStart = new java.util.Date(startDate.getTime());
+                SimpleDateFormat bookTimeFormat = new SimpleDateFormat("hh:mm a");
+                String startTime = bookTimeFormat.format(convertedStart);
+
+
+                getTime += startTime;
+            }
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+
+        }
+        return getTime;
+    }
+
+    public String viewBookedRoomTime(Integer userID, Integer bookingID) {
+        String getBookTime = "";
+        String q = "SELECT Book_StartTime, Book_EndTime FROM Booking WHERE User_ID = ? AND Booking_ID = ?";
+
+        try (Connection conn = this.connect()) {
+            PreparedStatement preparedStatement = conn.prepareStatement(q);
+
+            preparedStatement.setInt(1, userID);
+            preparedStatement.setInt(2, bookingID);
+            ResultSet rs = preparedStatement.executeQuery();
+
+            while (rs.next()) {
+
+                java.sql.Date startDate = rs.getDate("Book_StartTime");
+                java.sql.Date endDate = rs.getDate("Book_EndTime");
+
+                java.util.Date convertedStart = new java.util.Date(startDate.getTime());
+                java.util.Date convertedEnd = new java.util.Date(endDate.getTime());
+
+                SimpleDateFormat bookDateFormat = new SimpleDateFormat("dd/MM/yyyy");
+                SimpleDateFormat bookTimeFormat = new SimpleDateFormat("hh:mm a");
+                String date = bookDateFormat.format(convertedStart);
+                String startTime = bookTimeFormat.format(convertedStart);
+                String endTime = bookTimeFormat.format(convertedEnd);
+
+                getBookTime +=
+                        "<" + startTime + ">" + " - " + "<" + endTime + ">";
+
+            }
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+
+        }
+        return getBookTime;
     }
 
     public String getRoomDetail(Integer Room_ID) {
