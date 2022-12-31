@@ -190,14 +190,63 @@ public class PNG_Bot extends TelegramLongPollingBot {
 
                         //set新的State
                         userState.put(message.getChatId(), "Register:BuildingLocation");
-                        sendMessage.setText("Which school do you want to apply as its admin\nExample: School of Computing(SOC)");
+                        sendMessage.setText("Which school do you want to apply as its admin" +
+                                "\n\nReply 1: School Of Computing (SOC)" +
+                                "\nReply 2: School Of Education (SOE)" +
+                                "\nReply 3: School Of Multimedia Technology & Communication (SMMTC)" +
+                                "\nReply 4: School Of Quantitative Sciences (SQS)" +
+                                "\nReply 5: School Of Applied Psychology, Social Work and Policy (SAPSP)" +
+                                "\nReply 6: School Of Business Management (SBM)" +
+                                "\nReply 7: Islamic Business School (IBS)" +
+                                "\nReply 8: Tunku Puteri Intan Safinaz School of Accountancy (TISSA)" +
+                                "\nReply 9: School of Economics, Finance & Banking (SEFB)" +
+                                "\nReply 10: School of Technology Management & Logistics (STML)" +
+                                "\nReply 11: UUM National Golf Academy (UUMNGA)" +
+                                "\nReply 12: School Of Government (SOG)" +
+                                "\nReply 13: School Of Law (SOL)" +
+                                "\nReply 14: School Of International Studies (SOIS)" +
+                                "\nReply 15: School Of Tourism, Hospitality & Event Management (STHEM)" +
+                                "\nReply 16: School Of Creative Industry Management & Performing Arts (SCIMPA)" );
                         sendMessage.setChatId(message.getChatId());
 
                         break;
 
                     case "Register:BuildingLocation":
                         // save school name
-                        schoolAdminMap.get(message.getChatId()).setSchoolName(message.getText());
+                        if(message.getText().equals("1")){
+                            schoolAdminMap.get(message.getChatId()).setSchoolName("School Of Computing (SOC)");
+                        } else if(message.getText().equals("2")){
+                            schoolAdminMap.get(message.getChatId()).setSchoolName("School Of Education (SOE)");
+                        } else if(message.getText().equals("3")) {
+                            schoolAdminMap.get(message.getChatId()).setSchoolName("School Of Multimedia Technology & Communication (SMMTC)");
+                        } else if(message.getText().equals("4")) {
+                            schoolAdminMap.get(message.getChatId()).setSchoolName("School Of Quantitative Sciences (SQS)");
+                        } else if(message.getText().equals("5")) {
+                            schoolAdminMap.get(message.getChatId()).setSchoolName("School Of Applied Psychology, Social Work and Policy (SAPSP)");
+                        } else if(message.getText().equals("6")) {
+                            schoolAdminMap.get(message.getChatId()).setSchoolName("School Of Business Management (SBM)");
+                        } else if(message.getText().equals("7")) {
+                            schoolAdminMap.get(message.getChatId()).setSchoolName("Islamic Business School (IBS)");
+                        } else if(message.getText().equals("8")) {
+                            schoolAdminMap.get(message.getChatId()).setSchoolName("Tunku Puteri Intan Safinaz School of Accountancy (TISSA)");
+                        } else if(message.getText().equals("9")) {
+                            schoolAdminMap.get(message.getChatId()).setSchoolName("School of Economics, Finance & Banking (SEFB)");
+                        } else if(message.getText().equals("10")) {
+                            schoolAdminMap.get(message.getChatId()).setSchoolName("School of Technology Management & Logistics (STML)");
+                        } else if(message.getText().equals("11")) {
+                            schoolAdminMap.get(message.getChatId()).setSchoolName("UUM National Golf Academy (UUMNGA)");
+                        } else if(message.getText().equals("12")) {
+                            schoolAdminMap.get(message.getChatId()).setSchoolName("School Of Government (SOG)");
+                        } else if(message.getText().equals("13")) {
+                            schoolAdminMap.get(message.getChatId()).setSchoolName("School Of Law (SOL)");
+                        } else if(message.getText().equals("14")) {
+                            schoolAdminMap.get(message.getChatId()).setSchoolName("School Of International Studies (SOIS)");
+                        } else if(message.getText().equals("15")) {
+                            schoolAdminMap.get(message.getChatId()).setSchoolName("School Of Tourism, Hospitality & Event Management (STHEM)");
+                        } else if(message.getText().equals("16")) {
+                            schoolAdminMap.get(message.getChatId()).setSchoolName("School Of Creative Industry Management & Performing Arts (SCIMPA)");
+                        }
+
 
                         //set新的State
                         userState.put(message.getChatId(), "Register:RoomName");
@@ -323,7 +372,6 @@ public class PNG_Bot extends TelegramLongPollingBot {
                         }
 
                         break;
-
 
                 }
 
