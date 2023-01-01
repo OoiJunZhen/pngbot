@@ -486,7 +486,7 @@ public class PNG_bot extends TelegramLongPollingBot {
                                     System.out.println("this date got time booked in this room");
 
                                     //if the time chosen does not contradict with other booked time
-                                    if (!databaseManager.checkTimeDatabase(bookingMap.get(message.getChatId()).getRoomID(), bookingMap.get(message.getChatId()).getTemp(), message.getText())) {
+                                    if (!databaseManager.checkTimeDatabase(bookingMap.get(message.getChatId()).getRoomID(), bookingMap.get(message.getChatId()).getTemp(), message.getText())){
 
                                         SimpleDateFormat combine = new SimpleDateFormat("dd/MM/yyyy HH:mm");
                                         try {
@@ -561,7 +561,8 @@ public class PNG_bot extends TelegramLongPollingBot {
                                 if (dateTemp.after(bookingMap.get(message.getChatId()).getStartDate())) {
 
                                     //check whether the time contradicts with other booked time
-                                    if (!databaseManager.checkTimeDatabase(bookingMap.get(message.getChatId()).getRoomID(), bookingMap.get(message.getChatId()).getTemp(), message.getText())) {
+                                    if (!(databaseManager.checkTimeDatabase2(bookingMap.get(message.getChatId()).getRoomID(), bookingMap.get(message.getChatId()).getTemp(),bookingMap.get(message.getChatId()).getStartDate(), message.getText()) ||
+                                            databaseManager.checkTimeDatabase(bookingMap.get(message.getChatId()).getRoomID(), bookingMap.get(message.getChatId()).getTemp(), message.getText()))) {
 
                                         bookingMap.get(message.getChatId()).setEndDate(dateTemp);
                                         userState.put(message.getChatId(), "Book:Booking_Confirmation");
@@ -574,17 +575,17 @@ public class PNG_bot extends TelegramLongPollingBot {
                                     }
 
                                 } else {
-                                    sendMessage.setText("The booking end time cannot be before start time. Please enter your end time.\n\n" +
+                                    sendMessage.setText("The booking end time cannot be before start time. Please enter your end time. (In 24 hours format)\n\n" +
                                             "Example: 14:30");
 
                                 }
 
                             } else {
-                                sendMessage.setText("The available booking time is between 8AM to 8PM. Please enter your booking start time.\n\n" +
+                                sendMessage.setText("The available booking time is between 8AM to 8PM. Please enter your booking start time. (In 24 hours format)\n\n" +
                                         "Example: 08:30");
                             }
                         } else {
-                            sendMessage.setText("Please enter the time in correct format.\n\n" +
+                            sendMessage.setText("Please enter the time in correct format. (In 24 hours format)\n\n" +
                                     "Example: 08:30");
                         }
 
@@ -679,7 +680,7 @@ public class PNG_bot extends TelegramLongPollingBot {
                                 }
 
                             } else {
-                                sendMessage.setText("Please enter the date in correct format\n\n" +
+                                sendMessage.setText("Please enter the date in correct format. \n\n" +
                                         "Example: 27/04/2023");
                             }
 
@@ -724,7 +725,7 @@ public class PNG_bot extends TelegramLongPollingBot {
 
                                         } else {
                                             sendMessage.setText("The new start time cannot be after the initial end time :(\n" +
-                                                    "Please Re-enter the Time thank you." +
+                                                    "Please Re-enter the Time thank you. (In 24 hours format)" +
                                                     "\n\nExample: 08:30");
                                         }
 
@@ -733,12 +734,12 @@ public class PNG_bot extends TelegramLongPollingBot {
                                     }
 
                                 } else {
-                                    sendMessage.setText("The available booking time is between 8AM to 8PM. Please enter your booking start time.\n\n" +
+                                    sendMessage.setText("The available booking time is between 8AM to 8PM. Please enter your booking start time. (In 24 hours format)\n\n" +
                                             "Example: 08:30");
                                 }
 
                             } else {
-                                sendMessage.setText("Please enter the time in correct format.\n\n" +
+                                sendMessage.setText("Please enter the time in correct format. (In 24 hours format)\n\n" +
                                         "Example: 08:30");
                             }
 
@@ -772,7 +773,7 @@ public class PNG_bot extends TelegramLongPollingBot {
 
                                             } else {
                                                 sendMessage.setText("Booked time:\n" + databaseManager.bookedTime(bookingMap.get(message.getChatId()).getRoomID(), bookingMap.get(message.getChatId()).getTemp())
-                                                        + "Please choose a time that is not booked.");
+                                                        + "Please choose a time that is not booked. (In 24 hours format)");
                                             }
                                         } else {
                                             //assign dateTemp as new Date
@@ -782,7 +783,7 @@ public class PNG_bot extends TelegramLongPollingBot {
 
                                     } else {
                                         sendMessage.setText("The new end time cannot be before the initial start time :(\n" +
-                                                "Please Re-enter the Time thank you." +
+                                                "Please Re-enter the Time thank you. (In 24 hours format)" +
                                                 "\n\nExample: 08:30");
                                     }
 
@@ -792,7 +793,7 @@ public class PNG_bot extends TelegramLongPollingBot {
                                 }
 
                             } else {
-                                sendMessage.setText("Please enter the time in correct format.\n\n" +
+                                sendMessage.setText("Please enter the time in correct format. (In 24 hours format)\n\n" +
                                         "Example: 08:30");
                             }
 

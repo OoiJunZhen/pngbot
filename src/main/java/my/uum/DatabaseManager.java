@@ -669,7 +669,6 @@ public class DatabaseManager {
         }
 
         // Display booked time within the chosen date/day.
-        //String q = "SELECT Book_StartTime, Book_EndTime FROM Booking WHERE (Book_StartTime >=? AND Book_StartTime<?) AND Room_ID=?";
         String q = "SELECT Book_StartTime, Book_EndTime FROM Booking WHERE Room_ID=?";
 
         try (Connection conn = this.connect()) {
@@ -688,6 +687,84 @@ public class DatabaseManager {
                     java.util.Date convertedEnd = new java.util.Date(endTime.getTime());
 
                     if(dateTemp.before(convertedEnd) && dateTemp.after(convertedStart)){
+                        return true;
+                    }
+                }
+
+            }
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+
+        return false;
+
+    }
+
+    /**
+     * @Author Ang Toon Ph'ng
+     * Check whether the time contradicted with booked time when both start and end time are acquired. If yes, return true. If no, return false
+     * @param Room_ID
+     * @param Date
+     * @param StartDate
+     * @param EndTime
+     * @return
+     */
+    public boolean checkTimeDatabase2(Integer Room_ID, String Date, java.util.Date StartDate, String EndTime){
+
+        java.util.Date dateStartTemp;
+        java.util.Date dateEndTemp;
+        String start="";
+        String end="";
+        String date = "";
+        String date2="";
+        java.sql.Date sqlDate;
+        java.sql.Date sqlDate2;
+
+        SimpleDateFormat bookDateFormat = new SimpleDateFormat("dd/MM/yyyy");
+        SimpleDateFormat databaseDateFormat = new SimpleDateFormat("yyyy-MM-dd");
+        SimpleDateFormat combine = new SimpleDateFormat("dd/MM/yyyy HH:mm");
+
+
+
+        try {
+            dateEndTemp = combine.parse(Date + " " + EndTime);
+
+            java.util.Date utilDate = bookDateFormat.parse(Date);
+            date = databaseDateFormat.format(utilDate);
+
+
+            //add day by 1 to form date2
+            Calendar c = Calendar.getInstance();
+            c.setTime(databaseDateFormat.parse(date));
+            c.add(Calendar.DATE, 1);
+            date2 = databaseDateFormat.format(c.getTime());
+
+            sqlDate = java.sql.Date.valueOf(date);
+            sqlDate2 = java.sql.Date.valueOf(date2);
+
+        } catch (ParseException e) {
+            throw new RuntimeException(e);
+        }
+
+        // Display booked time within the chosen date/day.
+        String q = "SELECT Book_StartTime, Book_EndTime FROM Booking WHERE Room_ID=?";
+
+        try (Connection conn = this.connect()) {
+            PreparedStatement preparedStatement = conn.prepareStatement(q);
+            ;
+            preparedStatement.setInt(1, Room_ID);
+
+            ResultSet rs = preparedStatement.executeQuery();
+            while (rs.next()) {
+
+                if(rs.getDate("Book_StartTime").after(sqlDate) && rs.getDate("Book_StartTime").before(sqlDate2)){
+                    java.sql.Date startTime = rs.getDate("Book_StartTime");
+                    java.sql.Date endTime = rs.getDate("Book_EndTime");
+
+                    java.util.Date convertedStart = new java.util.Date(startTime.getTime());
+                    java.util.Date convertedEnd = new java.util.Date(endTime.getTime());
+
+                    if(StartDate.before(convertedStart) && dateEndTemp.after(convertedEnd)){
                         return true;
                     }
                 }
@@ -728,6 +805,16 @@ public class DatabaseManager {
         return roomName;
     }
 
+    /**
+     * @Author Ang Toon Ph'ng
+     * @param Booking_Purpose
+     * @param Book_StartTime
+     * @param Book_EndTime
+     * @param Room_ID
+     * @param User_ID
+     * @param Timestamp
+     */
+
     public void insertBook(String Booking_Purpose, String Book_StartTime, String Book_EndTime, Integer Room_ID, Integer User_ID, String Timestamp){
         //set dynamic query
         String q = "INSERT INTO Booking (Booking_Purpose, Room_ID, Book_StartTime, Book_EndTime, User_ID, Timestamp)VALUES (?,?,?,?,?,?)";
@@ -750,6 +837,12 @@ public class DatabaseManager {
             e.printStackTrace();
         }
     }
+
+    /**
+     * @Author Ang Toon Ph'ng
+     * @param User_ID
+     * @return
+     */
     public boolean checkBook(Integer User_ID) {
         Integer check_ID = 0;
         String q = "SELECT Booking_ID FROM Booking INNER JOIN Users ON Users.User_ID = Booking.User_ID WHERE Booking.User_ID = ?";
