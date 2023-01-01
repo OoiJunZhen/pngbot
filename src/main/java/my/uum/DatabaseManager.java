@@ -833,59 +833,6 @@ public class DatabaseManager {
     }
 
     /**
-     * Check whether the room is booked on the initial date. If yes, return true. If no, return false
-     *
-     * @param Room_ID
-     * @return
-     */
-    public boolean checkBookedRoomList(Integer Room_ID, String input) {
-        Integer id = 0;
-        String date = "";
-        java.sql.Date sqlDate;
-        SimpleDateFormat bookDateFormat = new SimpleDateFormat("dd/MM/yyyy");
-        SimpleDateFormat databaseDateFormat = new SimpleDateFormat("yyyy-MM-dd");
-        //  SimpleDateFormat combine = new SimpleDateFormat("dd/MM/yyyy HH:mm");
-        try {
-
-            //convert input date from dd/MM/yyyy to yyyy-MM-dd
-            java.util.Date utilDate = bookDateFormat.parse(input);
-            date = databaseDateFormat.format(utilDate);
-            Calendar c = Calendar.getInstance();
-            c.setTime(databaseDateFormat.parse(date));
-            c.add(Calendar.DATE, 1);
-            sqlDate = java.sql.Date.valueOf(date);
-        } catch (ParseException e) {
-            throw new RuntimeException(e);
-        }
-        String q = "SELECT Room_ID FROM Booking WHERE Room_ID=? AND Book_StartTime = ?";
-
-        try (Connection conn = this.connect()) {
-            PreparedStatement preparedStatement = conn.prepareStatement(q);
-
-            preparedStatement.setInt(1, Room_ID);
-            preparedStatement.setDate(2, sqlDate);
-            System.out.println("NIHAOMA1  " + Room_ID);
-            System.out.println("NIHAOMA2  " + sqlDate);
-            ResultSet rs = preparedStatement.executeQuery();
-
-            while (rs.next()) {
-                id = rs.getInt("Room_ID");
-                break;
-            }
-            System.out.println("NIHAOMA3  " + id);
-
-        } catch (SQLException e) {
-            System.out.println(e.getMessage());
-        }
-
-        if (id == 0) {
-            return false;
-        } else
-            return true;
-    }
-
-
-    /**
      * List out all available room
      *
      * @param School_ID
@@ -905,8 +852,9 @@ public class DatabaseManager {
             ResultSet rs = preparedStatement.executeQuery();
             String input = getBookedRoomDate(User_ID, Booking_ID);
             System.out.println(input);
+            System.out.println(checkBook(rs.getInt("Room_ID"), input));
             while (rs.next()) {
-                if (checkBookedRoomList(rs.getInt("Room_ID"), input)) {
+                if (checkBook(rs.getInt("Room_ID"), input)) {
                     book = " <book>";
                     book2 = "<book>: There might have some time which is unavailable, due to someone has booked" +
                             "this room.\n\n";
@@ -920,8 +868,10 @@ public class DatabaseManager {
                         "Reply " + rs.getInt("Room_ID") + ":\n" +
                                 "Room Name: " + rs.getString("Room_Name") + book + "\n" +
                                 "Maximum Capacity: " + rs.getString("Maximum_Capacity") + "\n" +
-                                "Type: " + rs.getString("Room_Type") + "\n\n" + book2;
+                                "Type: " + rs.getString("Room_Type") + "\n\n";
             }
+
+            roomList += book2;
 
 
         } catch (SQLException e) {
@@ -1146,6 +1096,30 @@ public class DatabaseManager {
         } catch (SQLException e) {
             System.out.println(e.getMessage());
         }
+    }
+
+    public boolean checkBook(Integer User_ID) {
+        Integer check_ID = 0;
+        String q = "SELECT Booking_ID FROM Booking INNER JOIN Users ON Users.User_ID = Booking.User_ID WHERE Booking.User_ID = ?";
+
+        try (Connection conn = this.connect()) {
+            PreparedStatement preparedStatement = conn.prepareStatement(q);
+            preparedStatement.setInt(1, User_ID);
+
+            ResultSet rs = preparedStatement.executeQuery();
+            while (rs.next()) {
+                check_ID = rs.getInt("Booking_ID");
+                break;
+            }
+
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+
+        if (check_ID == 0) {
+            return false;
+        } else
+            return true;
     }
 
 }

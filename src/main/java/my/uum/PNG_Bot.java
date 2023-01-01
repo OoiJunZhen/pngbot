@@ -927,11 +927,19 @@ public class PNG_Bot extends TelegramLongPollingBot {
                                 inlineKeyboardButton3.setCallbackData("Login:CancelBook");
                                 inlineKeyboardButton4.setCallbackData("Login:EditProfile");
                                 inlineKeyboardButtonList1.add(inlineKeyboardButton1);
-                                inlineKeyboardButtonList2.add(inlineKeyboardButton2);
-                                inlineKeyboardButtonList2.add(inlineKeyboardButton3);
+
+                                if (databaseManager.checkBook(userID)) {
+                                    //if user have booking{
+                                    inlineKeyboardButtonList2.add(inlineKeyboardButton2);
+                                    inlineKeyboardButtonList2.add(inlineKeyboardButton3);
+                                }
+
+
                                 inlineKeyboardButtonList3.add(inlineKeyboardButton4);
                                 inlineButtons.add(inlineKeyboardButtonList1);
-                                inlineButtons.add(inlineKeyboardButtonList2);
+                                if (databaseManager.checkBook(userID)) {
+                                    inlineButtons.add(inlineKeyboardButtonList2);
+                                }
                                 inlineButtons.add(inlineKeyboardButtonList3);
                                 inlineKeyboardMarkup.setKeyboard(inlineButtons);
                                 sendMessage.setReplyMarkup(inlineKeyboardMarkup);
@@ -1248,33 +1256,6 @@ public class PNG_Bot extends TelegramLongPollingBot {
                                         inlineKeyboardMarkup2.setKeyboard(inlineButtons2);
                                         sendMessage.setReplyMarkup(inlineKeyboardMarkup2);
 
-//                                        String list3 = databaseManager.getRoomDetail(bookingMap.get(message.getChatId()).getRoomID());
-//                                        list3 += "\nNew Booking Start Time:" + bookingMap.get(message.getChatId()).getStartDate();
-//                                        list3 += "\nNew Booking End Time:" + bookingMap.get(message.getChatId()).getEndDate();
-//
-//                                        sendMessage = new SendMessage();
-//                                        sendMessage.setChatId(message.getChatId());
-//                                        sendMessage.setText(list3);
-//
-//                                        //Inline Keyboard Button
-//                                        InlineKeyboardMarkup inlineKeyboardMarkup = new InlineKeyboardMarkup();
-//                                        List<List<InlineKeyboardButton>> inlineButtons = new ArrayList<>();
-//                                        List<InlineKeyboardButton> inlineKeyboardButtonList1 = new ArrayList<>();
-//                                        List<InlineKeyboardButton> inlineKeyboardButtonList2 = new ArrayList<>();
-//                                        InlineKeyboardButton inlineKeyboardButton1 = new InlineKeyboardButton();
-//                                        InlineKeyboardButton inlineKeyboardButton2 = new InlineKeyboardButton();
-//                                        inlineKeyboardButton1.setText("Yes");
-//                                        inlineKeyboardButton2.setText("No, I want to change ");
-//                                        inlineKeyboardButton1.setCallbackData("Login:EditBook_Location_Update2");
-//                                        inlineKeyboardButton2.setCallbackData("Login:EditBook_Location");
-//                                        inlineKeyboardButtonList1.add(inlineKeyboardButton1);
-//                                        inlineKeyboardButtonList2.add(inlineKeyboardButton2);
-//                                        inlineButtons.add(inlineKeyboardButtonList1);
-//                                        inlineButtons.add(inlineKeyboardButtonList2);
-//                                        inlineKeyboardMarkup.setKeyboard(inlineButtons);
-//                                        sendMessage.setReplyMarkup(inlineKeyboardMarkup);
-
-
                                     } else {
                                         sendMessage = new SendMessage();
                                         sendMessage.setChatId(message.getChatId());
@@ -1574,15 +1555,21 @@ public class PNG_Bot extends TelegramLongPollingBot {
                     inlineKeyboardButton3.setText("Cancel Booking");
                     inlineKeyboardButton4.setText("Edit Profile");
                     inlineKeyboardButton1.setCallbackData("Login:ViewBook");
-                    inlineKeyboardButton2.setCallbackData("Login:EditBook");
-                    inlineKeyboardButton3.setCallbackData("Login:CancelBook");
+
+                    if (databaseManager.checkBook(userID)) {
+                        inlineKeyboardButton2.setCallbackData("Login:EditBook");
+                        inlineKeyboardButton3.setCallbackData("Login:CancelBook");
+                    }
+
                     inlineKeyboardButton4.setCallbackData("Login:EditProfile");
                     inlineKeyboardButtonList1.add(inlineKeyboardButton1);
                     inlineKeyboardButtonList2.add(inlineKeyboardButton2);
                     inlineKeyboardButtonList2.add(inlineKeyboardButton3);
                     inlineKeyboardButtonList3.add(inlineKeyboardButton4);
                     inlineButtons.add(inlineKeyboardButtonList1);
-                    inlineButtons.add(inlineKeyboardButtonList2);
+                    if (databaseManager.checkBook(userID)) {
+                        inlineButtons.add(inlineKeyboardButtonList2);
+                    }
                     inlineButtons.add(inlineKeyboardButtonList3);
                     inlineKeyboardMarkup.setKeyboard(inlineButtons);
                     sendMessage.setReplyMarkup(inlineKeyboardMarkup);
