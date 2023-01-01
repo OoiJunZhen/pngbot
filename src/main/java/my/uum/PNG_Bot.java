@@ -135,7 +135,7 @@ public class PNG_Bot extends TelegramLongPollingBot {
                     String msg10 = "Do you want register to become the school admin";
                     sendMessage = new SendMessage();
                     sendMessage.setText(msg10);
-                    sendMessage.setChatId(message.getChatId().toString());
+                    //sendMessage.setChatId(message.getChatId().toString());
                     sendMessage.setParseMode(ParseMode.MARKDOWN);
                     sendMessage.setChatId(message.getChatId());
 
@@ -205,6 +205,11 @@ public class PNG_Bot extends TelegramLongPollingBot {
                             sendMessage.setChatId(message.getChatId());
                         } else {
                             sendMessage.setText("Please re-enter your name.");
+                        }
+                        try {
+                            execute(sendMessage);
+                        } catch (TelegramApiException e) {
+                            e.printStackTrace();
                         }
                         break;
 
@@ -369,9 +374,10 @@ public class PNG_Bot extends TelegramLongPollingBot {
                         }
 
                         break;
-                }
-            }
 
+                }
+
+            }
 
         } else if (update.hasCallbackQuery()) {
             //buttonData will be categorized such as Book:Conf_Y, same reason as state
@@ -395,21 +401,17 @@ public class PNG_Bot extends TelegramLongPollingBot {
                     sendMessage.setText("I'll be here whenever you need me :)");
                     sendMessage.setChatId(message.getChatId());
 
-
                 }
 
-            }
 
-            else if (data.equals("Register:OfficeNum2")) {
+            } else if (data.equals("Register:OfficeNum2")) {
 
                 userState.put(message.getChatId(), "Register:SchoolName");
                 sendMessage.setText("Excellent! However, since you are going to apply for School Admin, there are additional \n" +
                         "information that you need to enter here. Thank you for your patience!\n +" +
                         "\nWhat is the best Office contact number to reach you?");
                 sendMessage.setChatId(message.getChatId());
-            }
-
-            else if(data.equals("Register:ChangeUserData")){
+            } else if (data.equals("Register:ChangeUserData")) {
                 String UserInfo = "\nName: " + schoolAdminMap.get(message.getChatId()).getName() +
                         "\nIC Number: " + schoolAdminMap.get(message.getChatId()).getICNO() +
                         "\nEmail: " + schoolAdminMap.get(message.getChatId()).getEmail() +
@@ -456,8 +458,7 @@ public class PNG_Bot extends TelegramLongPollingBot {
                 inlineButtons.add(inlineKeyboardButtonList4);
                 inlineKeyboardMarkup.setKeyboard(inlineButtons);
                 sendMessage.setReplyMarkup(inlineKeyboardMarkup);
-            }
-            else if(data.equals("Register:Chan_Name") || data.equals("Register:Chan_IC") ||
+            } else if (data.equals("Register:Chan_Name") || data.equals("Register:Chan_IC") ||
                     data.equals("Register:Chan_Email") || data.equals("Register:Chan_StaffID") ||
                     data.equals("Register:Chan_Mobile")) {
                 if (data.equals("Register:Chan_Name")) {
@@ -485,10 +486,12 @@ public class PNG_Bot extends TelegramLongPollingBot {
 
                 sendMessage.setChatId(message.getChatId());
 
+                try {
+                    execute(sendMessage);
+                } catch (TelegramApiException e) {
+                    e.printStackTrace();
+                }
             }
-
-
-
 
         }
     }
