@@ -920,7 +920,7 @@ public class DatabaseManager {
     }
 
     /**
-     * @Author XinYIN
+     * @Author XinYin
      * @param User_ID
      * @param TelNo
      */
