@@ -185,14 +185,14 @@ public class PNG_Bot extends TelegramLongPollingBot {
                 }
             } else if (!String.valueOf(command[0].charAt(0)).equals("/") && userState.get(message.getChatId()).contains("Register:")) {
                 switch (userState.get(message.getChatId())) {
-                    case "Register:Name":
+                    /*case "Register:Name":
 
                         //set新的State
                         userState.put(message.getChatId(), "Register:IC");
                         sendMessage.setText("Please Enter your NAME as per NRIC number : \nExample: Ang Toon Phng");
                         sendMessage.setChatId(message.getChatId());
 
-                        break;
+                        break;*/
 
                     case "Register:IC":
                         if (inputFormatChecker.NameFormat(message.getText())) {
@@ -395,14 +395,6 @@ public class PNG_Bot extends TelegramLongPollingBot {
                     sendMessage.setText("I'll be here whenever you need me :)");
                     sendMessage.setChatId(message.getChatId());
 
-
-                }
-                else if (data.equals("Register:Register")) {
-
-                    userState.put(message.getChatId(), "Register:OfficeNum1");
-                    sendMessage.setText("Please enter your NRIC number and email as a verification" +
-                            "\n\n Example: 000315070000@example@hotmail.com)");
-                    sendMessage.setChatId(message.getChatId());
 
                 }
 
