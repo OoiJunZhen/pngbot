@@ -129,7 +129,7 @@ public class PNG_Bot extends TelegramLongPollingBot {
                     break;
                  */
                 case "/registerschoolad":
-                    schoolAdminMap.put(message.getChatId(), new SchoolAdmin("", "", "", "", "", "", "",""));// String name, String ICNO, String email, String staffID, String telNo, String schoolName
+                    schoolAdminMap.put(message.getChatId(), new SchoolAdmin("", "", "", "", "", "", "", ""));// String name, String ICNO, String email, String staffID, String telNo, String schoolName
                     RegisterRoomMap.put(message.getChatId(), new Room("", "", "", ""));
                     userState.put(message.getChatId(), "Register");
                     String msg10 = "Do you want register to become the school admin";
@@ -189,7 +189,7 @@ public class PNG_Bot extends TelegramLongPollingBot {
 
                         //set新的State
                         userState.put(message.getChatId(), "Register:IC");
-                        sendMessage.setText("Please Enter your NAME as per NRIC number :");
+                        sendMessage.setText("Please Enter your NAME as per NRIC number : \nExample: Ang Toon Phng");
                         sendMessage.setChatId(message.getChatId());
 
                         break;
@@ -201,8 +201,10 @@ public class PNG_Bot extends TelegramLongPollingBot {
 
                             //set新的State
                             userState.put(message.getChatId(), "Register:Email");
-                            sendMessage.setText("How about your IC number: ");
+                            sendMessage.setText("How about your IC number: \nExample: 001211080731");
                             sendMessage.setChatId(message.getChatId());
+                        } else {
+                            sendMessage.setText("Please re-enter your name.");
                         }
                         break;
 
@@ -240,22 +242,36 @@ public class PNG_Bot extends TelegramLongPollingBot {
                                 userState.put(message.getChatId(), "Register:StaffID");
                                 sendMessage.setText("How about your Email?");
                             }
+                        } else {
+                            sendMessage.setText("Please enter your IC in correct format thank you :).");
+                        }
 
+                        break;
+
+
+                    case "Register:Register:OfficeNum1":
+                        if (inputFormatChecker.EmailFormat(message.getText())) {
+                            schoolAdminMap.get(message.getChatId()).setEmail(message.getText());
+                            userState.put(message.getChatId(), "Register:StaffID");
+                            sendMessage.setText("Hi " + schoolAdminMap.get(message.getChatId()).getName() + "! What is the best Office contact number to reach you?");
+                            sendMessage.setChatId(message.getChatId());
+                        } else {
+                            sendMessage.setText("Please enter your email in correct format, thank you :)");
                         }
 
                         break;
 
                     case "Register:StaffID":
-                    if (inputFormatChecker.EmailFormat(message.getText())) {
-                        schoolAdminMap.get(message.getChatId()).setEmail(message.getText());
-                        userState.put(message.getChatId(), "Register:Mobile");
-                        sendMessage.setText("Almost there! How about your Staff ID?\n\nExample: abc123");
-                        sendMessage.setChatId(message.getChatId());
-                    } else {
-                        sendMessage.setText("Please enter your email in correct format, thank you :)");
-                    }
+                        if (inputFormatChecker.EmailFormat(message.getText())) {
+                            schoolAdminMap.get(message.getChatId()).setEmail(message.getText());
+                            userState.put(message.getChatId(), "Register:Mobile");
+                            sendMessage.setText("Almost there! How about your Staff ID?\n\nExample: abc123");
+                            sendMessage.setChatId(message.getChatId());
+                        } else {
+                            sendMessage.setText("Please enter your email in correct format, thank you :)");
+                        }
 
-                    break;
+                        break;
 
                     case "Register:Mobile":
                         schoolAdminMap.get(message.getChatId()).setStaffID(message.getText());
@@ -278,24 +294,46 @@ public class PNG_Bot extends TelegramLongPollingBot {
                                 //if (userState.get(message.getChatId()).equals("Register:Chan_Name")) {
                                 schoolAdminMap.get(message.getChatId()).setName(message.getText());
                                 msg1 = true;
+                            } else {
+                                sendMessage.setText("Please re-enter your name.\n\n" +
+                                        "Example: Ang Toon Phng");
                             }
-                            else if (userState.get(message.getChatId()).equals("Register:Chan_IC")) {
-                                schoolAdminMap.get(message.getChatId()).setICNO(message.getText());
-                                msg1 = true;
+                        } else if (userState.get(message.getChatId()).equals("Register:Chan_IC")) {
+                            if (inputFormatChecker.checkICFormat(message.getText())) {
 
-                            } else if (userState.get(message.getChatId()).equals("Register:Chan_Email")) {
+                                //check if user exist in the database
+                                if (!databaseManager.checkUser(message.getText())) {
+                                    schoolAdminMap.get(message.getChatId()).setICNO(message.getText());
+                                    msg1 = true;
+                                } else {
+                                    //if IC already used, then it is invalid
+                                    sendMessage.setText("Sorry, this IC had been used by someone else, please enter another IC number\n\n" +
+                                            "Example: 001211080731");
+                                }
+                            } else {
+                                sendMessage.setText("Please re-enter your IC in correct format thank you.\n\n" +
+                                        "Example: 001211080731");
+                            }
+
+                        } else if (userState.get(message.getChatId()).equals("Register:Chan_Email")) {
+                            if (inputFormatChecker.EmailFormat(message.getText())) {
                                 schoolAdminMap.get(message.getChatId()).setEmail(message.getText());
                                 msg1 = true;
-
-                            } else if (userState.get(message.getChatId()).equals("Register:Chan_StaffID")) {
-                                schoolAdminMap.get(message.getChatId()).setStaffID(message.getText());
-                                msg1 = true;
-
-                            } else if (userState.get(message.getChatId()).equals("Register:Chan_Mobile")) {
-                                schoolAdminMap.get(message.getChatId()).setOfficeTelNo(message.getText());
-                                msg1 = true;
+                            } else {
+                                sendMessage.setText("Please re-enter the email in correct format thank you.\n\n" +
+                                        "Example: MyEmail@hotmail.com");
                             }
+
+
+                        } else if (userState.get(message.getChatId()).equals("Register:Chan_StaffID")) {
+                            schoolAdminMap.get(message.getChatId()).setStaffID(message.getText());
+                            msg1 = true;
+
+                        } else if (userState.get(message.getChatId()).equals("Register:Chan_Mobile")) {
+                            schoolAdminMap.get(message.getChatId()).setOfficeTelNo(message.getText());
+                            msg1 = true;
                         }
+
 
                         if (msg1) {
                             String UserInfo = "\nName: " + schoolAdminMap.get(message.getChatId()).getName() +
@@ -331,11 +369,9 @@ public class PNG_Bot extends TelegramLongPollingBot {
                         }
 
                         break;
-
                 }
-
-
             }
+
 
         } else if (update.hasCallbackQuery()) {
             //buttonData will be categorized such as Book:Conf_Y, same reason as state
@@ -428,25 +464,24 @@ public class PNG_Bot extends TelegramLongPollingBot {
                 if (data.equals("Register:Chan_Name")) {
                     userState.put(message.getChatId(), "Register:Chan_Name");
                     sendMessage.setText("What do you want to change the name to?\n\n" +
-                            "Example: ");
+                            "Example: Ang Toon Phng");
                 } else if (data.equals("Register:Chan_IC")) {
                     userState.put(message.getChatId(), "Register:Chan_IC");
                     sendMessage.setText("What do you want to change the IC number to?\n\n" +
-                            "Example: ");
+                            "Example: 001211080731");
                 } else if (data.equals("Register:Chan_Email")) {
                     userState.put(message.getChatId(), "Register:Chan_Email");
                     sendMessage.setText("What do you want to change the email to?\n\n" +
-                            "Example: ");
+                            "Example: MyEmail@hotmail.com");
 
                 } else if (data.equals("Register:Chan_StaffID")) {
                     userState.put(message.getChatId(), "Register:Chan_StaffID");
-                    sendMessage.setText("What do you want to change the staff ID to?\n\n" +
-                            "Example: ");
+                    sendMessage.setText("What do you want to change the staff ID to?\n\n");
 
                 } else if (data.equals("Register:Chan_Mobile")) {
                     userState.put(message.getChatId(), "Register:Chan_Mobile");
                     sendMessage.setText("What do you want to change the mobile number to?\n\n" +
-                            "Example: ");
+                            "Example: 0124773579");
                 }
 
                 sendMessage.setChatId(message.getChatId());
