@@ -495,7 +495,7 @@ public class PNG_bot extends TelegramLongPollingBot {
 
                                             //save starting time
                                             bookingMap.get(message.getChatId()).setStartDate(dateTemp);
-                                            sendMessage.setText("When will the booking end?\n\n" +
+                                            sendMessage.setText("When will the booking end? (In 24 hours format)\n\n" +
                                                     "Example: 18:30");
 
                                         } catch (ParseException e) {
@@ -506,7 +506,7 @@ public class PNG_bot extends TelegramLongPollingBot {
                                     } else {
 
                                         sendMessage.setText("Booked time:\n" + databaseManager.bookedTime(bookingMap.get(message.getChatId()).getRoomID(), bookingMap.get(message.getChatId()).getTemp())
-                                                + "Please choose a time that is not booked.");
+                                                + "Please choose a time that is not booked. (In 24 hours format)");
                                     }
                                 } else {
 
@@ -530,12 +530,12 @@ public class PNG_bot extends TelegramLongPollingBot {
 
 
                             } else {
-                                sendMessage.setText("The available booking time is between 8AM to 8PM. Please enter your booking start time.\n\n" +
+                                sendMessage.setText("The available booking time is between 8AM to 8PM. Please enter your booking start time. (In 24 hours format)\n\n" +
                                         "Example: 08:30");
                             }
 
                         } else {
-                            sendMessage.setText("Please enter the time in correct format.\n\n" +
+                            sendMessage.setText("Please enter the time in correct format. (In 24 hours format)\n\n" +
                                     "Example: 08:30");
                         }
 
@@ -1286,11 +1286,11 @@ public class PNG_bot extends TelegramLongPollingBot {
                                 "Example: 27/04/2023");
                     } else if (data.equals("Book:Chan_StartTime")) {
                         userState.put(message.getChatId(), "Book:Chan_StartTime");
-                        sendMessage.setText("When do you want to change your start time to?\n\n" +
+                        sendMessage.setText("When do you want to change your start time to? (In 24 hours format)\n\n" +
                                 "Example: 08:30");
                     } else if (data.equals("Book:Chan_EndTime")) {
                         userState.put(message.getChatId(), "Book:Chan_EndTime");
-                        sendMessage.setText("When do you want to change your end time to?\n\n" +
+                        sendMessage.setText("When do you want to change your end time to? (In 24 hours format)\n\n" +
                                 "Example: 18:30");
                     } else if (data.equals("Book:Chan_Purpose")) {
                         userState.put(message.getChatId(), "Book:Chan_Purpose");
