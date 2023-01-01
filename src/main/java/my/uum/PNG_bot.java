@@ -20,12 +20,12 @@ public class PNG_bot extends TelegramLongPollingBot {
 
     @Override
     public String getBotUsername() {
-        return "xy9908bot";
+        return "PNG_bot";
     }
 
     @Override
     public String getBotToken() {
-        return "5863358572:AAHibpHj6iX6HDLi_xMo9xZvmJak4UYxudQ";
+        return "5813032321:AAFWCPiKtpUVrPa5mTzu6ZhZhXGVP7Va_vc";
     }
 
     /**
