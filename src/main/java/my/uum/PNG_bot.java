@@ -1293,8 +1293,6 @@ public class PNG_bot extends TelegramLongPollingBot {
                         sendMessage.setText("What do you want to change your booking purpose to?\n\n" +
                                 "Example: Club meeting.");
                     }
-
-
                     sendMessage.setChatId(message.getChatId());
                 }
 
@@ -1322,16 +1320,8 @@ public class PNG_bot extends TelegramLongPollingBot {
                         inlineButtons.add(inlineKeyboardButtonList1);
                         inlineKeyboardMarkup.setKeyboard(inlineButtons);
                         sendMessage.setReplyMarkup(inlineKeyboardMarkup);
-                        //打招呼和问user要做什么
-//                    bookDetails += "\n\n" + databaseManager.greetings(usersMap.get(message.getChatId()).getICNO());
-
-//                    //记得在save东西之后换state,可以看Book:IC做example
-//                    userState.put(message.getChatId(),"Book:IC");
-//                    sendMessage.setText("May I have the your NAME (as per NRIC/PASSPORT) please?" +
-//                            "\n\n P.S.:Don't worry, you can edit your information after the information are entered ;)");
                     }else {
                         String list = databaseManager.viewBooked(userID, "");
-//                        list += "This booking id does not exist. Please re-enter the booking id that you wish to delete.\n\nExample reply: 1";
                         sendMessage = new SendMessage();
                         sendMessage.setChatId(message.getChatId());
                         sendMessage.setText(list);
