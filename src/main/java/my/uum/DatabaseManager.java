@@ -159,7 +159,7 @@ public class DatabaseManager {
                 else if(viewOrDelete.equals("view"))
                     roomInfo+="Which room do you want to know more about\nExample Reply: 2";
                 else if(viewOrDelete.equals("delete"))
-                    roomInfo+="Which room do you want to Delete?";
+                    roomInfo+="Which booking do you want to Delete?";
             }
 
         }catch (SQLException e){
@@ -736,6 +736,29 @@ public class DatabaseManager {
             e.printStackTrace();
         }
     }
+    public boolean checkBook(Integer User_ID) {
+        Integer check_ID = 0;
+        String q = "SELECT Booking_ID FROM Booking INNER JOIN Users ON Users.User_ID = Booking.User_ID WHERE Booking.User_ID = ?";
+
+        try (Connection conn = this.connect()) {
+            PreparedStatement preparedStatement = conn.prepareStatement(q);
+            preparedStatement.setInt(1, User_ID);
+
+            ResultSet rs = preparedStatement.executeQuery();
+            while (rs.next()) {
+                check_ID = rs.getInt("Booking_ID");
+                break;
+            }
+
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+
+        if (check_ID == 0) {
+            return false;
+        } else
+            return true;
+    }
 
     /**
      * @Author XinYin
@@ -771,23 +794,25 @@ public class DatabaseManager {
                 String DotW = ForDay.format(convertedEnd);
                 String BookingPurpose = rs.getString("Booking_Purpose");
 
-                if(roomInfo.equals("")){
-                    roomInfo+="You currently have no booked rooms";
-                }else if(viewordetails.equals("viewDetails")){
-                        roomInfo+=
-                                "Room Name: " + rs.getString("Room_Name") + "\n" +
-                                        "Booking Date: " + date +
-                                        "\nBooking Start Time: " + startTime +
-                                        "\nBooking End Time: " + endTime +
-                                        "\nDotW: " + DotW + "\n" +
-                                        "Booking Purpose: " + BookingPurpose + "\n\n";
-                    } else if (viewordetails.equals("view")) {
-                        roomInfo+=
-                                "Room Name: " + rs.getString("Room_Name") + "\n" +
-                                        "Booking Date: " + date +
-                                        "\nBooking Start Time: " + startTime + "\n" +
-                                        "Booking End Time: " + endTime + "\n\n";
-                    }
+                if(viewordetails.equals("viewDetails")){
+                    roomInfo+=
+                            "Room Name: " + rs.getString("Room_Name") + "\n" +
+                                    "Booking Date: " + date +
+                                    "\nBooking Start Time: " + startTime +
+                                    "\nBooking End Time: " + endTime +
+                                    "\nDotW: " + DotW + "\n" +
+                                    "Booking Purpose: " + BookingPurpose + "\n\n";
+                } else if (viewordetails.equals("view")) {
+                    roomInfo+=
+                            "Room Name: " + rs.getString("Room_Name") + "\n" +
+                                    "Booking Date: " + date +
+                                    "\nBooking Start Time: " + startTime + "\n" +
+                                    "Booking End Time: " + endTime + "\n\n";
+                }
+
+            }
+            if(roomInfo.equals("")){
+                roomInfo+="You currently have no booked rooms";
             }
         }catch (SQLException e){
             System.out.println(e.getMessage());       }

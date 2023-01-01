@@ -448,7 +448,7 @@ public class PNG_bot extends TelegramLongPollingBot {
                                     bookingMap.get(message.getChatId()).setTemp(message.getText());
 
                                     //if that day, the room got booking
-                                    if (databaseManager.checkBook(bookingMap.get(message.getChatId()).getRoomID(), bookingMap.get(message.getChatId()).getTemp())){
+                                    if (databaseManager.checkBook(bookingMap.get(message.getChatId()).getRoomID(), bookingMap.get(message.getChatId()).getTemp())) {
                                         text += "Booked time:\n";
                                         //display booked Time
                                         text += databaseManager.bookedTime(bookingMap.get(message.getChatId()).getRoomID(), message.getText());
@@ -482,7 +482,7 @@ public class PNG_bot extends TelegramLongPollingBot {
                             if (inputFormatChecker.timeOpen(message.getText())) {
 
                                 //if that day got booking
-                                if(databaseManager.checkBook(bookingMap.get(message.getChatId()).getRoomID(),bookingMap.get(message.getChatId()).getTemp())){
+                                if (databaseManager.checkBook(bookingMap.get(message.getChatId()).getRoomID(), bookingMap.get(message.getChatId()).getTemp())) {
                                     System.out.println("this date got time booked in this room");
 
                                     //if the time chosen does not contradict with other booked time
@@ -508,7 +508,7 @@ public class PNG_bot extends TelegramLongPollingBot {
                                         sendMessage.setText("Booked time:\n" + databaseManager.bookedTime(bookingMap.get(message.getChatId()).getRoomID(), bookingMap.get(message.getChatId()).getTemp())
                                                 + "Please choose a time that is not booked.");
                                     }
-                                }else{
+                                } else {
 
                                     SimpleDateFormat combine = new SimpleDateFormat("dd/MM/yyyy HH:mm");
                                     try {
@@ -527,7 +527,6 @@ public class PNG_bot extends TelegramLongPollingBot {
                                     }
 
                                 }
-
 
 
                             } else {
@@ -927,11 +926,16 @@ public class PNG_bot extends TelegramLongPollingBot {
                                 inlineKeyboardButton3.setCallbackData("Login:CancelBook");
                                 inlineKeyboardButton4.setCallbackData("Login:EditProfile");
                                 inlineKeyboardButtonList1.add(inlineKeyboardButton1);
-                                inlineKeyboardButtonList2.add(inlineKeyboardButton2);
-                                inlineKeyboardButtonList2.add(inlineKeyboardButton3);
+                                if (databaseManager.checkBook(userID)) {
+                                    //if user have booking{
+                                    inlineKeyboardButtonList2.add(inlineKeyboardButton2);
+                                    inlineKeyboardButtonList2.add(inlineKeyboardButton3);
+                                }
                                 inlineKeyboardButtonList3.add(inlineKeyboardButton4);
                                 inlineButtons.add(inlineKeyboardButtonList1);
-                                inlineButtons.add(inlineKeyboardButtonList2);
+                                if (databaseManager.checkBook(userID)) {
+                                    inlineButtons.add(inlineKeyboardButtonList2);
+                                }
                                 inlineButtons.add(inlineKeyboardButtonList3);
                                 inlineKeyboardMarkup.setKeyboard(inlineButtons);
                                 sendMessage.setReplyMarkup(inlineKeyboardMarkup);
@@ -1069,8 +1073,7 @@ public class PNG_bot extends TelegramLongPollingBot {
                                 inlineButtons.add(inlineKeyboardButtonList2);
                                 inlineKeyboardMarkup.setKeyboard(inlineButtons);
                                 sendMessage.setReplyMarkup(inlineKeyboardMarkup);
-                            } else {
-
+                            }else {
                                 String list = databaseManager.viewBookedList(userID, "start");
                                 list += "This booking id does not exist. Please re-enter the booking id that you wish to delete.\n\nExample reply: 1";
                                 sendMessage = new SendMessage();
@@ -1358,11 +1361,16 @@ public class PNG_bot extends TelegramLongPollingBot {
                     inlineKeyboardButton3.setCallbackData("Login:CancelBook");
                     inlineKeyboardButton4.setCallbackData("Login:EditProfile");
                     inlineKeyboardButtonList1.add(inlineKeyboardButton1);
-                    inlineKeyboardButtonList2.add(inlineKeyboardButton2);
-                    inlineKeyboardButtonList2.add(inlineKeyboardButton3);
+                    if (databaseManager.checkBook(userID)) {
+                        //if user have booking{
+                        inlineKeyboardButtonList2.add(inlineKeyboardButton2);
+                        inlineKeyboardButtonList2.add(inlineKeyboardButton3);
+                    }
                     inlineKeyboardButtonList3.add(inlineKeyboardButton4);
                     inlineButtons.add(inlineKeyboardButtonList1);
-                    inlineButtons.add(inlineKeyboardButtonList2);
+                    if (databaseManager.checkBook(userID)) {
+                        inlineButtons.add(inlineKeyboardButtonList2);
+                    }
                     inlineButtons.add(inlineKeyboardButtonList3);
                     inlineKeyboardMarkup.setKeyboard(inlineButtons);
                     sendMessage.setReplyMarkup(inlineKeyboardMarkup);
