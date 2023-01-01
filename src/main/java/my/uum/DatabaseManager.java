@@ -111,6 +111,7 @@ public class DatabaseManager {
     }
 
     /**
+     * @Author Ang Toon Ph'ng
      * This method is to loop and display a list of booked rooms made by the user
      * @param User_ID User's ID
      * @param viewOrDelete Determine whether user want to view or delete the booking list, the output will be altered slightly based on the String
@@ -169,6 +170,7 @@ public class DatabaseManager {
 
 
     /**
+     * @Author Ang Toon Ph'ng
      * This method is for the bot to greet User with their name in it, it will ask user what they want to do as well
      * @param ICNO User's Identification Number for searching purposes
      * @return Return the greeting message
@@ -200,6 +202,7 @@ public class DatabaseManager {
     }
 
     /**
+     * @Author Ang Toon Ph'ng
      * This method will display User's Info Including Name, Identification Number, and Staff ID
      * @param ICNO User's Identification Number
      * @return Return User's Info
@@ -238,6 +241,7 @@ public class DatabaseManager {
     }
 
     /**
+     * @Author Ang Toon Ph'ng
      * This method will check whether user exist in the database based on IC inserted
      * @param ICNO User's Identification Number
      * @return return True if the user is successfully found and vise versa
@@ -270,6 +274,7 @@ public class DatabaseManager {
     }
 
     /**
+     * @Author Ang Toon Ph'ng
      * Save user into the database
      * @param Name
      * @param ICNO
@@ -302,6 +307,7 @@ public class DatabaseManager {
     }
 
     /**
+     * @Author Ang Toon Ph'ng
      * Display a list of schools
      * @return school list
      */
@@ -334,6 +340,7 @@ public class DatabaseManager {
     }
 
     /**
+     * @Author Ang Toon Ph'ng
      *Check whether the school id inputted by user exist in database
      * @param id
      * @return
@@ -380,6 +387,7 @@ public class DatabaseManager {
     }
 
     /**
+     * @Author Ang Toon Ph'ng
      * This method will display all rooms from the Room table
      * @return room list
      */
@@ -407,6 +415,7 @@ public class DatabaseManager {
     }
 
     /**
+     * @Author Ang Toon Ph'ng
      * This method will display room's details based on the Room ID
      * @param Room_ID Room ID
      * @return Room's Details
@@ -441,6 +450,7 @@ public class DatabaseManager {
     }
 
     /**
+     * @Author Ang Toon Ph'ng
      * Check whether the room id inputted by user exist in database
      * @param input
      * @param School_ID
@@ -488,6 +498,7 @@ public class DatabaseManager {
     }
 
     /**
+     * @Author Ang Toon Ph'ng
      * check whether the there are people who book this room during the day/date
      * @param Room_ID Room ID
      * @param inputDate the day
@@ -544,6 +555,7 @@ public class DatabaseManager {
     }
 
     /**
+     * @Author Ang Toon Ph'ng
      * List out booked time in a room
      * @param Room_ID
      * @param input date
@@ -612,6 +624,7 @@ public class DatabaseManager {
     }
 
     /**
+     * @Author Ang Toon Ph'ng
      * Check whether the time contradicted with booked time. If yes, return true. If no, return false
      * @param Room_ID
      * @param Date
@@ -689,6 +702,7 @@ public class DatabaseManager {
     }
 
     /**
+     * @Author Ang Toon Ph'ng
      * Get room name based on room ID
      * @param Room_ID
      * @return
