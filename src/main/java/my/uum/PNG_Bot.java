@@ -387,14 +387,21 @@ public class PNG_Bot extends TelegramLongPollingBot {
             if (buttonData[0].equals("Register")) {
                 if (data.equals("Register:Register_Y")) {
 
+                    userState.put(message.getChatId(), "Register:IC");
+                    sendMessage.setText("Please Enter your NAME as per NRIC number : \nExample: Ang Toon Phng");
+                    sendMessage.setChatId(message.getChatId());
+
+                } else if (data.equals("Register:Register_N")) {
+                    sendMessage.setText("I'll be here whenever you need me :)");
+                    sendMessage.setChatId(message.getChatId());
+
+
+                }
+                else if (data.equals("Register:Register")) {
+
                     userState.put(message.getChatId(), "Register:OfficeNum1");
                     sendMessage.setText("Please enter your NRIC number and email as a verification" +
                             "\n\n Example: 000315070000@example@hotmail.com)");
-                    sendMessage.setChatId(message.getChatId());
-
-                } else if (data.equals("Register:IC")) {
-                    userState.put(message.getChatId(), "Register:Email");
-                    sendMessage.setText("This IC has saved into the system, please re-enter your IC again");
                     sendMessage.setChatId(message.getChatId());
 
                 }
