@@ -298,7 +298,7 @@ public class DatabaseManager {
             ResultSet rs = preparedStatement.executeQuery();
             while(rs.next()){
                 list+= "Reply " + rs.getInt("School_ID") +": "+"\n"+
-                                "School Name: " + rs.getString("School_Name") + "\n\n ";
+                        "School Name: " + rs.getString("School_Name") + "\n\n ";
 
             }
 
