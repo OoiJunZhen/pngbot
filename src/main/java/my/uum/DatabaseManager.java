@@ -686,7 +686,7 @@ public class DatabaseManager {
                     java.util.Date convertedStart = new java.util.Date(startTime.getTime());
                     java.util.Date convertedEnd = new java.util.Date(endTime.getTime());
 
-                    if(dateTemp.before(convertedEnd) && dateTemp.after(convertedStart)){
+                    if((dateTemp.before(convertedEnd) && dateTemp.after(convertedStart)) || dateTemp.equals(convertedEnd) || dateTemp.equals(convertedStart)){
                         return true;
                     }
                 }
