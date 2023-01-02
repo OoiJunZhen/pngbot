@@ -415,6 +415,42 @@ public class DatabaseManager {
     }
 
     /**
+     * This method will display all rooms from room table while indicating which room is booked on that day
+     * @param School_ID
+     * @param Date
+     * @return
+     */
+    public String getRoomListwDate(Integer School_ID, String Date){
+        String roomList = " ";
+
+
+        String q = "SELECT Room_ID, Room_Name, Maximum_Capacity, Room_Type FROM Room WHERE School_ID=?";
+
+        try(Connection conn = this.connect()){
+            PreparedStatement preparedStatement = conn.prepareStatement(q);
+
+            preparedStatement.setInt(1,School_ID);
+            ResultSet rs = preparedStatement.executeQuery();
+            while(rs.next()){
+                roomList+=
+                        "Reply " + rs.getInt("Room_ID") + ":\n" +
+                                "Room Name: " + rs.getString("Room_Name");
+                if(checkBook(rs.getInt("Room_ID"), Date)){
+                    roomList+= " <book>\n";
+                }else{
+                    roomList+= "\n";
+                }
+
+                roomList+= "Maximum Capacity: " + rs.getString("Maximum_Capacity") + "\n" +
+                                "Type: " + rs.getString("Room_Type") + "\n\n";
+            }
+
+        }catch (SQLException e){
+            System.out.println(e.getMessage());
+        }
+        return roomList;
+    }
+    /**
      * @Author Ang Toon Ph'ng
      * This method will display room's details based on the Room ID
      * @param Room_ID Room ID
@@ -839,6 +875,7 @@ public class DatabaseManager {
     }
 
     /**
+     * Check whether this booking exist in the database
      * @Author Ang Toon Ph'ng
      * @param User_ID
      * @return
