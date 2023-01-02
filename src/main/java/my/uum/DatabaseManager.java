@@ -761,6 +761,7 @@ public class DatabaseManager {
     }
 
     /**
+     * view their booked room and view details of booked room, show no
      * @Author XinYin
      * @param User_ID
      * @param viewordetails
@@ -820,6 +821,7 @@ public class DatabaseManager {
     }
 
     /**
+     * view user profile
      * @Author XinYin
      * @param User_ID
      * @param vieworedit
@@ -866,6 +868,7 @@ public class DatabaseManager {
     }
 
     /**
+     * edit profile name
      * @Author XinYin
      * @param User_ID
      * @param Name
@@ -887,6 +890,7 @@ public class DatabaseManager {
     }
 
     /**
+     * edit profile ICNO
      * @Author XinYin
      * @param User_ID
      * @param ICNO
@@ -907,6 +911,7 @@ public class DatabaseManager {
     }
 
     /**
+     * edit profile email
      * @Author XinYin
      * @param User_ID
      * @param Email
@@ -926,6 +931,7 @@ public class DatabaseManager {
     }
 
     /**
+     * edit profile of staff ID
      * @Author XinYin
      * @param User_ID
      * @param SatffID
@@ -945,6 +951,7 @@ public class DatabaseManager {
     }
 
     /**
+     * edit profile of mobile number
      * @Author XinYin
      * @param User_ID
      * @param TelNo
@@ -964,6 +971,7 @@ public class DatabaseManager {
     }
 
     /**
+     * delete booking room
      * @Author XinYin
      * @param User_ID
      * @param Booking_ID
@@ -988,6 +996,7 @@ public class DatabaseManager {
     }
 
     /**
+     * get book list for cancel booking
      * @Author XinYIn
      * @param Booking_ID
      * @return
@@ -1036,6 +1045,7 @@ public class DatabaseManager {
     }
 
     /**
+     * check book id is in correct format
      * @Author XinYin
      * @param input
      * @return
@@ -1079,12 +1089,12 @@ public class DatabaseManager {
     }
 
     /**
+     * check userId
      * @Author XinYin
      * @param User_ID
-     * @param input
      * @return
      */
-    public boolean checkUserId(Integer User_ID, String input) {
+    public boolean checkUserId(Integer User_ID) {
         String q = "SELECT Booking_ID FROM Booking INNER JOIN Users ON Users.User_ID = Booking.User_ID WHERE Booking.User_ID = ? AND Booking.Booking_ID=?";
 
         try (Connection conn = this.connect()) {

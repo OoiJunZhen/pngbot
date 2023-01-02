@@ -1048,7 +1048,6 @@ public class PNG_bot extends TelegramLongPollingBot {
                             if (databaseManager.checkBookId(userID, message.getText())) {
                                 Date date = new Date();
                                 bookingMap.put(message.getChatId(), new Booking(date, date, date, 0, "", "", 0, databaseManager.getUserID(usersMap.get(message.getChatId()).getICNO())));
-//                                String del = databaseManager.getBookList(bookingMap.get(message.getChatId()).getBookID());
                                 bookingMap.get(message.getChatId()).setBookID(Integer.parseInt(message.getText()));
                                 String del = databaseManager.getBookList(bookingMap.get(message.getChatId()).getBookID());
                                 sendMessage = new SendMessage();
@@ -1305,7 +1304,7 @@ public class PNG_bot extends TelegramLongPollingBot {
             else if(buttonData[0].equals("Login")){
                 if(data.equals("Login:ViewBook")){
                     int userID = databaseManager.getUserID(usersMap.get(message.getChatId()).getICNO());
-                    if (databaseManager.checkUserId(userID, message.getText())) {
+                    if (databaseManager.checkUserId(userID)) {
                         userID = databaseManager.getUserID(usersMap.get(message.getChatId()).getICNO());
                         String bookDetails = databaseManager.viewBooked(userID, "viewDetails");
                         sendMessage.setText(bookDetails);
