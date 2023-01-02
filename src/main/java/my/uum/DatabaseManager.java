@@ -920,7 +920,7 @@ public class DatabaseManager {
 
             while(rs.next()){
                 String name = rs.getString("Name");
-                String ic = rs.getString("User_ID");
+                String ic = rs.getString("User_IC");
                 String email = rs.getString("Email");
                 String staffId = rs.getString("Staff_ID");
                 String telNo = rs.getString("Mobile_TelNo");
@@ -1145,12 +1145,11 @@ public class DatabaseManager {
     /**
      * @Author XinYin
      * @param User_IC
-     * @param input
      * @return
      */
-    public boolean checkUserIC(String User_IC, String input) {
+    public boolean checkUserIC(String User_IC) {
         Integer checkNum = 0;
-        String q = "SELECT Booking_ID FROM Booking INNER JOIN Users ON Users.User_IC = Booking.User_IC WHERE Booking.User_IC = ? AND Booking.Booking_ID=?";
+        String q = "SELECT Booking_ID FROM Booking INNER JOIN Users ON Users.User_IC = Booking.User_IC WHERE Booking.User_IC = ?";
 
         try (Connection conn = this.connect()) {
             PreparedStatement preparedStatement = conn.prepareStatement(q);
