@@ -65,6 +65,8 @@
 ![image](https://user-images.githubusercontent.com/80701138/201608618-2f3ac5da-066d-4f5e-929e-6afe0b533b66.png)
 
 ## Database Design
+![image](https://user-images.githubusercontent.com/116187610/210204856-6a791699-8bec-41f7-b0cb-6332bd5e5394.png)
+
 ## Youtube Presentation
 ## References (Not less than 20)
 <ol>
