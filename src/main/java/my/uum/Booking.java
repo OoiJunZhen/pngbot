@@ -11,12 +11,12 @@ public class Booking {
     private String bookPurpose;
     private String temp;
     private Integer roomID;
-    private Integer userID;
+    private String userIC;
 
 
 
 
-    public Booking(Date startDate, Date endDate, Date timeStamp, Integer bookID, String bookPurpose, String temp, Integer roomID, Integer userID){
+    public Booking(Date startDate, Date endDate, Date timeStamp, Integer bookID, String bookPurpose, String temp, Integer roomID,String userIC){
         this.startDate = startDate;
         this.endDate = endDate;
         this.timeStamp = timeStamp;
@@ -24,7 +24,7 @@ public class Booking {
         this.bookPurpose = bookPurpose;
         this.temp = temp;
         this.roomID = roomID;
-        this.userID = userID;
+        this.userIC = userIC;
     }
 
     public Date getStartDate() {
@@ -75,20 +75,20 @@ public class Booking {
         return endDate;
     }
 
-    public Integer getUserID() {
-        return userID;
-    }
-
-    public void setUserID(Integer userID) {
-        this.userID = userID;
-    }
-
     public Integer getRoomID() {
         return roomID;
     }
 
     public void setRoomID(Integer roomID) {
         this.roomID = roomID;
+    }
+
+    public String getUserIC() {
+        return userIC;
+    }
+
+    public void setUserIC(String userIC) {
+        this.userIC = userIC;
     }
 
 }

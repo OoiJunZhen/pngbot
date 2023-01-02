@@ -38,9 +38,9 @@ public class DatabaseManager {
      * @return return True if the user is found and vise versa
      */
     public boolean passwordCheck(String ICNO, String Email){
-        Integer User_ID = 0;
+        String Name = "";
 
-        String q = "SELECT User_ID FROM Users WHERE ICNO=? AND Email=?";
+        String q = "SELECT Name FROM Users WHERE ICNO=? AND Email=?";
 
 
         try(Connection conn = this.connect()){
@@ -51,7 +51,7 @@ public class DatabaseManager {
             ResultSet rs = preparedStatement.executeQuery();
 
             while(rs.next()){
-                User_ID = rs.getInt("User_ID");
+                Name = rs.getString("Name");
                 break;
             }
 
@@ -59,41 +59,17 @@ public class DatabaseManager {
             System.out.println(e.getMessage());
         }
 
-        if(User_ID == 0){
+        if(Name == ""){
             return false;
         }
         else
             return true;
     }
 
-    /**
-     * This method will search and return user ID  from the database based on the Identification Number inserted
-     *
-     * @param ICNO User's Identification Number
-     * @return Return UserID
-     */
-    public Integer getUserID(String ICNO){
-        Integer User_ID = 0;
-        String q = "SELECT User_ID FROM Users WHERE ICNO=?";
 
-
-        try(Connection conn = this.connect()){
-            PreparedStatement preparedStatement = conn.prepareStatement(q);
-
-            preparedStatement.setString(1,ICNO);
-            ResultSet rs = preparedStatement.executeQuery();
-            while(rs.next()){
-                return User_ID = rs.getInt("User_ID");
-            }
-
-        }catch (SQLException e){
-            System.out.println(e.getMessage());       }
-        return User_ID;
-    }
-
-    public Integer getUserId(String Email){
-        Integer User_ID = 0;
-        String q = "SELECT User_ID FROM Users WHERE Email=?";
+    public String getUserIC(String Email){
+        String User_IC = "";
+        String q = "SELECT User_IC FROM Users WHERE Email=?";
 
 
         try(Connection conn = this.connect()){
@@ -102,31 +78,31 @@ public class DatabaseManager {
             preparedStatement.setString(1,Email);
             ResultSet rs = preparedStatement.executeQuery();
             while(rs.next()){
-                return User_ID = rs.getInt("User_ID");
+                return User_IC = rs.getString("User_IC");
             }
 
         }catch (SQLException e){
             System.out.println(e.getMessage());       }
-        return User_ID;
+        return User_IC;
     }
 
     /**
      * @Author Ang Toon Ph'ng
      * This method is to loop and display a list of booked rooms made by the user
-     * @param User_ID User's ID
+     * @param User_IC User's IC
      * @param viewOrDelete Determine whether user want to view or delete the booking list, the output will be altered slightly based on the String
      * @return return list of booked rooms
      */
-    public String viewBookedList (Integer User_ID, String viewOrDelete){
+    public String viewBookedList (String User_IC, String viewOrDelete){
         String roomInfo = "";
         String q = "SELECT Room_Name,Booking_ID,Book_StartTime,Book_EndTime FROM Room INNER JOIN Booking ON" +
-                " Booking.Room_ID=Room.Room_ID AND Booking.User_ID=?";
+                " Booking.Room_ID=Room.Room_ID AND Booking.User_IC=?";
 
 
         try(Connection conn = this.connect()){
             PreparedStatement preparedStatement = conn.prepareStatement(q);
 
-            preparedStatement.setInt(1, User_ID);
+            preparedStatement.setString(1, User_IC);
             ResultSet rs = preparedStatement.executeQuery();
 
             while(rs.next()){
@@ -247,8 +223,8 @@ public class DatabaseManager {
      * @return return True if the user is successfully found and vise versa
      */
     public boolean checkUser(String ICNO){
-        Integer User_ID = 0;
-        String q = "SELECT User_ID FROM Users WHERE ICNO=?";
+        String Name = "";
+        String q = "SELECT Name FROM Users WHERE ICNO=?";
 
 
         try(Connection conn = this.connect()){
@@ -257,7 +233,7 @@ public class DatabaseManager {
             preparedStatement.setString(1,ICNO);
             ResultSet rs = preparedStatement.executeQuery();
             while(rs.next()){
-                User_ID = rs.getInt("User_ID");
+                Name = rs.getString("Name");
                 break;
             }
 
@@ -266,7 +242,7 @@ public class DatabaseManager {
         }
 
 
-        if(User_ID == 0){
+        if(Name == ""){
             return false;
         }
         else
@@ -811,13 +787,13 @@ public class DatabaseManager {
      * @param Book_StartTime
      * @param Book_EndTime
      * @param Room_ID
-     * @param User_ID
+     * @param User_IC
      * @param Timestamp
      */
 
-    public void insertBook(String Booking_Purpose, String Book_StartTime, String Book_EndTime, Integer Room_ID, Integer User_ID, String Timestamp){
+    public void insertBook(String Booking_Purpose, String Book_StartTime, String Book_EndTime, Integer Room_ID, String User_IC, String Timestamp){
         //set dynamic query
-        String q = "INSERT INTO Booking (Booking_Purpose, Room_ID, Book_StartTime, Book_EndTime, User_ID, Timestamp)VALUES (?,?,?,?,?,?)";
+        String q = "INSERT INTO Booking (Booking_Purpose, Room_ID, Book_StartTime, Book_EndTime, User_IC, Timestamp)VALUES (?,?,?,?,?,?)";
 
         try{
             //Get the preparedStatement Object
@@ -828,7 +804,7 @@ public class DatabaseManager {
             preparedStatement.setInt(2,Room_ID);
             preparedStatement.setString(3,Book_StartTime);
             preparedStatement.setString(4,Book_EndTime);
-            preparedStatement.setInt(5,User_ID);
+            preparedStatement.setString(5,User_IC);
             preparedStatement.setString(6, Timestamp);
 
             preparedStatement.executeUpdate();
@@ -840,16 +816,16 @@ public class DatabaseManager {
 
     /**
      * @Author Ang Toon Ph'ng
-     * @param User_ID
+     * @param User_IC
      * @return
      */
-    public boolean checkBook(Integer User_ID) {
+    public boolean checkBook(String User_IC) {
         Integer check_ID = 0;
-        String q = "SELECT Booking_ID FROM Booking INNER JOIN Users ON Users.User_ID = Booking.User_ID WHERE Booking.User_ID = ?";
+        String q = "SELECT Booking_ID FROM Booking INNER JOIN Users ON Users.User_IC = Booking.User_IC WHERE Booking.User_IC = ?";
 
         try (Connection conn = this.connect()) {
             PreparedStatement preparedStatement = conn.prepareStatement(q);
-            preparedStatement.setInt(1, User_ID);
+            preparedStatement.setString(1, User_IC);
 
             ResultSet rs = preparedStatement.executeQuery();
             while (rs.next()) {
@@ -869,19 +845,19 @@ public class DatabaseManager {
 
     /**
      * @Author XinYin
-     * @param User_ID
+     * @param User_IC
      * @param viewordetails
      * @return
      */
-    public String viewBooked (Integer User_ID, String viewordetails){
+    public String viewBooked (String User_IC, String viewordetails){
         String roomInfo = "";
         String q = "SELECT Room_Name,Booking_ID,Book_StartTime,Book_EndTime,Booking_Purpose FROM Room INNER JOIN Booking ON" +
-                " Booking.Room_ID=Room.Room_ID AND Booking.User_ID=?";
+                " Booking.Room_ID=Room.Room_ID AND Booking.User_IC=?";
 
         try(Connection conn = this.connect()){
             PreparedStatement preparedStatement = conn.prepareStatement(q);
 
-            preparedStatement.setInt(1, User_ID);
+            preparedStatement.setString(1, User_IC);
             ResultSet rs = preparedStatement.executeQuery();
 
             while(rs.next()){
@@ -928,18 +904,18 @@ public class DatabaseManager {
 
     /**
      * @Author XinYin
-     * @param User_ID
+     * @param User_IC
      * @param vieworedit
      * @return
      */
-    public String userProfile (Integer User_ID, String vieworedit){
+    public String userProfile (String User_IC, String vieworedit){
         String userInfo = "";
-        String q = "SELECT * FROM Users WHERE User_ID=?";
+        String q = "SELECT * FROM Users WHERE User_IC=?";
 
         try(Connection conn = this.connect()){
             PreparedStatement preparedStatement = conn.prepareStatement(q);
 
-            preparedStatement.setInt(1, User_ID);
+            preparedStatement.setString(1, User_IC);
             ResultSet rs = preparedStatement.executeQuery();
 
             while(rs.next()){
@@ -974,18 +950,18 @@ public class DatabaseManager {
 
     /**
      * @Author XinYin
-     * @param User_ID
+     * @param User_IC
      * @param Name
      */
-    public void editProfileName (Integer User_ID, String Name){
+    public void editProfileName (String User_IC, String Name){
 
-        String q = "UPDATE Users SET Name=? WHERE User_ID=?";
+        String q = "UPDATE Users SET Name=? WHERE User_IC=?";
 
         try(Connection conn = this.connect()){
             PreparedStatement preparedStatement = conn.prepareStatement(q);
 
             preparedStatement.setString(1, Name);
-            preparedStatement.setInt(2, User_ID);
+            preparedStatement.setString(2, User_IC);
             preparedStatement.executeUpdate();
 
 
@@ -995,17 +971,17 @@ public class DatabaseManager {
 
     /**
      * @Author XinYin
-     * @param User_ID
+     * @param User_IC
      * @param ICNO
      */
-    public void editProfileICNO (Integer User_ID, String ICNO){
-        String q = "UPDATE Users SET ICNO=? WHERE User_ID=?";
+    public void editProfileICNO (String User_IC, String ICNO){
+        String q = "UPDATE Users SET ICNO=? WHERE User_IC=?";
 
         try(Connection conn = this.connect()){
             PreparedStatement preparedStatement = conn.prepareStatement(q);
 
             preparedStatement.setString(1, ICNO);
-            preparedStatement.setInt(2, User_ID);
+            preparedStatement.setString(2, User_IC);
             preparedStatement.executeUpdate();
 
 
@@ -1015,17 +991,17 @@ public class DatabaseManager {
 
     /**
      * @Author XinYin
-     * @param User_ID
+     * @param User_IC
      * @param Email
      */
-    public void editProfileEmail (Integer User_ID, String Email){
-        String q = "UPDATE Users SET Email=? WHERE User_ID=?";
+    public void editProfileEmail (String User_IC, String Email){
+        String q = "UPDATE Users SET Email=? WHERE User_IC=?";
 
         try(Connection conn = this.connect()){
             PreparedStatement preparedStatement = conn.prepareStatement(q);
 
             preparedStatement.setString(1, Email);
-            preparedStatement.setInt(2, User_ID);
+            preparedStatement.setString(2, User_IC);
             preparedStatement.executeUpdate();
 
         }catch (SQLException e){
@@ -1034,17 +1010,17 @@ public class DatabaseManager {
 
     /**
      * @Author XinYin
-     * @param User_ID
+     * @param User_IC
      * @param SatffID
      */
-    public void editProfileStaffID (Integer User_ID, String SatffID){
-        String q = "UPDATE Users SET Staff_ID=? WHERE User_ID=?";
+    public void editProfileStaffID (String User_IC, String SatffID){
+        String q = "UPDATE Users SET Staff_ID=? WHERE User_IC=?";
 
         try(Connection conn = this.connect()){
             PreparedStatement preparedStatement = conn.prepareStatement(q);
 
             preparedStatement.setString(1, SatffID);
-            preparedStatement.setInt(2, User_ID);
+            preparedStatement.setString(2, User_IC);
             preparedStatement.executeUpdate();
 
         }catch (SQLException e){
@@ -1053,17 +1029,17 @@ public class DatabaseManager {
 
     /**
      * @Author XinYin
-     * @param User_ID
+     * @param User_IC
      * @param TelNo
      */
-    public void editProfileTelNo (Integer User_ID, String TelNo){
-        String q = "UPDATE Users SET Mobile_TelNo=? WHERE User_ID=?";
+    public void editProfileTelNo (String User_IC, String TelNo){
+        String q = "UPDATE Users SET Mobile_TelNo=? WHERE User_IC=?";
 
         try(Connection conn = this.connect()){
             PreparedStatement preparedStatement = conn.prepareStatement(q);
 
             preparedStatement.setString(1, TelNo);
-            preparedStatement.setInt(2, User_ID);
+            preparedStatement.setString(2, User_IC);
             preparedStatement.executeUpdate();
 
         }catch (SQLException e){
@@ -1072,18 +1048,18 @@ public class DatabaseManager {
 
     /**
      * @Author XinYin
-     * @param User_ID
+     * @param User_IC
      * @param Booking_ID
      * @return
      */
-    public String deleteBook (Integer User_ID, Integer Booking_ID){
+    public String deleteBook (String User_IC, Integer Booking_ID){
         String del="";
-        String q = "DELETE From Booking WHERE User_ID=? AND Booking_ID=?";
+        String q = "DELETE From Booking WHERE User_IC=? AND Booking_ID=?";
 
         try(Connection conn = this.connect()){
             PreparedStatement preparedStatement = conn.prepareStatement(q);
 
-            preparedStatement.setInt(1, User_ID);
+            preparedStatement.setString(1, User_IC);
             preparedStatement.setInt(2, Booking_ID);
             preparedStatement.executeUpdate();
 
@@ -1147,7 +1123,7 @@ public class DatabaseManager {
      * @param input
      * @return
      */
-    public boolean checkBookId(Integer User_ID, String input) {
+    public boolean checkBookId(String User_IC, String input) {
 
         Integer Booking_ID = 0;
         Integer check_ID = 0;
@@ -1162,13 +1138,13 @@ public class DatabaseManager {
             return false;
         }
 
-        String q = "SELECT Booking_ID FROM Booking INNER JOIN Users ON Users.User_ID = Booking.User_ID WHERE Booking.User_ID = ? AND Booking.Booking_ID=?";
+        String q = "SELECT Booking_ID FROM Booking INNER JOIN Users ON Users.User_IC = Booking.User_IC WHERE Booking.User_IC = ? AND Booking.Booking_ID=?";
 
 
         try (Connection conn = this.connect()) {
             PreparedStatement preparedStatement = conn.prepareStatement(q);
 
-            preparedStatement.setInt(1, User_ID);
+            preparedStatement.setString(1, User_IC);
             preparedStatement.setInt(2, Booking_ID);
             ResultSet rs = preparedStatement.executeQuery();
             while (rs.next()) {
@@ -1187,27 +1163,27 @@ public class DatabaseManager {
 
     /**
      * @Author XinYin
-     * @param User_ID
+     * @param User_IC
      * @param input
      * @return
      */
-    public boolean checkUserId(Integer User_ID, String input) {
-        String q = "SELECT Booking_ID FROM Booking INNER JOIN Users ON Users.User_ID = Booking.User_ID WHERE Booking.User_ID = ? AND Booking.Booking_ID=?";
+    public boolean checkUserId(String User_IC, String input) {
+        String q = "SELECT Booking_ID FROM Booking INNER JOIN Users ON Users.User_IC = Booking.User_IC WHERE Booking.User_IC = ? AND Booking.Booking_ID=?";
 
         try (Connection conn = this.connect()) {
             PreparedStatement preparedStatement = conn.prepareStatement(q);
 
-            preparedStatement.setInt(1, User_ID);
+            preparedStatement.setString(1, User_IC);
             ResultSet rs = preparedStatement.executeQuery();
             while (rs.next()) {
-                User_ID = rs.getInt("Booking_ID");
+                User_IC = String.valueOf(rs.getInt("Booking_ID"));
                 break;
             }
         } catch (SQLException e) {
             System.out.println(e.getMessage());
         }
 
-        if (User_ID == 0) {
+        if (User_IC == "") {
             return false;
         } else
             return true;
