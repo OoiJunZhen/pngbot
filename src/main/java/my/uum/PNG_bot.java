@@ -1405,7 +1405,7 @@ public class PNG_bot extends TelegramLongPollingBot {
                     inlineKeyboardButton3.setText("Email");
                     inlineKeyboardButton4.setText("Staff ID");
                     inlineKeyboardButton5.setText("Mobile Number");
-                    inlineKeyboardButton6.setText("No, I had changed my mine");
+                    inlineKeyboardButton6.setText("No, I had changed my mind");
                     inlineKeyboardButton1.setCallbackData("Login:EditProfile_Name");
                     inlineKeyboardButton2.setCallbackData("Login:EditProfile_ICNO");
                     inlineKeyboardButton3.setCallbackData("Login:EditProfile_Email");
