@@ -33,20 +33,20 @@ public class DatabaseManager {
 
     /**
      * This method is to check the user exist in the database based on Identification Number and Email Inputed
-     * @param ICNO Identification Number inputted
+     * @param User_IC Identification Number inputted
      * @param Email Email Inputted
      * @return return True if the user is found and vise versa
      */
-    public boolean passwordCheck(String ICNO, String Email){
+    public boolean passwordCheck(String User_IC, String Email){
         String Name = "";
 
-        String q = "SELECT Name FROM Users WHERE ICNO=? AND Email=?";
+        String q = "SELECT Name FROM Users WHERE User_IC=? AND Email=?";
 
 
         try(Connection conn = this.connect()){
             PreparedStatement preparedStatement = conn.prepareStatement(q);
 
-            preparedStatement.setString(1,ICNO);
+            preparedStatement.setString(1,User_IC);
             preparedStatement.setString(2,Email);
             ResultSet rs = preparedStatement.executeQuery();
 
@@ -148,18 +148,18 @@ public class DatabaseManager {
     /**
      * @Author Ang Toon Ph'ng
      * This method is for the bot to greet User with their name in it, it will ask user what they want to do as well
-     * @param ICNO User's Identification Number for searching purposes
+     * @param User_IC User's Identification Number for searching purposes
      * @return Return the greeting message
      */
-    public String greetings(String ICNO){
+    public String greetings(String User_IC){
         String greeting = "";
 
-        String q="SELECT Name FROM Users WHERE ICNO=?";
+        String q="SELECT Name FROM Users WHERE User_IC=?";
 
         try(Connection conn = this.connect()){
             PreparedStatement preparedStatement = conn.prepareStatement(q);
 
-            preparedStatement.setString(1, ICNO);
+            preparedStatement.setString(1, User_IC);
             ResultSet rs = preparedStatement.executeQuery();
             while(rs.next()){
                 greeting+=
@@ -180,25 +180,25 @@ public class DatabaseManager {
     /**
      * @Author Ang Toon Ph'ng
      * This method will display User's Info Including Name, Identification Number, and Staff ID
-     * @param ICNO User's Identification Number
+     * @param User_IC User's Identification Number
      * @return Return User's Info
      */
-    public String displayUserInfo(String ICNO){
+    public String displayUserInfo(String User_IC){
         String userInfo = "";
 
-        String q = "SELECT Name, ICNO, Staff_ID FROM Users WHERE ICNO=?";
+        String q = "SELECT Name, User_IC, Staff_ID FROM Users WHERE User_IC=?";
 
 
         try(Connection conn = this.connect()){
             PreparedStatement preparedStatement = conn.prepareStatement(q);
 
-            preparedStatement.setString(1, ICNO);
+            preparedStatement.setString(1, User_IC);
             ResultSet rs = preparedStatement.executeQuery();
             while(rs.next()){
                 userInfo+=
                         "Oh! I found out that you had made booking through here before.\n\n"+
                                 "Name: " + rs.getString("Name") + "\n"+
-                                "IC Number: " + rs.getString("ICNO") + "\n" +
+                                "IC Number: " + rs.getString("User_IC") + "\n" +
                                 "Staff ID: " + rs.getString("Staff_ID");
 
                 break;
@@ -219,18 +219,18 @@ public class DatabaseManager {
     /**
      * @Author Ang Toon Ph'ng
      * This method will check whether user exist in the database based on IC inserted
-     * @param ICNO User's Identification Number
+     * @param User_IC User's Identification Number
      * @return return True if the user is successfully found and vise versa
      */
-    public boolean checkUser(String ICNO){
+    public boolean checkUser(String User_IC){
         String Name = "";
-        String q = "SELECT Name FROM Users WHERE ICNO=?";
+        String q = "SELECT Name FROM Users WHERE User_IC=?";
 
 
         try(Connection conn = this.connect()){
             PreparedStatement preparedStatement = conn.prepareStatement(q);
 
-            preparedStatement.setString(1,ICNO);
+            preparedStatement.setString(1,User_IC);
             ResultSet rs = preparedStatement.executeQuery();
             while(rs.next()){
                 Name = rs.getString("Name");
@@ -253,15 +253,15 @@ public class DatabaseManager {
      * @Author Ang Toon Ph'ng
      * Save user into the database
      * @param Name
-     * @param ICNO
+     * @param User_IC
      * @param Email
      * @param Staff_ID
      * @param Mobile_TelNo
      */
-    public  void insertUser(String Name, String ICNO, String Email, String Staff_ID, String Mobile_TelNo){
+    public  void insertUser(String Name, String User_IC, String Email, String Staff_ID, String Mobile_TelNo){
         try{
             //set dynamic query
-            String q = "INSERT INTO Users (Name, ICNO, Email, Staff_ID,Mobile_TelNo)VALUES (?,?,?,?,?)";
+            String q = "INSERT INTO Users (Name, User_IC, Email, Staff_ID,Mobile_TelNo)VALUES (?,?,?,?,?)";
 
 
 
@@ -270,7 +270,7 @@ public class DatabaseManager {
 
             //set the values to query
             preparedStatement.setString(1,Name);
-            preparedStatement.setString(2,ICNO);
+            preparedStatement.setString(2,User_IC);
             preparedStatement.setString(3,Email);
             preparedStatement.setString(4,Staff_ID);
             preparedStatement.setString(5,Mobile_TelNo);
@@ -920,7 +920,7 @@ public class DatabaseManager {
 
             while(rs.next()){
                 String name = rs.getString("Name");
-                String ic = rs.getString("ICNO");
+                String ic = rs.getString("User_ID");
                 String email = rs.getString("Email");
                 String staffId = rs.getString("Staff_ID");
                 String telNo = rs.getString("Mobile_TelNo");
@@ -969,25 +969,6 @@ public class DatabaseManager {
             System.out.println(e.getMessage());       }
     }
 
-    /**
-     * @Author XinYin
-     * @param User_IC
-     * @param ICNO
-     */
-    public void editProfileICNO (String User_IC, String ICNO){
-        String q = "UPDATE Users SET ICNO=? WHERE User_IC=?";
-
-        try(Connection conn = this.connect()){
-            PreparedStatement preparedStatement = conn.prepareStatement(q);
-
-            preparedStatement.setString(1, ICNO);
-            preparedStatement.setString(2, User_IC);
-            preparedStatement.executeUpdate();
-
-
-        }catch (SQLException e){
-            System.out.println(e.getMessage());       }
-    }
 
     /**
      * @Author XinYin
@@ -1167,7 +1148,8 @@ public class DatabaseManager {
      * @param input
      * @return
      */
-    public boolean checkUserId(String User_IC, String input) {
+    public boolean checkUserIC(String User_IC, String input) {
+        Integer checkNum = 0;
         String q = "SELECT Booking_ID FROM Booking INNER JOIN Users ON Users.User_IC = Booking.User_IC WHERE Booking.User_IC = ? AND Booking.Booking_ID=?";
 
         try (Connection conn = this.connect()) {
@@ -1176,14 +1158,14 @@ public class DatabaseManager {
             preparedStatement.setString(1, User_IC);
             ResultSet rs = preparedStatement.executeQuery();
             while (rs.next()) {
-                User_IC = String.valueOf(rs.getInt("Booking_ID"));
+                checkNum = rs.getInt("Booking_ID");
                 break;
             }
         } catch (SQLException e) {
             System.out.println(e.getMessage());
         }
 
-        if (User_IC == "") {
+        if (checkNum == 0) {
             return false;
         } else
             return true;

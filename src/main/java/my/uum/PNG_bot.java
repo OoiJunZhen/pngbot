@@ -951,7 +951,6 @@ public class PNG_bot extends TelegramLongPollingBot {
                         break;
 
                     case "Login:EditProfile_Name":
-                    case "Login:EditProfile_ICNO":
                     case "Login:EditProfile_Email":
                     case "Login:EditProfile_StaffID":
                     case "Login:EditProfile_Mobile":
@@ -967,15 +966,6 @@ public class PNG_bot extends TelegramLongPollingBot {
                                         "Example: Ang Toon Phng");
                             }
 
-                        } else if (userState.get(message.getChatId()).equals("Login:EditProfile_ICNO")) {
-                            if (inputFormatChecker.checkICFormat(message.getText())) {
-                                usersMap.get(message.getChatId()).setICNO(message.getText());
-                                databaseManager.editProfileICNO(usersMap.get(message.getChatId()).getICNO(), usersMap.get(message.getChatId()).getICNO());
-                                editOutput = true;
-                            } else {
-                                sendMessage.setText("Please re-enter your IC in correct format thank you.\n\n" +
-                                        "Example: 001211080731");
-                            }
                         } else if (userState.get(message.getChatId()).equals("Login:EditProfile_Email")) {
                             if (inputFormatChecker.EmailFormat(message.getText())) {
                                 usersMap.get(message.getChatId()).setEmail(message.getText());
@@ -1293,8 +1283,169 @@ public class PNG_bot extends TelegramLongPollingBot {
                 }
 
 
-            } else if (buttonData[0].equals("Login")) {
+            } else if(buttonData[0].equals("Login")){
+                if(data.equals("Login:ViewBook")){
+                    if (databaseManager.checkUserIC(usersMap.get(message.getChatId()).getICNO(), message.getText())) {
 
+                        String bookDetails = databaseManager.viewBooked(usersMap.get(message.getChatId()).getICNO(), "viewDetails");
+                        sendMessage.setText(bookDetails);
+                        sendMessage.setParseMode(ParseMode.MARKDOWN);
+                        sendMessage.setChatId(message.getChatId());
+
+                        //Inline Keyboard Button
+                        InlineKeyboardMarkup inlineKeyboardMarkup = new InlineKeyboardMarkup();
+                        List<List<InlineKeyboardButton>> inlineButtons = new ArrayList<>();
+                        List<InlineKeyboardButton> inlineKeyboardButtonList1 = new ArrayList<>();
+                        InlineKeyboardButton inlineKeyboardButton1 = new InlineKeyboardButton();
+                        inlineKeyboardButton1.setText("Go back");
+                        inlineKeyboardButton1.setCallbackData("Login:Main");
+                        inlineKeyboardButtonList1.add(inlineKeyboardButton1);
+                        inlineButtons.add(inlineKeyboardButtonList1);
+                        inlineKeyboardMarkup.setKeyboard(inlineButtons);
+                        sendMessage.setReplyMarkup(inlineKeyboardMarkup);
+                    }else {
+                        String list = databaseManager.viewBooked(usersMap.get(message.getChatId()).getICNO(), "");
+                        sendMessage = new SendMessage();
+                        sendMessage.setChatId(message.getChatId());
+                        sendMessage.setText(list);
+                    }
+
+                } else if (data.equals("Login:Main")){
+                    String bookedRooms = databaseManager.viewBooked(usersMap.get(message.getChatId()).getICNO(), "view");
+
+                    //打招呼和问user要做什么
+                    bookedRooms += "\n\n" + databaseManager.greetings(usersMap.get(message.getChatId()).getICNO());
+
+                    sendMessage = new SendMessage();
+                    sendMessage.setText(bookedRooms);
+                    sendMessage.setParseMode(ParseMode.MARKDOWN);
+                    sendMessage.setChatId(message.getChatId());
+
+                    //Inline Keyboard Button
+                    InlineKeyboardMarkup inlineKeyboardMarkup = new InlineKeyboardMarkup();
+                    List<List<InlineKeyboardButton>> inlineButtons = new ArrayList<>();
+                    List<InlineKeyboardButton> inlineKeyboardButtonList1 = new ArrayList<>();
+                    List<InlineKeyboardButton> inlineKeyboardButtonList2 = new ArrayList<>();
+                    List<InlineKeyboardButton> inlineKeyboardButtonList3 = new ArrayList<>();
+                    InlineKeyboardButton inlineKeyboardButton1 = new InlineKeyboardButton();
+                    InlineKeyboardButton inlineKeyboardButton2 = new InlineKeyboardButton();
+                    InlineKeyboardButton inlineKeyboardButton3 = new InlineKeyboardButton();
+                    InlineKeyboardButton inlineKeyboardButton4 = new InlineKeyboardButton();
+                    inlineKeyboardButton1.setText("View Booking Details");
+                    inlineKeyboardButton2.setText("Edit Booking");
+                    inlineKeyboardButton3.setText("Cancel Booking");
+                    inlineKeyboardButton4.setText("Edit Profile");
+                    inlineKeyboardButton1.setCallbackData("Login:ViewBook");
+                    inlineKeyboardButton2.setCallbackData("Login:EditBook");
+                    inlineKeyboardButton3.setCallbackData("Login:CancelBook");
+                    inlineKeyboardButton4.setCallbackData("Login:EditProfile");
+                    inlineKeyboardButtonList1.add(inlineKeyboardButton1);
+                    if (databaseManager.checkBook(usersMap.get(message.getChatId()).getICNO())) {
+                        //if user have booking{
+                        inlineKeyboardButtonList2.add(inlineKeyboardButton2);
+                        inlineKeyboardButtonList2.add(inlineKeyboardButton3);
+                    }
+                    inlineKeyboardButtonList3.add(inlineKeyboardButton4);
+                    inlineButtons.add(inlineKeyboardButtonList1);
+                    if (databaseManager.checkBook(usersMap.get(message.getChatId()).getICNO())) {
+                        inlineButtons.add(inlineKeyboardButtonList2);
+                    }
+                    inlineButtons.add(inlineKeyboardButtonList3);
+                    inlineKeyboardMarkup.setKeyboard(inlineButtons);
+                    sendMessage.setReplyMarkup(inlineKeyboardMarkup);
+                } else if(data.equals("Login:EditProfile")){
+                    String edit = databaseManager.userProfile(usersMap.get(message.getChatId()).getICNO(), "view");
+                    sendMessage.setText(edit);
+                    sendMessage.setParseMode(ParseMode.MARKDOWN);
+                    sendMessage.setChatId(message.getChatId());
+
+                    //Inline Keyboard Button
+                    InlineKeyboardMarkup inlineKeyboardMarkup = new InlineKeyboardMarkup();
+                    List<List<InlineKeyboardButton>> inlineButtons = new ArrayList<>();
+                    List<InlineKeyboardButton> inlineKeyboardButtonList1 = new ArrayList<>();
+                    List<InlineKeyboardButton> inlineKeyboardButtonList2 = new ArrayList<>();
+                    List<InlineKeyboardButton> inlineKeyboardButtonList3 = new ArrayList<>();
+                    List<InlineKeyboardButton> inlineKeyboardButtonList4 = new ArrayList<>();
+                    InlineKeyboardButton inlineKeyboardButton1 = new InlineKeyboardButton();
+                    InlineKeyboardButton inlineKeyboardButton2 = new InlineKeyboardButton();
+                    InlineKeyboardButton inlineKeyboardButton3 = new InlineKeyboardButton();
+                    InlineKeyboardButton inlineKeyboardButton4 = new InlineKeyboardButton();
+                    InlineKeyboardButton inlineKeyboardButton5 = new InlineKeyboardButton();
+                    InlineKeyboardButton inlineKeyboardButton6 = new InlineKeyboardButton();
+                    inlineKeyboardButton1.setText("Name");
+                    inlineKeyboardButton2.setText("IC Number");
+                    inlineKeyboardButton3.setText("Email");
+                    inlineKeyboardButton4.setText("Staff ID");
+                    inlineKeyboardButton5.setText("Mobile Number");
+                    inlineKeyboardButton6.setText("No, I had changed my mine");
+                    inlineKeyboardButton1.setCallbackData("Login:EditProfile_Name");
+                    inlineKeyboardButton2.setCallbackData("Login:EditProfile_ICNO");
+                    inlineKeyboardButton3.setCallbackData("Login:EditProfile_Email");
+                    inlineKeyboardButton4.setCallbackData("Login:EditProfile_StaffID");
+                    inlineKeyboardButton5.setCallbackData("Login:EditProfile_Mobile");
+                    inlineKeyboardButton6.setCallbackData("Login:Main");
+                    inlineKeyboardButtonList1.add(inlineKeyboardButton1);
+                    inlineKeyboardButtonList2.add(inlineKeyboardButton2);
+                    inlineKeyboardButtonList2.add(inlineKeyboardButton3);
+                    inlineKeyboardButtonList3.add(inlineKeyboardButton4);
+                    inlineKeyboardButtonList3.add(inlineKeyboardButton5);
+                    inlineKeyboardButtonList4.add(inlineKeyboardButton6);
+                    inlineButtons.add(inlineKeyboardButtonList1);
+                    inlineButtons.add(inlineKeyboardButtonList2);
+                    inlineButtons.add(inlineKeyboardButtonList3);
+                    inlineButtons.add(inlineKeyboardButtonList4);
+                    inlineKeyboardMarkup.setKeyboard(inlineButtons);
+                    sendMessage.setReplyMarkup(inlineKeyboardMarkup);
+                } else if(data.equals("Login:EditProfile_Name") || data.equals("Login:EditProfile_ICNO") ||data.equals("Login:EditProfile_Email") ||data.equals("Login:EditProfile_StaffID") ||data.equals("Login:EditProfile_Mobile")) {
+                    if (data.equals("Login:EditProfile_Name")) {
+                        userState.put(message.getChatId(), "Login:EditProfile_Name");
+                        sendMessage.setText("What do you want to change your Name to?");
+                    } else if (data.equals("Login:EditProfile_ICNO")) {
+                        userState.put(message.getChatId(), "Login:EditProfile_ICNO");
+                        sendMessage.setText("What do you want to change your IC Number to?");
+                    } else if (data.equals("Login:EditProfile_Email")) {
+                        userState.put(message.getChatId(), "Login:EditProfile_Email");
+                        sendMessage.setText("What do you want to change your Email to?");
+                    } else if (data.equals("Login:EditProfile_StaffID")) {
+                        userState.put(message.getChatId(), "Login:EditProfile_StaffID");
+                        sendMessage.setText("What do you want to change your StaffID to?");
+                    } else if (data.equals("Login:EditProfile_Mobile")) {
+                        userState.put(message.getChatId(), "Login:EditProfile_Mobile");
+                        sendMessage.setText("What do you want to change your Mobile Number to?");
+                    }
+
+
+                    sendMessage.setChatId(message.getChatId());
+                } else if (data.equals("Login:CancelBook")){
+                    String bookDetails = databaseManager.viewBookedList(usersMap.get(message.getChatId()).getICNO(), "delete");
+                    sendMessage.setText(bookDetails);
+                    userState.put(message.getChatId(), "Login:CancelBook");
+                } else if (data.equals("Login:CancelBook_confirm")){
+                    String delDetails = databaseManager.deleteBook(usersMap.get(message.getChatId()).getICNO(), bookingMap.get(message.getChatId()).getBookID());
+                    sendMessage = new SendMessage();
+                    sendMessage.setText(delDetails);
+                    sendMessage.setParseMode(ParseMode.MARKDOWN);
+                    sendMessage.setChatId(message.getChatId());
+
+                    //Inline Keyboard Button
+                    InlineKeyboardMarkup inlineKeyboardMarkup = new InlineKeyboardMarkup();
+                    List<List<InlineKeyboardButton>> inlineButtons = new ArrayList<>();
+                    List<InlineKeyboardButton> inlineKeyboardButtonList1 = new ArrayList<>();
+                    List<InlineKeyboardButton> inlineKeyboardButtonList2 = new ArrayList<>();
+                    InlineKeyboardButton inlineKeyboardButton1 = new InlineKeyboardButton();
+                    InlineKeyboardButton inlineKeyboardButton2 = new InlineKeyboardButton();
+                    inlineKeyboardButton1.setText("Yes");
+                    inlineKeyboardButton2.setText("No, return to Main Menu");
+                    inlineKeyboardButton1.setCallbackData("Login:CancelBook");
+                    inlineKeyboardButton2.setCallbackData("Login:Main");
+                    inlineKeyboardButtonList1.add(inlineKeyboardButton1);
+                    inlineKeyboardButtonList2.add(inlineKeyboardButton2);
+                    inlineButtons.add(inlineKeyboardButtonList1);
+                    inlineButtons.add(inlineKeyboardButtonList2);
+                    inlineKeyboardMarkup.setKeyboard(inlineButtons);
+                    sendMessage.setReplyMarkup(inlineKeyboardMarkup);
+
+                }
             }
 
             try {
