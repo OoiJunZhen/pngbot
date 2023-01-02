@@ -1095,6 +1095,9 @@ public class PNG_bot extends TelegramLongPollingBot {
             }
 
 
+            else if(!String.valueOf(message.getText().charAt(0)).equals("/")  && userState.get(message.getChatId()).contains("RoomList")){
+
+            }
         } else if (update.hasCallbackQuery()) {
             //buttonData will be categorized such as Book:Conf_Y, same reason as state
             String[] buttonData = update.getCallbackQuery().getData().split(":", 2);
