@@ -114,28 +114,15 @@ public class PNG_Bot extends TelegramLongPollingBot {
                         e.printStackTrace();
                     }
                     break;
-                /*case "/login":
-                    String info2 = "Please enter your IC and Email to access your account\n\n" +
-                            "Example: 990724070661@MyEmail@hotmail.com";
-                    sendMessage = new SendMessage();
-                    sendMessage.setText(info2);
-                    sendMessage.setChatId(message.getChatId().toString());
-                    userState.put(message.getChatId(), "Login");
-                    try {
-                        execute(sendMessage);
-                    } catch (TelegramApiException e) {
-                        e.printStackTrace();
-                    }
-                    break;
-                 */
+
                 case "/registerschoolad":
+                    //当command flow正当开始的第一步骤时，我们会给这个chatID开object来接收接下来的information
                     schoolAdminMap.put(message.getChatId(), new SchoolAdmin("", "", "", "", "", "", "", ""));// String name, String ICNO, String email, String staffID, String telNo, String schoolName
                     RegisterRoomMap.put(message.getChatId(), new Room("", "", "", ""));
                     userState.put(message.getChatId(), "Register");
                     String msg10 = "Do you want register to become the school admin";
                     sendMessage = new SendMessage();
                     sendMessage.setText(msg10);
-                    //sendMessage.setChatId(message.getChatId().toString());
                     sendMessage.setParseMode(ParseMode.MARKDOWN);
                     sendMessage.setChatId(message.getChatId());
 
@@ -179,20 +166,16 @@ public class PNG_Bot extends TelegramLongPollingBot {
                 }
 
 
-            } else if (!String.valueOf(command[0].charAt(0)).equals("/") && userState.get(message.getChatId()).contains("Register:")) {
+            }
+
+            //Go to check state if State have the first word as 'Register:'
+            else if (!String.valueOf(command[0].charAt(0)).equals("/") && userState.get(message.getChatId()).contains("Register:")) {
+                //Get User State
                 switch (userState.get(message.getChatId())) {
-                    /*case "Register:Name":
-
-                        //set新的State
-                        userState.put(message.getChatId(), "Register:IC");
-                        sendMessage.setText("Please Enter your NAME as per NRIC number : \nExample: Ang Toon Phng");
-                        sendMessage.setChatId(message.getChatId());
-
-                        break;*/
 
                     case "Register:IC":
                         if (inputFormatChecker.NameFormat(message.getText())) {
-                            // save name
+                            // save user 在 Register:Register_Y 之后input的内容起来，进object
                             schoolAdminMap.get(message.getChatId()).setName(message.getText());
 
                             //set新的State
@@ -234,7 +217,7 @@ public class PNG_Bot extends TelegramLongPollingBot {
                                 inlineKeyboardMarkup.setKeyboard(inlineButtons);
                                 sendMessage.setReplyMarkup(inlineKeyboardMarkup);
                             } else {
-                                //save user 在 Book:Book_Y 之后input的内容起来，进object
+
                                 schoolAdminMap.get(message.getChatId()).setICNO(message.getText());
                                 userState.put(message.getChatId(), "Register:StaffID");
                                 sendMessage.setText("How about your Email?");
@@ -291,6 +274,8 @@ public class PNG_Bot extends TelegramLongPollingBot {
                                         "Example: Ang Toon Phng");
                             }
                         } else if (userState.get(message.getChatId()).equals("Register:Chan_IC")) {
+
+                            //check IC format
                             if (inputFormatChecker.checkICFormat(message.getText())) {
 
                                 //check if user exist in the database
@@ -354,9 +339,7 @@ public class PNG_Bot extends TelegramLongPollingBot {
                             inlineKeyboardMarkup.setKeyboard(inlineButtons);
                             sendMessage.setReplyMarkup(inlineKeyboardMarkup);
                         }
-
                         break;
-
                 }
                 try {
                     sendMessage.setChatId(message.getChatId());
@@ -469,8 +452,6 @@ public class PNG_Bot extends TelegramLongPollingBot {
                         sendMessage.setText("What do you want to change the mobile number to?\n\n" +
                                 "Example: 0124773579");
                     }
-
-
                 }
             }
             try {
@@ -480,6 +461,5 @@ public class PNG_Bot extends TelegramLongPollingBot {
                 e.printStackTrace();
             }
         }
-
     }
 }
