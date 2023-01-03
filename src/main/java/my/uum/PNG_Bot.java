@@ -178,11 +178,7 @@ public class PNG_Bot extends TelegramLongPollingBot {
                         break;
                 }
 
-                try {
-                    execute(sendMessage);
-                } catch (TelegramApiException e) {
-                    e.printStackTrace();
-                }
+
             } else if (!String.valueOf(command[0].charAt(0)).equals("/") && userState.get(message.getChatId()).contains("Register:")) {
                 switch (userState.get(message.getChatId())) {
                     /*case "Register:Name":
@@ -202,15 +198,11 @@ public class PNG_Bot extends TelegramLongPollingBot {
                             //set新的State
                             userState.put(message.getChatId(), "Register:Email");
                             sendMessage.setText("How about your IC number: \nExample: 001211080731");
-                            sendMessage.setChatId(message.getChatId());
+
                         } else {
                             sendMessage.setText("Please re-enter your name.");
                         }
-                        try {
-                            execute(sendMessage);
-                        } catch (TelegramApiException e) {
-                            e.printStackTrace();
-                        }
+
                         break;
 
                     case "Register:Email":
@@ -253,25 +245,12 @@ public class PNG_Bot extends TelegramLongPollingBot {
 
                         break;
 
-
-                    case "Register:Register:OfficeNum1":
-                        if (inputFormatChecker.EmailFormat(message.getText())) {
-                            schoolAdminMap.get(message.getChatId()).setEmail(message.getText());
-                            userState.put(message.getChatId(), "Register:StaffID");
-                            sendMessage.setText("Hi " + schoolAdminMap.get(message.getChatId()).getName() + "! What is the best Office contact number to reach you?");
-                            sendMessage.setChatId(message.getChatId());
-                        } else {
-                            sendMessage.setText("Please enter your email in correct format, thank you :)");
-                        }
-
-                        break;
-
                     case "Register:StaffID":
                         if (inputFormatChecker.EmailFormat(message.getText())) {
                             schoolAdminMap.get(message.getChatId()).setEmail(message.getText());
                             userState.put(message.getChatId(), "Register:Mobile");
                             sendMessage.setText("Almost there! How about your Staff ID?\n\nExample: abc123");
-                            sendMessage.setChatId(message.getChatId());
+
                         } else {
                             sendMessage.setText("Please enter your email in correct format, thank you :)");
                         }
@@ -280,7 +259,7 @@ public class PNG_Bot extends TelegramLongPollingBot {
 
                     case "Register:Mobile":
                         schoolAdminMap.get(message.getChatId()).setStaffID(message.getText());
-                        userState.put(message.getChatId(), ": Register:Check1");
+                        userState.put(message.getChatId(), "Register:Check1");
 
                         sendMessage.setText("How about your Telephone Mobile Number? \n\n Example: 0124773579");
 
@@ -294,9 +273,17 @@ public class PNG_Bot extends TelegramLongPollingBot {
                     case "Register:Chan_Mobile":
 
                         boolean msg1 = false;
-                        if (userState.get(message.getChatId()).equals("Register:Check1")) {
-                            if (userState.get(message.getChatId()).equals("Register:Chan_Name")) {
-                                //if (userState.get(message.getChatId()).equals("Register:Chan_Name")) {
+                        if (userState.get(message.getChatId()).equals("Register:Check1") || userState.get(message.getChatId()).equals("Register:Chan_Mobile")) {
+                            if (inputFormatChecker.TelNumFormat(message.getText())) {
+                                schoolAdminMap.get(message.getChatId()).setTelNo(message.getText());
+                                msg1 = true;
+                                System.out.println(msg1);
+                            } else {
+                                sendMessage.setText("Please enter your phone number in correct format thank you.\n\n" +
+                                        "Example: 0124773579");
+                            }
+                        } else if (userState.get(message.getChatId()).equals("Register:Chan_Name")) {
+                            if (inputFormatChecker.NameFormat(message.getText())) {
                                 schoolAdminMap.get(message.getChatId()).setName(message.getText());
                                 msg1 = true;
                             } else {
@@ -334,25 +321,20 @@ public class PNG_Bot extends TelegramLongPollingBot {
                             schoolAdminMap.get(message.getChatId()).setStaffID(message.getText());
                             msg1 = true;
 
-                        } else if (userState.get(message.getChatId()).equals("Register:Chan_Mobile")) {
-                            schoolAdminMap.get(message.getChatId()).setOfficeTelNo(message.getText());
-                            msg1 = true;
                         }
-
 
                         if (msg1) {
                             String UserInfo = "\nName: " + schoolAdminMap.get(message.getChatId()).getName() +
                                     "\nIC Number: " + schoolAdminMap.get(message.getChatId()).getICNO() +
                                     "\nEmail: " + schoolAdminMap.get(message.getChatId()).getEmail() +
                                     "\nStaffID: " + schoolAdminMap.get(message.getChatId()).getStaffID() +
-                                    "\nMobile Number: " + schoolAdminMap.get(message.getChatId()).getOfficeTelNo() +
+                                    "\nMobile Number: " + schoolAdminMap.get(message.getChatId()).getTelNo() +
                                     "\nAre these the correct information?\n";
 
 
                             sendMessage = new SendMessage();
                             sendMessage.setText(UserInfo);
                             sendMessage.setParseMode(ParseMode.MARKDOWN);
-                            sendMessage.setChatId(message.getChatId());
 
                             //Inline Keyboard Button
                             InlineKeyboardMarkup inlineKeyboardMarkup = new InlineKeyboardMarkup();
@@ -362,8 +344,8 @@ public class PNG_Bot extends TelegramLongPollingBot {
                             InlineKeyboardButton inlineKeyboardButton12 = new InlineKeyboardButton();
                             InlineKeyboardButton inlineKeyboardButton13 = new InlineKeyboardButton();
                             inlineKeyboardButton12.setText("Yes");
-                            inlineKeyboardButton13.setText("No, I would like to change something");
-                            inlineKeyboardButton12.setCallbackData("Register:OfficeNum2");
+                            inlineKeyboardButton13.setText("No I would like to change something");
+                            inlineKeyboardButton12.setCallbackData("Register:Success");
                             inlineKeyboardButton13.setCallbackData("Register:ChangeUserData");
                             inlineKeyboardButtonList12.add(inlineKeyboardButton12);
                             inlineKeyboardButtonList13.add(inlineKeyboardButton13);
@@ -376,7 +358,12 @@ public class PNG_Bot extends TelegramLongPollingBot {
                         break;
 
                 }
-
+                try {
+                    sendMessage.setChatId(message.getChatId());
+                    execute(sendMessage);
+                } catch (TelegramApiException e) {
+                    e.printStackTrace();
+                }
             }
 
         } else if (update.hasCallbackQuery()) {
@@ -395,104 +382,104 @@ public class PNG_Bot extends TelegramLongPollingBot {
 
                     userState.put(message.getChatId(), "Register:IC");
                     sendMessage.setText("Please Enter your NAME as per NRIC number : \nExample: Ang Toon Phng");
-                    sendMessage.setChatId(message.getChatId());
 
                 } else if (data.equals("Register:Register_N")) {
                     sendMessage.setText("I'll be here whenever you need me :)");
-                    sendMessage.setChatId(message.getChatId());
 
-                }
+                } else if (data.equals("Register:Verify")) {
+                    sendMessage.setText("Your information had already exist in the database. \nTo access more function, please use \n\n/login");
+
+                } else if (data.equals("Register:IC")) {
+
+                    userState.put(message.getChatId(), "Register:Email");
+                    sendMessage.setText("This IC has been used by someone else, please re-enter your IC again");
+                } else if (data.equals("Register:Success")) {
+                    databaseManager.insertUser(schoolAdminMap.get(message.getChatId()).getName(), schoolAdminMap.get(message.getChatId()).getICNO(), schoolAdminMap.get(message.getChatId()).getEmail(), schoolAdminMap.get(message.getChatId()).getStaffID(), schoolAdminMap.get(message.getChatId()).getTelNo());
+                    userState.put(message.getChatId(), "Register:SchoolName");
+                    sendMessage.setText("Excellent!\nYou have successfully registered your information!\n\n" +
+                            "To access more function please use \n\n/login");
+                } else if (data.equals("Register:ChangeUserData")) {
+
+                    String UserInfo = "\nName: " + schoolAdminMap.get(message.getChatId()).getName() +
+                            "\nIC Number: " + schoolAdminMap.get(message.getChatId()).getICNO() +
+                            "\nEmail: " + schoolAdminMap.get(message.getChatId()).getEmail() +
+                            "\nStaffID: " + schoolAdminMap.get(message.getChatId()).getStaffID() +
+                            "\nMobile Number: " + schoolAdminMap.get(message.getChatId()).getTelNo() +
+                            "\nAre these the correct information?\n";
 
 
-            } else if (data.equals("Register:OfficeNum2")) {
+                    sendMessage = new SendMessage();
+                    sendMessage.setText(UserInfo);
+                    sendMessage.setParseMode(ParseMode.MARKDOWN);
 
-                userState.put(message.getChatId(), "Register:SchoolName");
-                sendMessage.setText("Excellent! However, since you are going to apply for School Admin, there are additional \n" +
-                        "information that you need to enter here. Thank you for your patience!\n +" +
-                        "\nWhat is the best Office contact number to reach you?");
-                sendMessage.setChatId(message.getChatId());
-            } else if (data.equals("Register:ChangeUserData")) {
-                String UserInfo = "\nName: " + schoolAdminMap.get(message.getChatId()).getName() +
-                        "\nIC Number: " + schoolAdminMap.get(message.getChatId()).getICNO() +
-                        "\nEmail: " + schoolAdminMap.get(message.getChatId()).getEmail() +
-                        "\nStaffID: " + schoolAdminMap.get(message.getChatId()).getStaffID() +
-                        "\nMobile Number: " + schoolAdminMap.get(message.getChatId()).getOfficeTelNo() +
-                        "\nAre these the correct information?\n";
+                    //Inline Keyboard Button
+                    InlineKeyboardMarkup inlineKeyboardMarkup = new InlineKeyboardMarkup();
+                    List<List<InlineKeyboardButton>> inlineButtons = new ArrayList<>();
+                    List<InlineKeyboardButton> inlineKeyboardButtonList1 = new ArrayList<>();
+                    List<InlineKeyboardButton> inlineKeyboardButtonList2 = new ArrayList<>();
+                    List<InlineKeyboardButton> inlineKeyboardButtonList3 = new ArrayList<>();
+                    InlineKeyboardButton inlineKeyboardButton1 = new InlineKeyboardButton();
+                    InlineKeyboardButton inlineKeyboardButton2 = new InlineKeyboardButton();
+                    InlineKeyboardButton inlineKeyboardButton3 = new InlineKeyboardButton();
+                    InlineKeyboardButton inlineKeyboardButton4 = new InlineKeyboardButton();
+                    InlineKeyboardButton inlineKeyboardButton5 = new InlineKeyboardButton();
+                    inlineKeyboardButton1.setText("Name");
+                    inlineKeyboardButton2.setText("IC Number");
+                    inlineKeyboardButton3.setText("Email");
+                    inlineKeyboardButton4.setText("StaffID");
+                    inlineKeyboardButton5.setText("Mobile");
+                    inlineKeyboardButton1.setCallbackData("Register:Chan_Name");
+                    inlineKeyboardButton2.setCallbackData("Register:Chan_IC");
+                    inlineKeyboardButton3.setCallbackData("Register:Chan_Email");
+                    inlineKeyboardButton4.setCallbackData("Register:Chan_StaffID");
+                    inlineKeyboardButton5.setCallbackData("Register:Chan_Mobile");
+                    inlineKeyboardButtonList1.add(inlineKeyboardButton1);
+                    inlineKeyboardButtonList1.add(inlineKeyboardButton2);
+                    inlineKeyboardButtonList2.add(inlineKeyboardButton3);
+                    inlineKeyboardButtonList2.add(inlineKeyboardButton4);
+                    inlineKeyboardButtonList3.add(inlineKeyboardButton5);
+                    inlineButtons.add(inlineKeyboardButtonList1);
+                    inlineButtons.add(inlineKeyboardButtonList2);
+                    inlineButtons.add(inlineKeyboardButtonList3);
+                    inlineKeyboardMarkup.setKeyboard(inlineButtons);
+                    sendMessage.setReplyMarkup(inlineKeyboardMarkup);
+
+                } else if (data.equals("Register:Chan_Name") || data.equals("Register:Chan_IC") ||
+                        data.equals("Register:Chan_Email") || data.equals("Register:Chan_StaffID") ||
+                        data.equals("Register:Chan_Mobile")) {
+                    if (data.equals("Register:Chan_Name")) {
+                        userState.put(message.getChatId(), "Register:Chan_Name");
+                        sendMessage.setText("What do you want to change the name to?\n\n" +
+                                "Example: Ang Toon Phng");
+                    } else if (data.equals("Register:Chan_IC")) {
+                        userState.put(message.getChatId(), "Register:Chan_IC");
+                        sendMessage.setText("What do you want to change the IC number to?\n\n" +
+                                "Example: 001211080731");
+                    } else if (data.equals("Register:Chan_Email")) {
+                        userState.put(message.getChatId(), "Register:Chan_Email");
+                        sendMessage.setText("What do you want to change the email to?\n\n" +
+                                "Example: MyEmail@hotmail.com");
+
+                    } else if (data.equals("Register:Chan_StaffID")) {
+                        userState.put(message.getChatId(), "Register:Chan_StaffID");
+                        sendMessage.setText("What do you want to change the staff ID to?\n\n");
+
+                    } else if (data.equals("Register:Chan_Mobile")) {
+                        userState.put(message.getChatId(), "Register:Chan_Mobile");
+                        sendMessage.setText("What do you want to change the mobile number to?\n\n" +
+                                "Example: 0124773579");
+                    }
 
 
-                sendMessage = new SendMessage();
-                sendMessage.setText(UserInfo);
-                sendMessage.setParseMode(ParseMode.MARKDOWN);
-                sendMessage.setChatId(message.getChatId());
-
-                //Inline Keyboard Button
-                InlineKeyboardMarkup inlineKeyboardMarkup = new InlineKeyboardMarkup();
-                List<List<InlineKeyboardButton>> inlineButtons = new ArrayList<>();
-                List<InlineKeyboardButton> inlineKeyboardButtonList1 = new ArrayList<>();
-                List<InlineKeyboardButton> inlineKeyboardButtonList2 = new ArrayList<>();
-                List<InlineKeyboardButton> inlineKeyboardButtonList3 = new ArrayList<>();
-                List<InlineKeyboardButton> inlineKeyboardButtonList4 = new ArrayList<>();
-                InlineKeyboardButton inlineKeyboardButton1 = new InlineKeyboardButton();
-                InlineKeyboardButton inlineKeyboardButton2 = new InlineKeyboardButton();
-                InlineKeyboardButton inlineKeyboardButton3 = new InlineKeyboardButton();
-                InlineKeyboardButton inlineKeyboardButton4 = new InlineKeyboardButton();
-                InlineKeyboardButton inlineKeyboardButton5 = new InlineKeyboardButton();
-                inlineKeyboardButton1.setText("Name");
-                inlineKeyboardButton2.setText("IC Number");
-                inlineKeyboardButton3.setText("Email");
-                inlineKeyboardButton4.setText("StaffID");
-                inlineKeyboardButton5.setText("Mobile");
-                inlineKeyboardButton1.setCallbackData("Register:Chan_Name");
-                inlineKeyboardButton2.setCallbackData("Register:Chan_IC");
-                inlineKeyboardButton3.setCallbackData("Register:Chan_Email");
-                inlineKeyboardButton4.setCallbackData("Register:Chan_StaffID");
-                inlineKeyboardButton5.setCallbackData("Register:Chan_Mobile");
-                inlineKeyboardButtonList1.add(inlineKeyboardButton1);
-                inlineKeyboardButtonList1.add(inlineKeyboardButton2);
-                inlineKeyboardButtonList2.add(inlineKeyboardButton3);
-                inlineKeyboardButtonList2.add(inlineKeyboardButton4);
-                inlineKeyboardButtonList3.add(inlineKeyboardButton5);
-                inlineButtons.add(inlineKeyboardButtonList1);
-                inlineButtons.add(inlineKeyboardButtonList2);
-                inlineButtons.add(inlineKeyboardButtonList3);
-                inlineButtons.add(inlineKeyboardButtonList4);
-                inlineKeyboardMarkup.setKeyboard(inlineButtons);
-                sendMessage.setReplyMarkup(inlineKeyboardMarkup);
-            } else if (data.equals("Register:Chan_Name") || data.equals("Register:Chan_IC") ||
-                    data.equals("Register:Chan_Email") || data.equals("Register:Chan_StaffID") ||
-                    data.equals("Register:Chan_Mobile")) {
-                if (data.equals("Register:Chan_Name")) {
-                    userState.put(message.getChatId(), "Register:Chan_Name");
-                    sendMessage.setText("What do you want to change the name to?\n\n" +
-                            "Example: Ang Toon Phng");
-                } else if (data.equals("Register:Chan_IC")) {
-                    userState.put(message.getChatId(), "Register:Chan_IC");
-                    sendMessage.setText("What do you want to change the IC number to?\n\n" +
-                            "Example: 001211080731");
-                } else if (data.equals("Register:Chan_Email")) {
-                    userState.put(message.getChatId(), "Register:Chan_Email");
-                    sendMessage.setText("What do you want to change the email to?\n\n" +
-                            "Example: MyEmail@hotmail.com");
-
-                } else if (data.equals("Register:Chan_StaffID")) {
-                    userState.put(message.getChatId(), "Register:Chan_StaffID");
-                    sendMessage.setText("What do you want to change the staff ID to?\n\n");
-
-                } else if (data.equals("Register:Chan_Mobile")) {
-                    userState.put(message.getChatId(), "Register:Chan_Mobile");
-                    sendMessage.setText("What do you want to change the mobile number to?\n\n" +
-                            "Example: 0124773579");
-                }
-
-                sendMessage.setChatId(message.getChatId());
-
-                try {
-                    execute(sendMessage);
-                } catch (TelegramApiException e) {
-                    e.printStackTrace();
                 }
             }
-
+            try {
+                sendMessage.setChatId(message.getChatId());
+                execute(sendMessage);
+            } catch (TelegramApiException e) {
+                e.printStackTrace();
+            }
         }
+
     }
 }
