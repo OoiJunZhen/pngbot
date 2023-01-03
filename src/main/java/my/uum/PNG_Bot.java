@@ -114,20 +114,7 @@ public class PNG_Bot extends TelegramLongPollingBot {
                         e.printStackTrace();
                     }
                     break;
-                /*case "/login":
-                    String info2 = "Please enter your IC and Email to access your account\n\n" +
-                            "Example: 990724070661@MyEmail@hotmail.com";
-                    sendMessage = new SendMessage();
-                    sendMessage.setText(info2);
-                    sendMessage.setChatId(message.getChatId().toString());
-                    userState.put(message.getChatId(), "Login");
-                    try {
-                        execute(sendMessage);
-                    } catch (TelegramApiException e) {
-                        e.printStackTrace();
-                    }
-                    break;
-                 */
+
                 case "/registerschoolad":
                     schoolAdminMap.put(message.getChatId(), new SchoolAdmin("", "", "", "", "", "", "", ""));// String name, String ICNO, String email, String staffID, String telNo, String schoolName
                     RegisterRoomMap.put(message.getChatId(), new Room("", "", "", ""));
@@ -179,16 +166,10 @@ public class PNG_Bot extends TelegramLongPollingBot {
                 }
 
 
-            } else if (!String.valueOf(command[0].charAt(0)).equals("/") && userState.get(message.getChatId()).contains("Register:")) {
+            }
+            //Go to check state if no command found AND State have the first word as 'Register'
+            else if (!String.valueOf(command[0].charAt(0)).equals("/") && userState.get(message.getChatId()).contains("Register:")) {
                 switch (userState.get(message.getChatId())) {
-                    /*case "Register:Name":
-
-                        //set新的State
-                        userState.put(message.getChatId(), "Register:IC");
-                        sendMessage.setText("Please Enter your NAME as per NRIC number : \nExample: Ang Toon Phng");
-                        sendMessage.setChatId(message.getChatId());
-
-                        break;*/
 
                     case "Register:IC":
                         if (inputFormatChecker.NameFormat(message.getText())) {
@@ -234,7 +215,7 @@ public class PNG_Bot extends TelegramLongPollingBot {
                                 inlineKeyboardMarkup.setKeyboard(inlineButtons);
                                 sendMessage.setReplyMarkup(inlineKeyboardMarkup);
                             } else {
-                                //save user 在 Book:Book_Y 之后input的内容起来，进object
+
                                 schoolAdminMap.get(message.getChatId()).setICNO(message.getText());
                                 userState.put(message.getChatId(), "Register:StaffID");
                                 sendMessage.setText("How about your Email?");
@@ -469,8 +450,6 @@ public class PNG_Bot extends TelegramLongPollingBot {
                         sendMessage.setText("What do you want to change the mobile number to?\n\n" +
                                 "Example: 0124773579");
                     }
-
-
                 }
             }
             try {
@@ -480,6 +459,5 @@ public class PNG_Bot extends TelegramLongPollingBot {
                 e.printStackTrace();
             }
         }
-
     }
 }
