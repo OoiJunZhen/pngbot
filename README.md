@@ -62,7 +62,7 @@
 ![image](https://user-images.githubusercontent.com/80701138/201608575-185ea5c5-9f8e-4733-a693-6c26806a3b29.png)
 
 ## UML Class Diagram
-![image](https://user-images.githubusercontent.com/116187610/210719709-0e6e34ee-5eeb-4508-a4db-18dcc0a07b49.png)
+![image](https://user-images.githubusercontent.com/116187610/210720072-860234ed-bdbc-42db-b9e1-5d4d8432943a.png)
 
 ## Database Design
 ![image](https://user-images.githubusercontent.com/116187610/210718032-2b72721c-a93e-4bca-a5fa-4bdfefbc8266.png)
