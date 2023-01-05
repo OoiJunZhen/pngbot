@@ -588,7 +588,6 @@ public class DatabaseManager {
     public boolean checkBook(Integer Room_ID, String inputDate) {
         String date = "";
         String date2 = "";
-        Integer check = 0;
         java.sql.Date sqlDate;
         java.sql.Date sqlDate2;
 
@@ -599,8 +598,6 @@ public class DatabaseManager {
             //convert input date from dd/MM/yyyy to yyyy-MM-dd
             java.util.Date utilDate = bookDateFormat.parse(inputDate);
             date = databaseDateFormat.format(utilDate);
-
-
             //add the date by one day and save it into date2
             Calendar c = Calendar.getInstance();
             c.setTime(databaseDateFormat.parse(date));
@@ -838,7 +835,7 @@ public class DatabaseManager {
      * @param School_ID
      * @return
      */
-    public String getBookedRoomList(Integer School_ID, Integer User_ID, Integer Booking_ID) {
+    public String getBookedRoomList(Integer School_ID, String ICNO, Integer Booking_ID) {
         String book = "";
         String book2 = "";
         String roomList = " ";
@@ -850,7 +847,7 @@ public class DatabaseManager {
             preparedStatement.setInt(1, School_ID);
 
             ResultSet rs = preparedStatement.executeQuery();
-            String input = getBookedRoomDate(User_ID, Booking_ID);
+            String input = getBookedRoomDate(ICNO, Booking_ID);
             System.out.println(input);
             System.out.println(checkBook(rs.getInt("Room_ID"), input));
             while (rs.next()) {
@@ -881,14 +878,14 @@ public class DatabaseManager {
         return roomList;
     }
 
-    public String getBookedRoomDate(Integer userID, Integer bookingID) {
+    public String getBookedRoomDate(String ICNO, Integer bookingID) {
         String getDate = "";
-        String q = "SELECT Booking.Book_StartTime FROM Booking WHERE User_ID = ? AND Booking_ID = ?";
+        String q = "SELECT Booking.Book_StartTime FROM Booking INNER JOIN Users ON Users.User_ID = Booking.User_ID WHERE Users.ICNO = ? AND Booking_ID = ?";
 
         try (Connection conn = this.connect()) {
             PreparedStatement preparedStatement = conn.prepareStatement(q);
 
-            preparedStatement.setInt(1, userID);
+            preparedStatement.setString(1, ICNO);
             preparedStatement.setInt(2, bookingID);
             ResultSet rs = preparedStatement.executeQuery();
 
@@ -907,14 +904,41 @@ public class DatabaseManager {
         return getDate;
     }
 
-    public String getBookedRoomTime(Integer userID, Integer bookingID) {
-        String getTime = "";
-        String q = "SELECT Booking.Book_StartTime FROM Booking WHERE User_ID = ? AND Booking_ID = ?";
+    public String getTimestamp(String ICNO, Integer bookingID) {
+        String getDate = "";
+        String q = "SELECT Booking.Timestamp FROM Booking INNER JOIN Users ON Users.User_ID = Booking.User_ID WHERE Users.ICNO = ? AND Booking_ID = ?";
 
         try (Connection conn = this.connect()) {
             PreparedStatement preparedStatement = conn.prepareStatement(q);
 
-            preparedStatement.setInt(1, userID);
+            preparedStatement.setString(1, ICNO);
+            preparedStatement.setInt(2, bookingID);
+            ResultSet rs = preparedStatement.executeQuery();
+
+            while (rs.next()) {
+                java.sql.Date startDate = rs.getDate("Timestamp");
+                java.util.Date convertedStart = new java.util.Date(startDate.getTime());
+                SimpleDateFormat bookDateFormat = new SimpleDateFormat("dd/MM/yyyy");
+                String date = bookDateFormat.format(convertedStart);
+
+                getDate += date;
+            }
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+
+        }
+        return getDate;
+    }
+
+
+    public String getBookedRoomTime(String ICNO, Integer bookingID) {
+        String getTime = "";
+        String q = "SELECT Booking.Book_StartTime FROM Booking INNER JOIN Users ON Booking.User_ID = Users.User_ID WHERE Users.ICNO = ? AND Booking_ID = ?";
+
+        try (Connection conn = this.connect()) {
+            PreparedStatement preparedStatement = conn.prepareStatement(q);
+
+            preparedStatement.setString(1, ICNO);
             preparedStatement.setInt(2, bookingID);
             ResultSet rs = preparedStatement.executeQuery();
 
@@ -922,7 +946,7 @@ public class DatabaseManager {
 
                 java.sql.Date startDate = rs.getDate("Book_StartTime");
                 java.util.Date convertedStart = new java.util.Date(startDate.getTime());
-                SimpleDateFormat bookTimeFormat = new SimpleDateFormat("hh:mm a");
+                SimpleDateFormat bookTimeFormat = new SimpleDateFormat("HH:mm");
                 String startTime = bookTimeFormat.format(convertedStart);
 
 
@@ -935,14 +959,42 @@ public class DatabaseManager {
         return getTime;
     }
 
-    public String viewBookedRoomTime(Integer userID, Integer bookingID) {
-        String getBookTime = "";
-        String q = "SELECT Book_StartTime, Book_EndTime FROM Booking WHERE User_ID = ? AND Booking_ID = ?";
+    public String getBookedRoomEndTime(String ICNO, Integer bookingID) {
+        String getTime = "";
+        String q = "SELECT Booking.Book_EndTime FROM Booking INNER JOIN Users ON Users.User_ID = Booking.User_ID WHERE Users.ICNO=? AND Booking_ID = ?";
 
         try (Connection conn = this.connect()) {
             PreparedStatement preparedStatement = conn.prepareStatement(q);
 
-            preparedStatement.setInt(1, userID);
+            preparedStatement.setString(1, ICNO);
+            preparedStatement.setInt(2, bookingID);
+            ResultSet rs = preparedStatement.executeQuery();
+
+            while (rs.next()) {
+
+                java.sql.Date endDate = rs.getDate("Book_EndTime");
+                java.util.Date convertedEnd = new java.util.Date(endDate.getTime());
+                SimpleDateFormat bookTimeFormat = new SimpleDateFormat("HH:mm");
+                String endTime = bookTimeFormat.format(convertedEnd);
+
+
+                getTime += endTime;
+            }
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+
+        }
+        return getTime;
+    }
+
+    public String viewBookedRoomTime(String ICNO, Integer bookingID) {
+        String getBookTime = "";
+        String q = "SELECT Book_StartTime, Book_EndTime FROM Booking INNER JOIN Users ON Booking.User_ID = Users.User_ID WHERE Users.ICNO = ? AND Booking_ID = ?";
+
+        try (Connection conn = this.connect()) {
+            PreparedStatement preparedStatement = conn.prepareStatement(q);
+
+            preparedStatement.setString(1, ICNO);
             preparedStatement.setInt(2, bookingID);
             ResultSet rs = preparedStatement.executeQuery();
 
@@ -961,7 +1013,7 @@ public class DatabaseManager {
                 String endTime = bookTimeFormat.format(convertedEnd);
 
                 getBookTime +=
-                        "<" + startTime + ">" + " - " + "<" + endTime + ">";
+                        startTime + " - " + endTime;
 
             }
         } catch (SQLException e) {
@@ -970,6 +1022,7 @@ public class DatabaseManager {
         }
         return getBookTime;
     }
+
 
     public String getRoomDetail(Integer Room_ID) {
         String roomInfo = "";
@@ -999,8 +1052,8 @@ public class DatabaseManager {
         return roomInfo;
     }
 
-    public String checkbookedRoomTime(Integer Room_ID, Integer userID, Integer bookID) {
-        String input = getBookedRoomDate(userID, bookID);
+    public String checkbookedRoomTime(Integer Room_ID, String ICNO, Integer bookID) {
+        String input = getBookedRoomDate(ICNO, bookID);
         String list = "";
         String start = "";
         String end = "";
@@ -1098,6 +1151,41 @@ public class DatabaseManager {
         }
     }
 
+    public void editBookingDateTime(Integer User_ID, String Book_StartTime, String Book_EndTime, Integer Booking_ID) {
+        String q = "UPDATE Booking SET Book_StartTime =?, Book_EndTime =? WHERE User_ID=? AND Booking_ID =?";
+
+        try (Connection conn = this.connect()) {
+            PreparedStatement preparedStatement = conn.prepareStatement(q);
+
+            preparedStatement.setString(1, Book_StartTime);
+            preparedStatement.setString(2, Book_EndTime);
+            preparedStatement.setInt(3, User_ID);
+            preparedStatement.setInt(4, Booking_ID);
+            preparedStatement.executeUpdate();
+
+
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+    }
+
+
+    public void editBookingDate(String Book_StartTime, String Book_EndTime, Integer User_ID, Integer Booking_ID) {
+        String q = "UPDATE Booking SET Book_StartTime =?, Book_EndTime =? WHERE User_ID=? AND Booking_ID =?";
+
+        try (Connection conn = this.connect()) {
+            PreparedStatement preparedStatement = conn.prepareStatement(q);
+            preparedStatement.setString(1, Book_StartTime);
+            preparedStatement.setString(2, Book_EndTime);
+            preparedStatement.setInt(3, User_ID);
+            preparedStatement.setInt(4, Booking_ID);
+            preparedStatement.executeUpdate();
+
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+    }
+
     public boolean checkBook(Integer User_ID) {
         Integer check_ID = 0;
         String q = "SELECT Booking_ID FROM Booking INNER JOIN Users ON Users.User_ID = Booking.User_ID WHERE Booking.User_ID = ?";
@@ -1122,4 +1210,23 @@ public class DatabaseManager {
             return true;
     }
 
+    public String checkBookedRoom(String ICNO, Integer Booking_ID) {
+        String roomName = "";
+        String q = "SELECT Room.Room_Name FROM Booking INNER JOIN Room ON Room.Room_ID = Booking.Room_ID INNER JOIN Users ON Users.User_ID = Booking.User_ID WHERE Users.ICNO = ? AND Booking.Booking_ID=?";
+
+        try (Connection conn = this.connect()) {
+            PreparedStatement preparedStatement = conn.prepareStatement(q);
+            preparedStatement.setString(1, ICNO);
+            preparedStatement.setInt(2, Booking_ID);
+            ResultSet rs = preparedStatement.executeQuery();
+            while (rs.next()) {
+                roomName = rs.getString("Room_Name");
+                break;
+            }
+
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+        return roomName;
+    }
 }
