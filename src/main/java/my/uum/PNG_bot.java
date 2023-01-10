@@ -53,6 +53,11 @@ public class PNG_bot extends TelegramLongPollingBot {
      */
     Map<Long, Room> RegisterRoomMap = new HashMap<Long, Room>();
 
+    /**
+     * Hashmap for adding roomlist information
+     */
+    Map<Long, RoomList> roomListMap = new HashMap<Long, RoomList>();
+
     public void onUpdateReceived(Update update) {
         SendMessage sendMessage = new SendMessage();
         DatabaseManager databaseManager = new DatabaseManager();
@@ -167,6 +172,21 @@ public class PNG_bot extends TelegramLongPollingBot {
                         e.printStackTrace();
                     }
                     break;
+
+                case "/roomlist":
+                    roomListMap.put(message.getChatId(),new RoomList("",0));
+                    userState.put(message.getChatId(),"RoomList:Date_School");
+                    sendMessage.setText("Please input the day that you want to view available rooms.\n\n" +
+                            "Example: 27/04/2023");
+
+                    try {
+                        sendMessage.setChatId(message.getChatId());
+                        execute(sendMessage);
+                    } catch (TelegramApiException e) {
+                        e.printStackTrace();
+                    }
+                    break;
+
 
                 case "/test":
                     usersMap.put(message.getChatId(), new Users("", "", "", "", ""));
@@ -502,7 +522,7 @@ public class PNG_bot extends TelegramLongPollingBot {
                                     if (databaseManager.checkBook(bookingMap.get(message.getChatId()).getRoomID(), bookingMap.get(message.getChatId()).getTemp())){
                                         text += "Booked time:\n";
                                         //display booked Time
-                                        text += databaseManager.bookedTime(bookingMap.get(message.getChatId()).getRoomID(), message.getText());
+                                        text += databaseManager.bookedTime(bookingMap.get(message.getChatId()).getRoomID(), message.getText()) + "\n";
                                     }
 
                                     text += "When do you want to start using the room?(In 24 hours time format)\n\nExample: 08:30";
@@ -557,7 +577,7 @@ public class PNG_bot extends TelegramLongPollingBot {
                                     } else {
 
                                         sendMessage.setText("Booked time:\n" + databaseManager.bookedTime(bookingMap.get(message.getChatId()).getRoomID(), bookingMap.get(message.getChatId()).getTemp())
-                                                + "Please choose a time that is not booked.");
+                                                + "\nPlease choose a time that is not booked.");
                                     }
                                 }else{
 
@@ -703,7 +723,7 @@ public class PNG_bot extends TelegramLongPollingBot {
 
                                         } else {
                                             sendMessage.setText("Booked time:\n" + databaseManager.bookedTime(bookingMap.get(message.getChatId()).getRoomID(), bookingMap.get(message.getChatId()).getTemp())
-                                                    + "Please choose a date that does not contradict the booking time.\n If you still wish to book this day, you can change the time first.");
+                                                    + "\nPlease choose a date that does not contradict the booking time.\n If you still wish to book this day, you can change the time first.");
                                         }
 
                                     } else {
@@ -764,7 +784,7 @@ public class PNG_bot extends TelegramLongPollingBot {
 
                                                 } else {
                                                     sendMessage.setText("Booked time:\n" + databaseManager.bookedTime(bookingMap.get(message.getChatId()).getRoomID(), bookingMap.get(message.getChatId()).getTemp())
-                                                            + "Please choose a time that is not booked.");
+                                                            + "\nPlease choose a time that is not booked.");
                                                 }
                                             } else {
                                                 //assign dateTemp as new Date
@@ -822,7 +842,7 @@ public class PNG_bot extends TelegramLongPollingBot {
 
                                             } else {
                                                 sendMessage.setText("Booked time:\n" + databaseManager.bookedTime(bookingMap.get(message.getChatId()).getRoomID(), bookingMap.get(message.getChatId()).getTemp())
-                                                        + "Please choose a time that is not booked.");
+                                                        + "\nPlease choose a time that is not booked.");
                                             }
                                         } else {
                                             //assign dateTemp as new Date
@@ -1376,6 +1396,92 @@ public class PNG_bot extends TelegramLongPollingBot {
                     e.printStackTrace();
                 }
             }
+
+            else if (!String.valueOf(message.getText().charAt(0)).equals("/") && userState.get(message.getChatId()).contains("RoomList:")) {
+                switch (userState.get(message.getChatId())){
+                    case "RoomList:Date_School":
+                        if(inputFormatChecker.DateFormat(message.getText())){
+                            roomListMap.get(message.getChatId()).setDate(message.getText());
+                            userState.put(message.getChatId(),"RoomList:Date_Room");
+
+                            sendMessage.setText(databaseManager.schoolBookList() + "\nWhat about the school?\nExample Reply: 1");
+
+                        }else{
+                            sendMessage.setText("Please re-enter the date in correct format.");
+                        }
+
+                    break;
+
+                    case "RoomList:Date_Room":
+                        if(!inputFormatChecker.NameFormat(message.getText())){
+                            if(databaseManager.SchoolHaveRoom(Integer.parseInt(message.getText()))){
+                                userState.put(message.getChatId(),"RoomList:Date_AvailableTime");
+                                roomListMap.get(message.getChatId()).setSchoolID(Integer.parseInt(message.getText()));
+                                sendMessage.setText(databaseManager.RoomListwDate(Integer.parseInt(message.getText()),roomListMap.get(message.getChatId()).getDate()) +
+                                        "You can enter room id if you want to learn more about specific room.\n" +
+                                        "Example reply: 2");
+                            }else{
+                                sendMessage.setText(databaseManager.schoolBookList() + "\nThis school does not exist. Please re-enter the school\n Example reply: 1");
+                            }
+                        }else{
+                            sendMessage.setText(databaseManager.schoolBookList() + "\nPlease enter a number.\nExample Reply: 1");
+                        }
+
+                    break;
+
+                    case "RoomList:Date_AvailableTime":
+                        if(!inputFormatChecker.NameFormat(message.getText())){
+                            if(databaseManager.checkRoom(message.getText(),roomListMap.get(message.getChatId()).getSchoolID())){
+                                String output ="";
+                                if(databaseManager.checkBook(Integer.parseInt(message.getText()),roomListMap.get(message.getChatId()).getDate())){
+                                    output += "Booked Time:\n";
+                                    output += databaseManager.bookedTime(Integer.parseInt(message.getText()),roomListMap.get(message.getChatId()).getDate()) + "\n";
+                                }
+
+                                output += databaseManager.RoomInfo(Integer.parseInt(message.getText()));
+
+                                output += "\n" + "If you want to check for more rooms, you can press the buttons below.";
+
+                                sendMessage = new SendMessage();
+                                sendMessage.setText(output);
+                                sendMessage.setChatId(message.getChatId());
+                                sendMessage.setParseMode(ParseMode.MARKDOWN);
+
+                                //Inline Keyboard Button
+                                InlineKeyboardMarkup inlineKeyboardMarkup2 = new InlineKeyboardMarkup();
+                                List<List<InlineKeyboardButton>> inlineButtons2 = new ArrayList<>();
+                                List<InlineKeyboardButton> inlineKeyboardButtonList5 = new ArrayList<>();
+                                List<InlineKeyboardButton> inlineKeyboardButtonList6 = new ArrayList<>();
+                                InlineKeyboardButton inlineKeyboardButton5 = new InlineKeyboardButton();
+                                InlineKeyboardButton inlineKeyboardButton6 = new InlineKeyboardButton();
+                                inlineKeyboardButton5.setText("Re-enter date");
+                                inlineKeyboardButton6.setText("Use the same date again");
+                                inlineKeyboardButton5.setCallbackData("RoomList:Date");
+                                inlineKeyboardButton6.setCallbackData("RoomList:Date_School");
+                                inlineKeyboardButtonList5.add(inlineKeyboardButton5);
+                                inlineKeyboardButtonList6.add(inlineKeyboardButton6);
+                                inlineButtons2.add(inlineKeyboardButtonList5);
+                                inlineButtons2.add(inlineKeyboardButtonList6);
+                                inlineKeyboardMarkup2.setKeyboard(inlineButtons2);
+                                sendMessage.setReplyMarkup(inlineKeyboardMarkup2);
+
+                            }else{
+                                sendMessage.setText("This room does not exist, please re-enter the room.\nExample reply: 2");
+                            }
+                        }else{
+                            sendMessage.setText("Please enter a number.");
+                        }
+
+                    break;
+                }
+
+                try {
+                    sendMessage.setChatId(message.getChatId());
+                    execute(sendMessage);
+                } catch (TelegramApiException e) {
+                    throw new RuntimeException(e);
+                }
+            }
         } else if (update.hasCallbackQuery()) {
             //buttonData will be categorized such as Book:Conf_Y, same reason as state
             String[] buttonData = update.getCallbackQuery().getData().split(":", 2);
@@ -1841,6 +1947,19 @@ public class PNG_bot extends TelegramLongPollingBot {
                 }
             }
 
+            else if(buttonData[0].equals("RoomList")){
+                if(data.equals("RoomList:Date")){
+                    userState.put(message.getChatId(),"RoomList:Date_School");
+                    sendMessage.setText("Please input the day that you want to view available rooms.\n\n" +
+                            "Example: 27/04/2023");
+                }
+
+                else if(data.equals("RoomList:Date_School")){
+                        userState.put(message.getChatId(),"RoomList:Date_Room");
+                        sendMessage.setText(databaseManager.schoolBookList() + "\nWhich school do you want to know more about\nExample Reply: 1");
+                }
+
+            }
             try {
                 execute(sendMessage);
             } catch (TelegramApiException e) {

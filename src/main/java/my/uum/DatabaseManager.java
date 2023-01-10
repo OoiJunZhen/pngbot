@@ -87,7 +87,7 @@ public class DatabaseManager {
     }
 
     /**
-     * @Author Ang Toon Ph'ng
+     * @author Ang Toon Ph'ng
      * This method is to loop and display a list of booked rooms made by the user
      * @param User_IC User's IC
      * @param viewOrDelete Determine whether user want to view or delete the booking list, the output will be altered slightly based on the String
@@ -146,7 +146,7 @@ public class DatabaseManager {
 
 
     /**
-     * @Author Ang Toon Ph'ng
+     * @author Ang Toon Ph'ng
      * This method is for the bot to greet User with their name in it, it will ask user what they want to do as well
      * @param User_IC User's Identification Number for searching purposes
      * @return Return the greeting message
@@ -178,7 +178,7 @@ public class DatabaseManager {
     }
 
     /**
-     * @Author Ang Toon Ph'ng
+     * @author Ang Toon Ph'ng
      * This method will display User's Info Including Name, Identification Number, and Staff ID
      * @param User_IC User's Identification Number
      * @return Return User's Info
@@ -217,7 +217,7 @@ public class DatabaseManager {
     }
 
     /**
-     * @Author Ang Toon Ph'ng
+     * @author Ang Toon Ph'ng
      * This method will check whether user exist in the database based on IC inserted
      * @param User_IC User's Identification Number
      * @return return True if the user is successfully found and vise versa
@@ -250,7 +250,7 @@ public class DatabaseManager {
     }
 
     /**
-     * @Author Ang Toon Ph'ng
+     * @author Ang Toon Ph'ng
      * Save user into the database
      * @param Name
      * @param User_IC
@@ -284,7 +284,7 @@ public class DatabaseManager {
     }
 
     /**
-     * @Author Ang Toon Ph'ng
+     * @author Ang Toon Ph'ng
      * Display a list of schools
      * @return school list
      */
@@ -346,7 +346,7 @@ public class DatabaseManager {
     }
 
     /**
-     * @Author Ang Toon Ph'ng
+     * @author Ang Toon Ph'ng
      * Check whether the school has room under it, if yes return True
      * @param School_ID
      * @return
@@ -380,7 +380,7 @@ public class DatabaseManager {
     }
 
     /**
-     * @Author Ang Toon Ph'ng
+     * @author Ang Toon Ph'ng
      * get School name based on school admin's IC
      * @return school list
      */
@@ -408,8 +408,9 @@ public class DatabaseManager {
     }
 
     /**
-     * get User's role either is User or School Admin
-      * @param User_IC
+     *get User's role either is User or School Admin
+     *@author Ang Toon Ph'ng
+     * @param User_IC
      * @return
      */
     public String getUserRole(String User_IC){
@@ -507,7 +508,7 @@ public class DatabaseManager {
     }
 
     /**
-     * @Author Ang Toon Ph'ng
+     * @author Ang Toon Ph'ng
      * This method will display all rooms from the Room table
      * @return room list
      */
@@ -531,6 +532,51 @@ public class DatabaseManager {
         }catch (SQLException e){
             System.out.println(e.getMessage());
         }
+        return roomList;
+    }
+
+    /**
+     * List out all available room while checking whether that day are booked or not
+     *
+     * @param School_ID
+     * @return
+     */
+    public String RoomListwDate(Integer School_ID, String date) {
+        String book = "";
+        String book2 = "";
+        String roomList = " ";
+        String q = "SELECT Room_ID, Room_Name, Maximum_Capacity, Room_Type FROM Room WHERE School_ID=?";
+
+        try (Connection conn = this.connect()) {
+            PreparedStatement preparedStatement = conn.prepareStatement(q);
+
+            preparedStatement.setInt(1, School_ID);
+
+            ResultSet rs = preparedStatement.executeQuery();
+
+            while (rs.next()) {
+                if (checkBook(rs.getInt("Room_ID"), date)) {
+                    book = " <book>";
+                    book2 = "<book>: There might have some time which is unavailable, due to someone has booked" +
+                            " this room.\n\n";
+                } else {
+                    book = "";
+                }
+
+                roomList +=
+                        "Reply " + rs.getInt("Room_ID") + ":\n" +
+                                "Room Name: " + rs.getString("Room_Name") + book + "\n" +
+                                "Maximum Capacity: " + rs.getString("Maximum_Capacity") + "\n" +
+                                "Type: " + rs.getString("Room_Type") + "\n\n";
+            }
+
+            roomList += book2;
+
+
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+
         return roomList;
     }
 
@@ -558,8 +604,8 @@ public class DatabaseManager {
     }
 
     /**
-     * @Author Ang Toon Ph'ng
-     * This method will display room's details based on the Room ID
+     * @author Ang Toon Ph'ng
+     * This method will display room's details based on the Room ID while asking whether user want to book the room
      * @param Room_ID Room ID
      * @return Room's Details
      */
@@ -594,7 +640,37 @@ public class DatabaseManager {
     }
 
     /**
-     * @Author Ang Toon Ph'ng
+     * @author Ang Toon Ph'ng
+     * This method will display room's details based on the Room ID
+     * @param Room_ID Room ID
+     * @return Room's Details
+     */
+    public String RoomInfo(Integer Room_ID){
+        String roomInfo = "";
+        String q = "SELECT Room_Name, Room_Description, Maximum_Capacity, Room_Type, Building_Address FROM Room INNER JOIN Building ON Room.Building_ID = Building.Building_ID WHERE Room_ID=?";
+
+
+        try(Connection conn = this.connect()){
+            PreparedStatement preparedStatement = conn.prepareStatement(q);
+
+            preparedStatement.setInt(1, Room_ID);
+            ResultSet rs = preparedStatement.executeQuery();
+            while(rs.next()){
+                roomInfo+=
+                        "Room Name: " + rs.getString("Room_Name") + "\n"+
+                                "Description: " + rs.getString("Room_Description") + "\n" +
+                                "Maximum Capacity: " + rs.getString("Maximum_Capacity") + "\n" +
+                                "Type: " + rs.getString("Room_Type") + "\n";
+            }
+
+
+        }catch (SQLException e){
+            System.out.println(e.getMessage());       }
+        return roomInfo;
+    }
+
+    /**
+     * @author Ang Toon Ph'ng
      * Check whether the room id inputted by user exist in database
      * @param input
      * @param School_ID
@@ -642,7 +718,7 @@ public class DatabaseManager {
     }
 
     /**
-     * @Author Ang Toon Ph'ng
+     * @author Ang Toon Ph'ng
      * check whether the there are people who book this room during the day/date
      * @param Room_ID Room ID
      * @param inputDate the day
@@ -699,7 +775,7 @@ public class DatabaseManager {
     }
 
     /**
-     * @Author Ang Toon Ph'ng
+     * @author Ang Toon Ph'ng
      * List out booked time in a room
      * @param Room_ID
      * @param input date
@@ -768,7 +844,7 @@ public class DatabaseManager {
     }
 
     /**
-     * @Author Ang Toon Ph'ng
+     * @author Ang Toon Ph'ng
      * Check whether the time contradicted with booked time. If yes, return true. If no, return false
      * @param Room_ID
      * @param Date
@@ -845,7 +921,7 @@ public class DatabaseManager {
     }
 
     /**
-     * @Author Ang Toon Ph'ng
+     * @author Ang Toon Ph'ng
      * Check whether the time contradicted with booked time when both start and end time are acquired. If yes, return true. If no, return false
      * @param Room_ID
      * @param Date
@@ -923,7 +999,7 @@ public class DatabaseManager {
     }
 
     /**
-     * @Author Ang Toon Ph'ng
+     * @author Ang Toon Ph'ng
      * Get room name based on room ID
      * @param Room_ID
      * @return
@@ -950,7 +1026,7 @@ public class DatabaseManager {
     }
 
     /**
-     * @Author Ang Toon Ph'ng
+     * @author Ang Toon Ph'ng
      * @param Booking_Purpose
      * @param Book_StartTime
      * @param Book_EndTime
@@ -983,7 +1059,8 @@ public class DatabaseManager {
     }
 
     /**
-     * @Author Ang Toon Ph'ng
+     * This is to check whether user have made booking
+     * @author Ang Toon Ph'ng
      * @param User_IC
      * @return
      */
@@ -1012,7 +1089,7 @@ public class DatabaseManager {
     }
 
     /**
-     * @Author XinYin
+     * @author XinYin
      * @param User_IC
      * @param viewordetails
      * @return
@@ -1071,7 +1148,7 @@ public class DatabaseManager {
     }
 
     /**
-     * @Author XinYin
+     * @author XinYin
      * @param User_IC
      * @param vieworedit
      * @return
@@ -1117,7 +1194,7 @@ public class DatabaseManager {
     }
 
     /**
-     * @Author XinYin
+     * @author XinYin
      * @param User_IC
      * @param Name
      */
@@ -1139,7 +1216,7 @@ public class DatabaseManager {
 
 
     /**
-     * @Author XinYin
+     * @author XinYin
      * @param User_IC
      * @param Email
      */
@@ -1158,7 +1235,7 @@ public class DatabaseManager {
     }
 
     /**
-     * @Author XinYin
+     * @author XinYin
      * @param User_IC
      * @param SatffID
      */
@@ -1177,7 +1254,7 @@ public class DatabaseManager {
     }
 
     /**
-     * @Author XinYin
+     * @author XinYin
      * @param User_IC
      * @param TelNo
      */
@@ -1196,7 +1273,7 @@ public class DatabaseManager {
     }
 
     /**
-     * @Author XinYin
+     * @author XinYin
      * @param User_IC
      * @param Booking_ID
      * @return
@@ -1220,7 +1297,7 @@ public class DatabaseManager {
     }
 
     /**
-     * @Author XinYIn
+     * @author XinYIn
      * @param Booking_ID
      * @return
      */
@@ -1268,7 +1345,7 @@ public class DatabaseManager {
     }
 
     /**
-     * @Author XinYin
+     * @author XinYin
      * @param input
      * @return
      */
@@ -1311,7 +1388,7 @@ public class DatabaseManager {
     }
 
     /**
-     * @Author XinYin
+     * @author XinYin
      * @param User_IC
      * @return
      */
