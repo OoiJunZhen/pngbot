@@ -345,6 +345,12 @@ public class DatabaseManager {
         return list;
     }
 
+    /**
+     * @Author Ang Toon Ph'ng
+     * Check whether the school has room under it, if yes return True
+     * @param School_ID
+     * @return
+     */
     protected boolean SchoolHaveRoom(Integer School_ID){
         Integer check = 0;
 
@@ -370,6 +376,86 @@ public class DatabaseManager {
             return false;
         }
         else
+            return true;
+    }
+
+    /**
+     * @Author Ang Toon Ph'ng
+     * get School name based on school admin's IC
+     * @return school list
+     */
+    public String getSchoolName(String User_IC){
+        String schoolName = "";
+
+        String q = "SELECT School_Name FROM School INNER JOIN School_Admin ON School_Admin.School_ID = School.School_ID WHERE School_Admin.User_IC=?";
+
+
+        try(Connection conn = this.connect()){
+            PreparedStatement preparedStatement = conn.prepareStatement(q);
+
+            preparedStatement.setString(1,User_IC);
+            ResultSet rs = preparedStatement.executeQuery();
+            while(rs.next()){
+                schoolName = rs.getString("School_Name");
+                break;
+            }
+
+        }catch (SQLException e){
+            System.out.println(e.getMessage());
+        }
+        
+        return schoolName;
+    }
+
+    /**
+     * get User's role either is User or School Admin
+      * @param User_IC
+     * @return
+     */
+    public String getUserRole(String User_IC){
+        String userRole = "";
+        String q = "SELECT User_Role FROM Users WHERE User_IC=?";
+
+        try(Connection conn = this.connect()){
+            PreparedStatement preparedStatement = conn.prepareStatement(q);
+
+            preparedStatement.setString(1,User_IC);
+            ResultSet rs = preparedStatement.executeQuery();
+            while(rs.next()){
+                userRole=rs.getString("User_Role");
+            }
+
+        }catch (SQLException e){
+            System.out.println(e.getMessage());
+        }
+        return userRole;
+    }
+
+    /**
+     * Check whether the school admin have office number, return true if got
+     * @param User_IC
+     * @return
+     */
+    public boolean checkOfficeNum(String User_IC){
+        boolean check = false;
+        String no = "";
+        String q = "SELECT Office_TelNo FROM School_Admin WHERE User_IC=?";
+
+        try(Connection conn = this.connect()){
+            PreparedStatement preparedStatement = conn.prepareStatement(q);
+
+            preparedStatement.setString(1,User_IC);
+            ResultSet rs = preparedStatement.executeQuery();
+            while(rs.next()){
+                no=rs.getString("Office_TelNo");
+            }
+
+        }catch (SQLException e){
+            System.out.println(e.getMessage());
+        }
+        if(no.equals("")){
+            return false;
+        }else
             return true;
     }
 
@@ -425,7 +511,7 @@ public class DatabaseManager {
      * This method will display all rooms from the Room table
      * @return room list
      */
-    public String getRoomList(Integer School_ID){
+    public String getBookRoomList(Integer School_ID){
         String roomList = " ";
         String q = "SELECT Room_ID, Room_Name, Maximum_Capacity, Room_Type FROM Room WHERE School_ID=?";
 
@@ -437,6 +523,29 @@ public class DatabaseManager {
             while(rs.next()){
                 roomList+=
                         "Reply " + rs.getInt("Room_ID") + ":\n" +
+                                "Room Name: " + rs.getString("Room_Name") + "\n"+
+                                "Maximum Capacity: " + rs.getString("Maximum_Capacity") + "\n" +
+                                "Type: " + rs.getString("Room_Type") + "\n\n";
+            }
+
+        }catch (SQLException e){
+            System.out.println(e.getMessage());
+        }
+        return roomList;
+    }
+
+    public String getSchoolAdRoomList(String User_IC){
+        String roomList = " ";
+        String q = "SELECT Room_ID, Room_Name, Maximum_Capacity, Room_Type FROM Room INNER JOIN School_Admin ON Room.School_ID = School_Admin.School_ID WHERE User_IC=?";
+
+        try(Connection conn = this.connect()){
+            PreparedStatement preparedStatement = conn.prepareStatement(q);
+
+            preparedStatement.setString(1,User_IC);
+            ResultSet rs = preparedStatement.executeQuery();
+            while(rs.next()){
+                roomList+=
+                        "Room ID: " + rs.getInt("Room_ID") + "\n" +
                                 "Room Name: " + rs.getString("Room_Name") + "\n"+
                                 "Maximum Capacity: " + rs.getString("Maximum_Capacity") + "\n" +
                                 "Type: " + rs.getString("Room_Type") + "\n\n";
