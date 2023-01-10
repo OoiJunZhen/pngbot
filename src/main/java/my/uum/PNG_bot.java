@@ -1436,6 +1436,8 @@ public class PNG_bot extends TelegramLongPollingBot {
                                 if(databaseManager.checkBook(Integer.parseInt(message.getText()),roomListMap.get(message.getChatId()).getDate())){
                                     output += "Booked Time:\n";
                                     output += databaseManager.bookedTime(Integer.parseInt(message.getText()),roomListMap.get(message.getChatId()).getDate()) + "\n";
+                                } else{
+                                    output += "There are no booked time\n\n";
                                 }
 
                                 output += databaseManager.RoomInfo(Integer.parseInt(message.getText()));
