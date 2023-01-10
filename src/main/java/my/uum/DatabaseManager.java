@@ -316,6 +316,63 @@ public class DatabaseManager {
         return list;
     }
 
+    public String schoolBookList(){
+        String list = "";
+
+        String q = "SELECT * FROM School";
+
+
+        try(Connection conn = this.connect()){
+            PreparedStatement preparedStatement = conn.prepareStatement(q);
+
+            ResultSet rs = preparedStatement.executeQuery();
+            while(rs.next()){
+                if(SchoolHaveRoom(rs.getInt("School_ID"))){
+                    list+= "Reply " + rs.getInt("School_ID") +": "+"\n"+
+                            "School Name: " + rs.getString("School_Name") + "\n\n ";
+                }
+            }
+
+            if(list.equals("")){
+                list+="Sorry, there are no school registered in this system yet";
+            }
+
+        }catch (SQLException e){
+            System.out.println(e.getMessage());
+        }
+
+
+        return list;
+    }
+
+    protected boolean SchoolHaveRoom(Integer School_ID){
+        Integer check = 0;
+
+        String q = "SELECT * FROM Room WHERE School_ID=?";
+
+
+        try(Connection conn = this.connect()){
+            PreparedStatement preparedStatement = conn.prepareStatement(q);
+
+            preparedStatement.setInt(1,School_ID);
+            ResultSet rs = preparedStatement.executeQuery();
+            while(rs.next()){
+                check = rs.getInt("School_ID");
+                break;
+            }
+
+        }catch (SQLException e){
+            System.out.println(e.getMessage());
+        }
+
+
+        if(check == 0){
+            return false;
+        }
+        else
+            return true;
+    }
+
     /**
      * @Author Ang Toon Ph'ng
      *Check whether the school id inputted by user exist in database
@@ -370,7 +427,7 @@ public class DatabaseManager {
      */
     public String getRoomList(Integer School_ID){
         String roomList = " ";
-        String q = "SELECT Room_ID, Room_Name, Maximum_Capacity, Room_Type FROM Room WHERE School_ID=?";
+        String q = "SELECT Room_ID, Room_Name, Maximum_Capacity, Room_Type, Building_Address FROM Room INNER JOIN Building ON Room.Building_ID = Building.Building_ID WHERE School_ID=?";
 
         try(Connection conn = this.connect()){
             PreparedStatement preparedStatement = conn.prepareStatement(q);
@@ -382,7 +439,8 @@ public class DatabaseManager {
                         "Reply " + rs.getInt("Room_ID") + ":\n" +
                                 "Room Name: " + rs.getString("Room_Name") + "\n"+
                                 "Maximum Capacity: " + rs.getString("Maximum_Capacity") + "\n" +
-                                "Type: " + rs.getString("Room_Type") + "\n\n";
+                                "Type: " + rs.getString("Room_Type") + "\n" +
+                                "Building Address: " + rs.getString("Building_Address") + "\n\n";
             }
 
         }catch (SQLException e){

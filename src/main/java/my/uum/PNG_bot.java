@@ -397,7 +397,7 @@ public class PNG_bot extends TelegramLongPollingBot {
                                 bookingMap.put(message.getChatId(), new Booking(date, date, date, 0, "", "", 0, password[0]));
                                 userState.put(message.getChatId(), "Book:Room");
 
-                                String list = databaseManager.schoolList();
+                                String list = databaseManager.schoolBookList();
                                 list += "Excellent! Which school do you wish to book in?\nExample reply: 1";
 
                                 sendMessage.setText(list);
@@ -415,20 +415,34 @@ public class PNG_bot extends TelegramLongPollingBot {
                         break;
 
                     case "Book:Room":
-                        if (databaseManager.checkSchool(message.getText())) {
-                            userState.put(message.getChatId(), "Book:RoomDetails");
-                            bookingMap.get(message.getChatId()).setRoomID(Integer.parseInt(message.getText()));
-                            String roomList = databaseManager.getRoomList(bookingMap.get(message.getChatId()).getRoomID());
-
-                            roomList += "Which room do you want to book?\nExample reply: 1";
-                            sendMessage.setText(roomList);
-
-                        } else {
-                            String list2 = databaseManager.schoolList();
-                            list2 += "This school does not exist. Please re-enter the school that you wish to book in.\nExample reply: 1";
-
-                            sendMessage.setText(list2);
+                        boolean schoolIDCheck = false;
+                        try{
+                            Integer.parseInt(message.getText());
+                            schoolIDCheck=true;
+                        }catch(NumberFormatException e){
+                            System.out.println("Wrong School ID input");
+                            sendMessage.setText("Please enter a  number.");
                         }
+
+                        if(schoolIDCheck){
+                            if(databaseManager.SchoolHaveRoom(Integer.parseInt(message.getText()))){
+                                if (databaseManager.checkSchool(message.getText())&&databaseManager.SchoolHaveRoom(Integer.parseInt(message.getText()))) {
+                                    userState.put(message.getChatId(), "Book:RoomDetails");
+                                    bookingMap.get(message.getChatId()).setRoomID(Integer.parseInt(message.getText()));
+                                    String roomList = databaseManager.getRoomList(bookingMap.get(message.getChatId()).getRoomID());
+
+                                    roomList += "Which room do you want to book?\nExample reply: 1";
+                                    sendMessage.setText(roomList);
+
+                                } else {
+                                    String list2 = databaseManager.schoolBookList();
+                                    list2 += "This school does not exist. Please re-enter the school that you wish to book in.\nExample reply: 1";
+
+                                    sendMessage.setText(list2);
+                                }
+                            }
+                        }
+
                         break;
 
                     case "Book:RoomDetails":
@@ -1400,7 +1414,7 @@ public class PNG_bot extends TelegramLongPollingBot {
 
                     userState.put(message.getChatId(), "Book:Room");
 
-                    String list = databaseManager.schoolList();
+                    String list = databaseManager.schoolBookList();
                     list += "Excellent! Which school do you wish to book in?\nExample reply: 1";
 
                     sendMessage.setText(list);
@@ -1412,7 +1426,7 @@ public class PNG_bot extends TelegramLongPollingBot {
                     bookingMap.put(message.getChatId(), new Booking(date, date, date, 0, "", "", 0, usersMap.get(message.getChatId()).getICNO()));
                     userState.put(message.getChatId(), "Book:Room");
 
-                    String list = databaseManager.schoolList();
+                    String list = databaseManager.schoolBookList();
                     list += "Which school do you wish to book in?\nExample reply: 1";
 
                     sendMessage.setText(list);
