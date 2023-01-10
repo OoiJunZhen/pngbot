@@ -41,12 +41,17 @@ public class PNG_bot extends TelegramLongPollingBot {
     /**
      * Hashmap for adding school admin information
      */
-    //Map<Long, SchoolAdmin> schoolAdminMap = new HashMap<Long, SchoolAdmin>();
+    Map<Long, SchoolAdmin> schoolAdminMap = new HashMap<Long, SchoolAdmin>();
 
     /**
      * Hashmap for adding booking information
      */
     Map<Long, Booking> bookingMap = new HashMap<Long, Booking>();
+
+    /**
+     * Hashmap for adding room information
+     */
+    Map<Long, Room> RegisterRoomMap = new HashMap<Long, Room>();
 
     public void onUpdateReceived(Update update) {
         SendMessage sendMessage = new SendMessage();
@@ -113,6 +118,7 @@ public class PNG_bot extends TelegramLongPollingBot {
                         e.printStackTrace();
                     }
                     break;
+
                 case "/login":
                     usersMap.put(message.getChatId(), new Users("", "", "", "", ""));
                     userState.put(message.getChatId(), "Login:Verification");
@@ -121,6 +127,39 @@ public class PNG_bot extends TelegramLongPollingBot {
                     sendMessage = new SendMessage();
                     sendMessage.setText(info3);
                     sendMessage.setChatId(message.getChatId().toString());
+
+                    try {
+                        execute(sendMessage);
+                    } catch (TelegramApiException e) {
+                        e.printStackTrace();
+                    }
+                    break;
+
+                case "/registeruser":
+                    schoolAdminMap.put(message.getChatId(), new SchoolAdmin("", "", "", "", "","", "", ""));// String name, String ICNO, String email, String staffID, String telNo, String schoolName
+                    userState.put(message.getChatId(), "Register");
+                    String msg10 = "Do you want register to become the school admin";
+                    sendMessage = new SendMessage();
+                    sendMessage.setText(msg10);
+                    //sendMessage.setChatId(message.getChatId().toString());
+                    sendMessage.setParseMode(ParseMode.MARKDOWN);
+                    sendMessage.setChatId(message.getChatId());
+
+                    //Inline Keyboard Button
+                    InlineKeyboardMarkup inlineKeyboardMarkup10 = new InlineKeyboardMarkup();
+                    List<List<InlineKeyboardButton>> inlineButtons10 = new ArrayList<>();
+                    List<InlineKeyboardButton> inlineKeyboardButtonList10 = new ArrayList<>();
+                    InlineKeyboardButton inlineKeyboardButton10 = new InlineKeyboardButton();
+                    InlineKeyboardButton inlineKeyboardButton11 = new InlineKeyboardButton();
+                    inlineKeyboardButton10.setText("Yes");
+                    inlineKeyboardButton11.setText("No");
+                    inlineKeyboardButton10.setCallbackData("Register:Register_Y");
+                    inlineKeyboardButton11.setCallbackData("Register:Register_N");
+                    inlineKeyboardButtonList10.add(inlineKeyboardButton10);
+                    inlineKeyboardButtonList10.add(inlineKeyboardButton11);
+                    inlineButtons10.add(inlineKeyboardButtonList10);
+                    inlineKeyboardMarkup10.setKeyboard(inlineButtons10);
+                    sendMessage.setReplyMarkup(inlineKeyboardMarkup10);
 
                     try {
                         execute(sendMessage);
@@ -1068,8 +1107,185 @@ public class PNG_bot extends TelegramLongPollingBot {
                 }
             }
 
+            //Go to check state if no command found AND State have the first word as 'Register'
+            else if (!String.valueOf(message.getText().charAt(0)).equals("/") && userState.get(message.getChatId()).contains("Register:")) {
+                switch (userState.get(message.getChatId())) {
+
+                    case "Register:IC":
+                        if (inputFormatChecker.NameFormat(message.getText())) {
+                            // save name
+                            schoolAdminMap.get(message.getChatId()).setName(message.getText());
+
+                            //set新的State
+                            userState.put(message.getChatId(), "Register:Email");
+                            sendMessage.setText("How about your IC number: \nExample: 001211080731");
+
+                        } else {
+                            sendMessage.setText("Please re-enter your name.");
+                        }
+
+                        break;
+
+                    case "Register:Email":
+                        if (inputFormatChecker.checkICFormat(message.getText())) {
+                            schoolAdminMap.get(message.getChatId()).setICNO(message.getText());
+                            //if database has user
+                            if (databaseManager.checkUser(message.getText())) {
+                                String text = databaseManager.displayUserInfo(schoolAdminMap.get(message.getChatId()).getICNO());
+
+                                sendMessage = new SendMessage();
+                                sendMessage.setText(text);
+                                sendMessage.setParseMode(ParseMode.MARKDOWN);
+
+                                //Inline Keyboard Button
+                                InlineKeyboardMarkup inlineKeyboardMarkup = new InlineKeyboardMarkup();
+                                List<List<InlineKeyboardButton>> inlineButtons = new ArrayList<>();
+                                List<InlineKeyboardButton> inlineKeyboardButtonList1 = new ArrayList<>();
+                                List<InlineKeyboardButton> inlineKeyboardButtonList2 = new ArrayList<>();
+                                InlineKeyboardButton inlineKeyboardButton1 = new InlineKeyboardButton();
+                                InlineKeyboardButton inlineKeyboardButton2 = new InlineKeyboardButton();
+                                inlineKeyboardButton1.setText("Yes");
+                                inlineKeyboardButton2.setText("No");
+                                inlineKeyboardButton1.setCallbackData("Register:Verify");
+                                inlineKeyboardButton2.setCallbackData("Register:IC");
+                                inlineKeyboardButtonList1.add(inlineKeyboardButton1);
+                                inlineKeyboardButtonList2.add(inlineKeyboardButton2);
+                                inlineButtons.add(inlineKeyboardButtonList1);
+                                inlineButtons.add(inlineKeyboardButtonList2);
+                                inlineKeyboardMarkup.setKeyboard(inlineButtons);
+                                sendMessage.setReplyMarkup(inlineKeyboardMarkup);
+                            } else {
+
+                                schoolAdminMap.get(message.getChatId()).setICNO(message.getText());
+                                userState.put(message.getChatId(), "Register:StaffID");
+                                sendMessage.setText("How about your Email?");
+                            }
+                        } else {
+                            sendMessage.setText("Please enter your IC in correct format thank you :).");
+                        }
+
+                        break;
+
+                    case "Register:StaffID":
+                        if (inputFormatChecker.EmailFormat(message.getText())) {
+                            schoolAdminMap.get(message.getChatId()).setEmail(message.getText());
+                            userState.put(message.getChatId(), "Register:Mobile");
+                            sendMessage.setText("Almost there! How about your Staff ID?\n\nExample: abc123");
+
+                        } else {
+                            sendMessage.setText("Please enter your email in correct format, thank you :)");
+                        }
+
+                        break;
+
+                    case "Register:Mobile":
+                        schoolAdminMap.get(message.getChatId()).setStaffID(message.getText());
+                        userState.put(message.getChatId(), "Register:Check1");
+
+                        sendMessage.setText("How about your Telephone Mobile Number? \n\n Example: 0124773579");
+
+                        break;
+
+                    case "Register:Check1":
+                    case "Register:Chan_Name":
+                    case "Register:Chan_IC":
+                    case "Register:Chan_Email":
+                    case "Register:Chan_StaffID":
+                    case "Register:Chan_Mobile":
+
+                        boolean msg1 = false;
+                        if (userState.get(message.getChatId()).equals("Register:Check1") || userState.get(message.getChatId()).equals("Register:Chan_Mobile")) {
+                            if (inputFormatChecker.TelNumFormat(message.getText())) {
+                                schoolAdminMap.get(message.getChatId()).setTelNo(message.getText());
+                                msg1 = true;
+                                System.out.println(msg1);
+                            } else {
+                                sendMessage.setText("Please enter your phone number in correct format thank you.\n\n" +
+                                        "Example: 0124773579");
+                            }
+                        } else if (userState.get(message.getChatId()).equals("Register:Chan_Name")) {
+                            if (inputFormatChecker.NameFormat(message.getText())) {
+                                schoolAdminMap.get(message.getChatId()).setName(message.getText());
+                                msg1 = true;
+                            } else {
+                                sendMessage.setText("Please re-enter your name.\n\n" +
+                                        "Example: Ang Toon Phng");
+                            }
+                        } else if (userState.get(message.getChatId()).equals("Register:Chan_IC")) {
+                            if (inputFormatChecker.checkICFormat(message.getText())) {
+
+                                //check if user exist in the database
+                                if (!databaseManager.checkUser(message.getText())) {
+                                    schoolAdminMap.get(message.getChatId()).setICNO(message.getText());
+                                    msg1 = true;
+                                } else {
+                                    //if IC already used, then it is invalid
+                                    sendMessage.setText("Sorry, this IC had been used by someone else, please enter another IC number\n\n" +
+                                            "Example: 001211080731");
+                                }
+                            } else {
+                                sendMessage.setText("Please re-enter your IC in correct format thank you.\n\n" +
+                                        "Example: 001211080731");
+                            }
+
+                        } else if (userState.get(message.getChatId()).equals("Register:Chan_Email")) {
+                            if (inputFormatChecker.EmailFormat(message.getText())) {
+                                schoolAdminMap.get(message.getChatId()).setEmail(message.getText());
+                                msg1 = true;
+                            } else {
+                                sendMessage.setText("Please re-enter the email in correct format thank you.\n\n" +
+                                        "Example: MyEmail@hotmail.com");
+                            }
 
 
+                        } else if (userState.get(message.getChatId()).equals("Register:Chan_StaffID")) {
+                            schoolAdminMap.get(message.getChatId()).setStaffID(message.getText());
+                            msg1 = true;
+
+                        }
+
+                        if (msg1) {
+                            String UserInfo = "\nName: " + schoolAdminMap.get(message.getChatId()).getName() +
+                                    "\nIC Number: " + schoolAdminMap.get(message.getChatId()).getICNO() +
+                                    "\nEmail: " + schoolAdminMap.get(message.getChatId()).getEmail() +
+                                    "\nStaffID: " + schoolAdminMap.get(message.getChatId()).getStaffID() +
+                                    "\nMobile Number: " + schoolAdminMap.get(message.getChatId()).getTelNo() +
+                                    "\nAre these the correct information?\n";
+
+
+                            sendMessage = new SendMessage();
+                            sendMessage.setText(UserInfo);
+                            sendMessage.setParseMode(ParseMode.MARKDOWN);
+
+                            //Inline Keyboard Button
+                            InlineKeyboardMarkup inlineKeyboardMarkup = new InlineKeyboardMarkup();
+                            List<List<InlineKeyboardButton>> inlineButtons = new ArrayList<>();
+                            List<InlineKeyboardButton> inlineKeyboardButtonList12 = new ArrayList<>();
+                            List<InlineKeyboardButton> inlineKeyboardButtonList13 = new ArrayList<>();
+                            InlineKeyboardButton inlineKeyboardButton12 = new InlineKeyboardButton();
+                            InlineKeyboardButton inlineKeyboardButton13 = new InlineKeyboardButton();
+                            inlineKeyboardButton12.setText("Yes");
+                            inlineKeyboardButton13.setText("No I would like to change something");
+                            inlineKeyboardButton12.setCallbackData("Register:Success");
+                            inlineKeyboardButton13.setCallbackData("Register:ChangeUserData");
+                            inlineKeyboardButtonList12.add(inlineKeyboardButton12);
+                            inlineKeyboardButtonList13.add(inlineKeyboardButton13);
+                            inlineButtons.add(inlineKeyboardButtonList12);
+                            inlineButtons.add(inlineKeyboardButtonList13);
+                            inlineKeyboardMarkup.setKeyboard(inlineButtons);
+                            sendMessage.setReplyMarkup(inlineKeyboardMarkup);
+                        }
+
+                        break;
+
+                }
+                try {
+                    sendMessage.setChatId(message.getChatId());
+                    execute(sendMessage);
+                } catch (TelegramApiException e) {
+                    e.printStackTrace();
+                }
+            }
         } else if (update.hasCallbackQuery()) {
             //buttonData will be categorized such as Book:Conf_Y, same reason as state
             String[] buttonData = update.getCallbackQuery().getData().split(":", 2);
@@ -1280,7 +1496,9 @@ public class PNG_bot extends TelegramLongPollingBot {
                 }
 
 
-            } else if(buttonData[0].equals("Login")){
+            }
+
+            else if(buttonData[0].equals("Login")){
                 if(data.equals("Login:ViewBook")){
                     if (databaseManager.checkUserIC(usersMap.get(message.getChatId()).getICNO())) {
 
@@ -1435,6 +1653,101 @@ public class PNG_bot extends TelegramLongPollingBot {
                     inlineKeyboardMarkup.setKeyboard(inlineButtons);
                     sendMessage.setReplyMarkup(inlineKeyboardMarkup);
 
+                }
+            }
+
+            else if (buttonData[0].equals("Register")) {
+                if (data.equals("Register:Register_Y")) {
+
+                    userState.put(message.getChatId(), "Register:IC");
+                    sendMessage.setText("Please Enter your NAME as per NRIC number : \nExample: Ang Toon Phng");
+
+                } else if (data.equals("Register:Register_N")) {
+                    sendMessage.setText("I'll be here whenever you need me :)");
+
+                } else if (data.equals("Register:Verify")) {
+                    sendMessage.setText("Your information had already exist in the database. \nTo access more function, please use \n\n/login");
+
+                } else if (data.equals("Register:IC")) {
+
+                    userState.put(message.getChatId(), "Register:Email");
+                    sendMessage.setText("This IC has been used by someone else, please re-enter your IC again");
+                } else if (data.equals("Register:Success")) {
+                    databaseManager.insertUser(schoolAdminMap.get(message.getChatId()).getName(), schoolAdminMap.get(message.getChatId()).getICNO(), schoolAdminMap.get(message.getChatId()).getEmail(), schoolAdminMap.get(message.getChatId()).getStaffID(), schoolAdminMap.get(message.getChatId()).getTelNo());
+                    userState.put(message.getChatId(), "Register:SchoolName");
+                    sendMessage.setText("Excellent!\nYou have successfully registered your information!\n\n" +
+                            "To access more function please use \n\n/login");
+                } else if (data.equals("Register:ChangeUserData")) {
+
+                    String UserInfo = "\nName: " + schoolAdminMap.get(message.getChatId()).getName() +
+                            "\nIC Number: " + schoolAdminMap.get(message.getChatId()).getICNO() +
+                            "\nEmail: " + schoolAdminMap.get(message.getChatId()).getEmail() +
+                            "\nStaffID: " + schoolAdminMap.get(message.getChatId()).getStaffID() +
+                            "\nMobile Number: " + schoolAdminMap.get(message.getChatId()).getTelNo() +
+                            "\nAre these the correct information?\n";
+
+
+                    sendMessage = new SendMessage();
+                    sendMessage.setText(UserInfo);
+                    sendMessage.setParseMode(ParseMode.MARKDOWN);
+
+                    //Inline Keyboard Button
+                    InlineKeyboardMarkup inlineKeyboardMarkup = new InlineKeyboardMarkup();
+                    List<List<InlineKeyboardButton>> inlineButtons = new ArrayList<>();
+                    List<InlineKeyboardButton> inlineKeyboardButtonList1 = new ArrayList<>();
+                    List<InlineKeyboardButton> inlineKeyboardButtonList2 = new ArrayList<>();
+                    List<InlineKeyboardButton> inlineKeyboardButtonList3 = new ArrayList<>();
+                    InlineKeyboardButton inlineKeyboardButton1 = new InlineKeyboardButton();
+                    InlineKeyboardButton inlineKeyboardButton2 = new InlineKeyboardButton();
+                    InlineKeyboardButton inlineKeyboardButton3 = new InlineKeyboardButton();
+                    InlineKeyboardButton inlineKeyboardButton4 = new InlineKeyboardButton();
+                    InlineKeyboardButton inlineKeyboardButton5 = new InlineKeyboardButton();
+                    inlineKeyboardButton1.setText("Name");
+                    inlineKeyboardButton2.setText("IC Number");
+                    inlineKeyboardButton3.setText("Email");
+                    inlineKeyboardButton4.setText("StaffID");
+                    inlineKeyboardButton5.setText("Mobile");
+                    inlineKeyboardButton1.setCallbackData("Register:Chan_Name");
+                    inlineKeyboardButton2.setCallbackData("Register:Chan_IC");
+                    inlineKeyboardButton3.setCallbackData("Register:Chan_Email");
+                    inlineKeyboardButton4.setCallbackData("Register:Chan_StaffID");
+                    inlineKeyboardButton5.setCallbackData("Register:Chan_Mobile");
+                    inlineKeyboardButtonList1.add(inlineKeyboardButton1);
+                    inlineKeyboardButtonList1.add(inlineKeyboardButton2);
+                    inlineKeyboardButtonList2.add(inlineKeyboardButton3);
+                    inlineKeyboardButtonList2.add(inlineKeyboardButton4);
+                    inlineKeyboardButtonList3.add(inlineKeyboardButton5);
+                    inlineButtons.add(inlineKeyboardButtonList1);
+                    inlineButtons.add(inlineKeyboardButtonList2);
+                    inlineButtons.add(inlineKeyboardButtonList3);
+                    inlineKeyboardMarkup.setKeyboard(inlineButtons);
+                    sendMessage.setReplyMarkup(inlineKeyboardMarkup);
+
+                } else if (data.equals("Register:Chan_Name") || data.equals("Register:Chan_IC") ||
+                        data.equals("Register:Chan_Email") || data.equals("Register:Chan_StaffID") ||
+                        data.equals("Register:Chan_Mobile")) {
+                    if (data.equals("Register:Chan_Name")) {
+                        userState.put(message.getChatId(), "Register:Chan_Name");
+                        sendMessage.setText("What do you want to change the name to?\n\n" +
+                                "Example: Ang Toon Phng");
+                    } else if (data.equals("Register:Chan_IC")) {
+                        userState.put(message.getChatId(), "Register:Chan_IC");
+                        sendMessage.setText("What do you want to change the IC number to?\n\n" +
+                                "Example: 001211080731");
+                    } else if (data.equals("Register:Chan_Email")) {
+                        userState.put(message.getChatId(), "Register:Chan_Email");
+                        sendMessage.setText("What do you want to change the email to?\n\n" +
+                                "Example: MyEmail@hotmail.com");
+
+                    } else if (data.equals("Register:Chan_StaffID")) {
+                        userState.put(message.getChatId(), "Register:Chan_StaffID");
+                        sendMessage.setText("What do you want to change the staff ID to?\n\n");
+
+                    } else if (data.equals("Register:Chan_Mobile")) {
+                        userState.put(message.getChatId(), "Register:Chan_Mobile");
+                        sendMessage.setText("What do you want to change the mobile number to?\n\n" +
+                                "Example: 0124773579");
+                    }
                 }
             }
 

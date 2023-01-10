@@ -261,7 +261,7 @@ public class DatabaseManager {
     public  void insertUser(String Name, String User_IC, String Email, String Staff_ID, String Mobile_TelNo){
         try{
             //set dynamic query
-            String q = "INSERT INTO Users (Name, User_IC, Email, Staff_ID,Mobile_TelNo)VALUES (?,?,?,?,?)";
+            String q = "INSERT INTO Users (Name, User_IC, Email, Staff_ID,Mobile_TelNo,User_Role)VALUES (?,?,?,?,?,?)";
 
 
 
@@ -274,6 +274,7 @@ public class DatabaseManager {
             preparedStatement.setString(3,Email);
             preparedStatement.setString(4,Staff_ID);
             preparedStatement.setString(5,Mobile_TelNo);
+            preparedStatement.setString(6,"User");
 
             preparedStatement.executeUpdate();
 
