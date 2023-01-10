@@ -579,8 +579,6 @@ public class PNG_bot extends TelegramLongPollingBot {
 
                                 }
 
-
-
                             } else {
                                 sendMessage.setText("The available booking time is between 8AM to 8PM. Please enter your booking start time.(In 24 hours time format)\n\n" +
                                         "Example: 08:30");

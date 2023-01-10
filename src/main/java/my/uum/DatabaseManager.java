@@ -427,7 +427,7 @@ public class DatabaseManager {
      */
     public String getRoomList(Integer School_ID){
         String roomList = " ";
-        String q = "SELECT Room_ID, Room_Name, Maximum_Capacity, Room_Type, Building_Address FROM Room INNER JOIN Building ON Room.Building_ID = Building.Building_ID WHERE School_ID=?";
+        String q = "SELECT Room_ID, Room_Name, Maximum_Capacity, Room_Type FROM Room WHERE School_ID=?";
 
         try(Connection conn = this.connect()){
             PreparedStatement preparedStatement = conn.prepareStatement(q);
@@ -439,8 +439,7 @@ public class DatabaseManager {
                         "Reply " + rs.getInt("Room_ID") + ":\n" +
                                 "Room Name: " + rs.getString("Room_Name") + "\n"+
                                 "Maximum Capacity: " + rs.getString("Maximum_Capacity") + "\n" +
-                                "Type: " + rs.getString("Room_Type") + "\n" +
-                                "Building Address: " + rs.getString("Building_Address") + "\n\n";
+                                "Type: " + rs.getString("Room_Type") + "\n\n";
             }
 
         }catch (SQLException e){
@@ -457,7 +456,7 @@ public class DatabaseManager {
      */
     public String getRoomInfo(Integer Room_ID){
         String roomInfo = "";
-        String q = "SELECT Room_Name, Room_Description, Maximum_Capacity, Room_Type FROM Room WHERE Room_ID=?";
+        String q = "SELECT Room_Name, Room_Description, Maximum_Capacity, Room_Type, Building_Address FROM Room INNER JOIN Building ON Room.Building_ID = Building.Building_ID WHERE Room_ID=?";
 
 
         try(Connection conn = this.connect()){
@@ -470,7 +469,8 @@ public class DatabaseManager {
                         "Room Name: " + rs.getString("Room_Name") + "\n"+
                                 "Description: " + rs.getString("Room_Description") + "\n" +
                                 "Maximum Capacity: " + rs.getString("Maximum_Capacity") + "\n" +
-                                "Type: " + rs.getString("Room_Type");
+                                "Type: " + rs.getString("Room_Type") + "\n\n" +
+                                "Building Location: " + rs.getString("Building_Address");
             }
 
             if(roomInfo.equals("")){
