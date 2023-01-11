@@ -316,6 +316,39 @@ public class DatabaseManager {
         return list;
     }
 
+    /**
+     * @author Ang Toon Ph'ng
+     * Display a list of buildings
+     * @return building list
+     */
+    public String buildingList(){
+        String list = "";
+
+        String q = "SELECT * FROM Building";
+
+
+        try(Connection conn = this.connect()){
+            PreparedStatement preparedStatement = conn.prepareStatement(q);
+
+            ResultSet rs = preparedStatement.executeQuery();
+            while(rs.next()){
+                list+= "Reply " + rs.getInt("Building_ID") +": "+"\n"+
+                        "School Name: " + rs.getString("Building_Name") + "\n\n ";
+
+            }
+
+            if(list.equals("")){
+                list+="Sorry, there are no school registered in this system yet";
+            }
+
+        }catch (SQLException e){
+            System.out.println(e.getMessage());
+        }
+
+
+        return list;
+    }
+
     public String schoolBookList(){
         String list = "";
 

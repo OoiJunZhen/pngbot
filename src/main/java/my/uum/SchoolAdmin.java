@@ -5,6 +5,7 @@ public class SchoolAdmin extends Users {
     private String officeTelNo;
     private String buildingLoc;
 
+    //换去Integer School ID
     public SchoolAdmin(String name, String ICNO, String email, String staffID, String telNo, String schoolName, String officeTelNo, String buildingLoc) {
         super(name, ICNO, email, staffID, telNo);
         this.schoolName = schoolName;
