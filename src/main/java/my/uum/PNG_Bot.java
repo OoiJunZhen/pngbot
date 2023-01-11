@@ -1363,6 +1363,7 @@ public class PNG_Bot extends TelegramLongPollingBot {
                             if (inputFormatChecker.timeOpen(message.getText())) {
                                 int bookID = bookingMap.get(message.getChatId()).getBookID();
                                 String dateTemp = databaseManager.getBookedRoomDate(usersMap.get(message.getChatId()).getICNO(), bookID);
+                                System.out.println(dateTemp);
 
                                 //if that day got booking
                                 if (databaseManager.checkBook(bookingMap.get(message.getChatId()).getRoomID(), dateTemp)) {
@@ -1375,6 +1376,7 @@ public class PNG_Bot extends TelegramLongPollingBot {
                                         try {
                                             userState.put(message.getChatId(), "Login:EditBook_Time_Update");
                                             Date date2 = combine.parse(dateTemp + " " + message.getText());
+                                            System.out.println(date2);
                                             sendMessage = new SendMessage();
                                             sendMessage.setChatId(message.getChatId());
                                             //save starting time
