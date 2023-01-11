@@ -1414,4 +1414,490 @@ public class DatabaseManager {
         } else
             return true;
     }
+
+    /**
+     *@author Tan Zhi Yang
+     * Get room based on School ID and add "<book>" on it
+     * @param School_ID
+     * @param ICNO
+     * @param Booking_ID
+     * @return roomList
+     */
+    public String getBookedRoomList(Integer School_ID, String ICNO, Integer Booking_ID) {
+        String book = "";
+        String book2 = "";
+        String roomList = " ";
+        String q = "SELECT Room_ID, Room_Name, Maximum_Capacity, Room_Type FROM Room WHERE School_ID=?";
+
+        try (Connection conn = this.connect()) {
+            PreparedStatement preparedStatement = conn.prepareStatement(q);
+
+            preparedStatement.setInt(1, School_ID);
+
+            ResultSet rs = preparedStatement.executeQuery();
+            String input = getBookedRoomDate(ICNO, Booking_ID);
+            System.out.println(input);
+            System.out.println(checkBook(rs.getInt("Room_ID"), input));
+            while (rs.next()) {
+                if (checkBook(rs.getInt("Room_ID"), input)) {
+                    book = " <book>";
+                    book2 = "<book>: There might have some time which is unavailable, due to someone has booked" +
+                            "this room.\n\n";
+
+                } else {
+                    book = "";
+                    book2 = "";
+                }
+
+                roomList +=
+                        "Reply " + rs.getInt("Room_ID") + ":\n" +
+                                "Room Name: " + rs.getString("Room_Name") + book + "\n" +
+                                "Maximum Capacity: " + rs.getString("Maximum_Capacity") + "\n" +
+                                "Type: " + rs.getString("Room_Type") + "\n\n";
+            }
+
+            roomList += book2;
+
+
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+
+        return roomList;
+    }
+
+    /**
+     *@author Tan Zhi Yang
+     * Get booking date based on User IC and Booking ID
+     * @param ICNO
+     * @param bookingID
+     * @return roomList
+     */
+    public String getBookedRoomDate(String ICNO, Integer bookingID) {
+        String getDate = "";
+        String q = "SELECT Booking.Book_StartTime FROM Booking INNER JOIN Users ON Users.User_IC = Booking.User_IC WHERE Users.User_IC = ? AND Booking_ID = ?";
+
+        try (Connection conn = this.connect()) {
+            PreparedStatement preparedStatement = conn.prepareStatement(q);
+
+            preparedStatement.setString(1, ICNO);
+            preparedStatement.setInt(2, bookingID);
+            ResultSet rs = preparedStatement.executeQuery();
+
+            while (rs.next()) {
+                java.sql.Date startDate = rs.getDate("Book_StartTime");
+                java.util.Date convertedStart = new java.util.Date(startDate.getTime());
+                SimpleDateFormat bookDateFormat = new SimpleDateFormat("dd/MM/yyyy");
+                String date = bookDateFormat.format(convertedStart);
+
+                getDate += date;
+            }
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+
+        }
+        return getDate;
+    }
+
+    /**
+     *@author Tan Zhi Yang
+     * Get timestamp based on User IC and Booking ID
+     * @param ICNO
+     * @param bookingID
+     * @return getDate
+     */
+    public String getTimestamp(String ICNO, Integer bookingID) {
+        String getDate = "";
+        String q = "SELECT Booking.Timestamp FROM Booking INNER JOIN Users ON Users.User_IC = Booking.User_IC WHERE Users.User_IC = ? AND Booking_ID = ?";
+
+        try (Connection conn = this.connect()) {
+            PreparedStatement preparedStatement = conn.prepareStatement(q);
+
+            preparedStatement.setString(1, ICNO);
+            preparedStatement.setInt(2, bookingID);
+            ResultSet rs = preparedStatement.executeQuery();
+
+            while (rs.next()) {
+                java.sql.Date startDate = rs.getDate("Timestamp");
+                java.util.Date convertedStart = new java.util.Date(startDate.getTime());
+                SimpleDateFormat bookDateFormat = new SimpleDateFormat("dd/MM/yyyy");
+                String date = bookDateFormat.format(convertedStart);
+
+                getDate += date;
+            }
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+
+        }
+        return getDate;
+    }
+    /**
+     *@author Tan Zhi Yang
+     * Get room detail based on Room ID
+     * @param Room_ID
+     * @return roomInfo
+     */
+    public String getRoomDetail(Integer Room_ID) {
+        String roomInfo = "";
+        String q = "SELECT Room_Name, Room_Description, Maximum_Capacity, Room_Type FROM Room WHERE Room_ID=?";
+
+
+        try (Connection conn = this.connect()) {
+            PreparedStatement preparedStatement = conn.prepareStatement(q);
+
+            preparedStatement.setInt(1, Room_ID);
+            ResultSet rs = preparedStatement.executeQuery();
+            while (rs.next()) {
+                roomInfo +=
+                        "Room Name: " + rs.getString("Room_Name") + "\n" +
+                                "Description: " + rs.getString("Room_Description") + "\n" +
+                                "Maximum Capacity: " + rs.getString("Maximum_Capacity") + "\n" +
+                                "Type: " + rs.getString("Room_Type");
+            }
+
+            if (roomInfo.equals("")) {
+                roomInfo += "Sorry, this room does not exist. Please try to reply another number :)";
+            }
+
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+        return roomInfo;
+    }
+
+    /**
+     *@author Tan Zhi Yang
+     * Get booking start time and booking end time based on Room ID
+     * @param Room_ID
+     * @param ICNO
+     * @param bookID
+     * @return list
+     */
+    public String checkbookedRoomTime(Integer Room_ID, String ICNO, Integer bookID) {
+        String input = getBookedRoomDate(ICNO, bookID);
+        String list = "";
+        String start = "";
+        String end = "";
+        String date = "";
+        String date2 = "";
+        java.sql.Date sqlDate;
+        java.sql.Date sqlDate2;
+
+        SimpleDateFormat bookDateFormat = new SimpleDateFormat("dd/MM/yyyy");
+        SimpleDateFormat databaseDateFormat = new SimpleDateFormat("yyyy-MM-dd");
+        SimpleDateFormat timeFormat = new SimpleDateFormat("hh:mm a");
+
+        try {
+            java.util.Date utilDate = bookDateFormat.parse(input);
+            date = databaseDateFormat.format(utilDate);
+
+            Calendar c = Calendar.getInstance();
+            c.setTime(databaseDateFormat.parse(date));
+            c.add(Calendar.DATE, 1);
+            date2 = databaseDateFormat.format(c.getTime());
+
+            sqlDate = java.sql.Date.valueOf(date);
+            sqlDate2 = java.sql.Date.valueOf(date2);
+
+        } catch (ParseException e) {
+            throw new RuntimeException(e);
+        }
+
+        String q = "SELECT Book_StartTime, Book_EndTime FROM Booking WHERE Room_ID=?";
+
+        try (Connection conn = this.connect()) {
+            PreparedStatement preparedStatement = conn.prepareStatement(q);
+
+            preparedStatement.setInt(1, Room_ID);
+
+            ResultSet rs = preparedStatement.executeQuery();
+            while (rs.next()) {
+                if (rs.getDate("Book_StartTime").after(sqlDate) && rs.getDate("Book_StartTime").before(sqlDate2)) {
+                    java.sql.Date startTime = rs.getDate("Book_StartTime");
+                    java.sql.Date endTime = rs.getDate("Book_EndTime");
+
+                    java.util.Date convertedStart = new java.util.Date(startTime.getTime());
+                    java.util.Date convertedEnd = new java.util.Date(endTime.getTime());
+
+                    start = timeFormat.format(convertedStart);
+                    end = timeFormat.format(convertedEnd);
+
+                    list += start + " - " + end + "\n";
+                }
+            }
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+
+        return list;
+    }
+    /**
+     *@author Tan Zhi Yang
+     * Get booking start time based on User IC and Booking ID
+     * @param ICNO
+     * @param bookingID
+     * @return getTime
+     */
+    public String getBookedRoomTime(String ICNO, Integer bookingID) {
+        String getTime = "";
+        String q = "SELECT Booking.Book_StartTime FROM Booking INNER JOIN Users ON Booking.User_IC = Users.User_IC WHERE Users.User_IC = ? AND Booking_ID = ?";
+
+        try (Connection conn = this.connect()) {
+            PreparedStatement preparedStatement = conn.prepareStatement(q);
+
+            preparedStatement.setString(1, ICNO);
+            preparedStatement.setInt(2, bookingID);
+            ResultSet rs = preparedStatement.executeQuery();
+
+            while (rs.next()) {
+
+                java.sql.Date startDate = rs.getDate("Book_StartTime");
+                java.util.Date convertedStart = new java.util.Date(startDate.getTime());
+                SimpleDateFormat bookTimeFormat = new SimpleDateFormat("HH:mm");
+                String startTime = bookTimeFormat.format(convertedStart);
+
+
+                getTime += startTime;
+            }
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+
+        }
+        return getTime;
+    }
+
+    /**
+     *@author Tan Zhi Yang
+     * Get booking end time based on User IC and Booking ID
+     * @param ICNO
+     * @param bookingID
+     * return getTime
+     */
+    public String getBookedRoomEndTime(String ICNO, Integer bookingID) {
+        String getTime = "";
+        String q = "SELECT Booking.Book_EndTime FROM Booking INNER JOIN Users ON Users.User_IC = Booking.User_IC WHERE Users.User_IC =? AND Booking_ID = ?";
+
+        try (Connection conn = this.connect()) {
+            PreparedStatement preparedStatement = conn.prepareStatement(q);
+
+            preparedStatement.setString(1, ICNO);
+            preparedStatement.setInt(2, bookingID);
+            ResultSet rs = preparedStatement.executeQuery();
+
+            while (rs.next()) {
+
+                java.sql.Date endDate = rs.getDate("Book_EndTime");
+                java.util.Date convertedEnd = new java.util.Date(endDate.getTime());
+                SimpleDateFormat bookTimeFormat = new SimpleDateFormat("HH:mm");
+                String endTime = bookTimeFormat.format(convertedEnd);
+
+
+                getTime += endTime;
+            }
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+
+        }
+        return getTime;
+    }
+
+    /**
+     *@author Tan Zhi Yang
+     * Get booking start time and booking end time based on User IC and Booking ID
+     * @param ICNO
+     * @param bookingID
+     * @return getBookTime
+     */
+    public String viewBookedRoomTime(String ICNO, Integer bookingID) {
+        String getBookTime = "";
+        String q = "SELECT Book_StartTime, Book_EndTime FROM Booking INNER JOIN Users ON Booking.User_IC = Users.User_IC WHERE Users.User_IC  = ? AND Booking_ID = ?";
+
+        try (Connection conn = this.connect()) {
+            PreparedStatement preparedStatement = conn.prepareStatement(q);
+
+            preparedStatement.setString(1, ICNO);
+            preparedStatement.setInt(2, bookingID);
+            ResultSet rs = preparedStatement.executeQuery();
+
+            while (rs.next()) {
+
+                java.sql.Date startDate = rs.getDate("Book_StartTime");
+                java.sql.Date endDate = rs.getDate("Book_EndTime");
+
+                java.util.Date convertedStart = new java.util.Date(startDate.getTime());
+                java.util.Date convertedEnd = new java.util.Date(endDate.getTime());
+
+                SimpleDateFormat bookDateFormat = new SimpleDateFormat("dd/MM/yyyy");
+                SimpleDateFormat bookTimeFormat = new SimpleDateFormat("hh:mm a");
+                String date = bookDateFormat.format(convertedStart);
+                String startTime = bookTimeFormat.format(convertedStart);
+                String endTime = bookTimeFormat.format(convertedEnd);
+
+                getBookTime +=
+                        startTime + " - " + endTime;
+
+            }
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+
+        }
+        return getBookTime;
+    }
+
+    /**
+     *@author Tan Zhi Yang
+     * Get room name based on User IC and Booking ID
+     * @param ICNO
+     * @param Booking_ID
+     * @return roomName
+     */
+    public String checkBookedRoom(String ICNO, Integer Booking_ID) {
+        String roomName = "";
+        String q = "SELECT Room.Room_Name FROM Booking INNER JOIN Room ON Room.Room_ID = Booking.Room_ID INNER JOIN Users ON Users.User_IC  = Booking.User_IC WHERE Users.User_IC  = ? AND Booking.Booking_ID=?";
+
+        try (Connection conn = this.connect()) {
+            PreparedStatement preparedStatement = conn.prepareStatement(q);
+            preparedStatement.setString(1, ICNO);
+            preparedStatement.setInt(2, Booking_ID);
+            ResultSet rs = preparedStatement.executeQuery();
+            while (rs.next()) {
+                roomName = rs.getString("Room_Name");
+                break;
+            }
+
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+        return roomName;
+    }
+
+    /**
+     *@author Tan Zhi Yang
+     * Get room detail based on School ID
+     * @param School_ID
+     * @return roomList
+     */
+    public String getRoomList(Integer School_ID) {
+        String roomList = " ";
+        String q = "SELECT Room_ID, Room_Name, Maximum_Capacity, Room_Type FROM Room WHERE School_ID=?";
+
+        try (Connection conn = this.connect()) {
+            PreparedStatement preparedStatement = conn.prepareStatement(q);
+
+            preparedStatement.setInt(1, School_ID);
+            ResultSet rs = preparedStatement.executeQuery();
+            while (rs.next()) {
+                roomList +=
+                        "Reply " + rs.getInt("Room_ID") + ":\n" +
+                                "Room Name: " + rs.getString("Room_Name") + "\n" +
+                                "Maximum Capacity: " + rs.getString("Maximum_Capacity") + "\n" +
+                                "Type: " + rs.getString("Room_Type") + "\n\n";
+            }
+
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+        return roomList;
+    }
+    /**
+     *@author Tan Zhi Yang
+     * Edit booking location, booking start time and booking end time based on User IC and Booking ID
+     * @param ICNO
+     * @param Room_ID
+     * @param Book_StartTime
+     * @param Book_EndTime
+     * @param Booking_ID
+     */
+    public void editBookingDateTimeLoc(String ICNO, Integer Room_ID, String Book_StartTime, String Book_EndTime, Integer Booking_ID) {
+        String q = "UPDATE Booking SET Room_ID=?, Book_StartTime =?, Book_EndTime =? WHERE User_IC =? AND Booking_ID =?";
+
+        try (Connection conn = this.connect()) {
+            PreparedStatement preparedStatement = conn.prepareStatement(q);
+
+            preparedStatement.setInt(1, Room_ID);
+            preparedStatement.setString(2, Book_StartTime);
+            preparedStatement.setString(3, Book_EndTime);
+            preparedStatement.setString(4, ICNO);
+            preparedStatement.setInt(5, Booking_ID);
+            preparedStatement.executeUpdate();
+
+
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+    }
+
+    /**
+     *@author Tan Zhi Yang
+     * Edit booking start time and booking end time based on User IC and Booking ID
+     * @param ICNO
+     * @param Book_StartTime
+     * @param Book_EndTime
+     * @param Booking_ID
+     */
+    public void editBookingDateTime(String ICNO, String Book_StartTime, String Book_EndTime, Integer Booking_ID) {
+        String q = "UPDATE Booking SET Book_StartTime =?, Book_EndTime =? WHERE User_IC =? AND Booking_ID =?";
+
+        try (Connection conn = this.connect()) {
+            PreparedStatement preparedStatement = conn.prepareStatement(q);
+
+            preparedStatement.setString(1, Book_StartTime);
+            preparedStatement.setString(2, Book_EndTime);
+            preparedStatement.setString(3, ICNO);
+            preparedStatement.setInt(4, Booking_ID);
+            preparedStatement.executeUpdate();
+
+
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+    }
+
+    /**
+     *@author Tan Zhi Yang
+     * Edit booking location based on User IC and Booking ID
+     * @param ICNO
+     * @param Room_ID
+     * @param Booking_ID
+     */
+    public void editBookingLocation(String ICNO, Integer Room_ID, Integer Booking_ID) {
+        String q = "UPDATE Booking SET Room_ID=? WHERE User_IC =? AND Booking_ID =?";
+
+        try (Connection conn = this.connect()) {
+            PreparedStatement preparedStatement = conn.prepareStatement(q);
+
+            preparedStatement.setInt(1, Room_ID);
+            preparedStatement.setString(2, ICNO);
+            preparedStatement.setInt(3, Booking_ID);
+            preparedStatement.executeUpdate();
+
+
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+    }
+    /**
+     *@author Tan Zhi Yang
+     * Edit booking date based on User IC and Booking ID
+     * @param Book_StartTime
+     * @param Book_EndTime
+     * @param ICNO
+     * @param Booking_ID
+     */
+    public void editBookingDate(String Book_StartTime, String Book_EndTime, String ICNO, Integer Booking_ID) {
+        String q = "UPDATE Booking SET Book_StartTime =?, Book_EndTime =? WHERE User_IC=? AND Booking_ID =?";
+
+        try (Connection conn = this.connect()) {
+            PreparedStatement preparedStatement = conn.prepareStatement(q);
+            preparedStatement.setString(1, Book_StartTime);
+            preparedStatement.setString(2, Book_EndTime);
+            preparedStatement.setString(3, ICNO);
+            preparedStatement.setInt(4, Booking_ID);
+            preparedStatement.executeUpdate();
+
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+    }
+
 }
