@@ -1474,7 +1474,8 @@ public class PNG_bot extends TelegramLongPollingBot {
                                 if (date.after(bookingMap.get(message.getChatId()).getStartDate())) {
 
                                     //check whether the time contradicts with other booked time
-                                    if (!databaseManager.checkTimeDatabase(bookingMap.get(message.getChatId()).getRoomID(), dateTemp, message.getText())) {
+                                    if (!databaseManager.checkTimeDatabase(bookingMap.get(message.getChatId()).getRoomID(), dateTemp, message.getText())
+                                            && !databaseManager.checkTimeDatabase2(bookingMap.get(message.getChatId()).getRoomID(), dateTemp, bookingMap.get(message.getChatId()).getStartDate(),message.getText())) {
                                         bookingMap.get(message.getChatId()).setEndDate(date);
                                         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
                                         String startDate = sdf.format(bookingMap.get(message.getChatId()).getStartDate());
@@ -1699,7 +1700,8 @@ public class PNG_bot extends TelegramLongPollingBot {
                                 if (date2.after(bookingMap.get(message.getChatId()).getStartDate())) {
 
                                     //check whether the time contradicts with other booked time
-                                    if (!databaseManager.checkTimeDatabase(bookingMap.get(message.getChatId()).getRoomID(), dateTemp, message.getText())) {
+                                    if (!databaseManager.checkTimeDatabase(bookingMap.get(message.getChatId()).getRoomID(), dateTemp, message.getText())
+                                            && !databaseManager.checkTimeDatabase2(bookingMap.get(message.getChatId()).getRoomID(),dateTemp,bookingMap.get(message.getChatId()).getStartDate(),message.getText())) {
                                         bookingMap.get(message.getChatId()).setEndDate(date2);
                                         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
                                         String startDate = sdf.format(bookingMap.get(message.getChatId()).getStartDate());
