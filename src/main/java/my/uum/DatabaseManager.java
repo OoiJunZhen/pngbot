@@ -2017,14 +2017,46 @@ public class DatabaseManager {
             preparedStatement.setString(2,RoomDesc);
             preparedStatement.setString(3,RoomMaxCap);
             preparedStatement.setString(4,RoomType);
-            preparedStatement.setInt(4,buildingID);
-            //preparedStatement.setString(8,UserID);
+            preparedStatement.setInt(5,buildingID);
 
             preparedStatement.executeUpdate();
 
         } catch (SQLException e) {
             e.printStackTrace();
         }
+    }
+
+    /**
+     * @author Ooi Jun Zhen
+     * Display a list of buildings (Change_info)
+     * @return building list
+     */
+    public String buildingList1(){
+        String list = "What do you want to change the building location to?\n\n";
+
+        String q = "SELECT * FROM Building";
+
+
+        try(Connection conn = this.connect()){
+            PreparedStatement preparedStatement = conn.prepareStatement(q);
+
+            ResultSet rs = preparedStatement.executeQuery();
+            while(rs.next()){
+                list+= "Reply " + rs.getInt("Building_ID") +": "+"\n"+
+                        "Building Name: " + rs.getString("Building_Name") + "\n\n";
+
+            }
+
+            if(list.equals("What do you want to change the building location to?")){
+                list+="Sorry, there are no school registered in this system yet";
+            }
+
+        }catch (SQLException e){
+            System.out.println(e.getMessage());
+        }
+
+
+        return list;
     }
 
 
