@@ -322,7 +322,7 @@ public class DatabaseManager {
      * @return building list
      */
     public String buildingList(){
-        String list = "";
+        String list = "Please enter the number to select building location\n\n";
 
         String q = "SELECT * FROM Building";
 
@@ -333,11 +333,11 @@ public class DatabaseManager {
             ResultSet rs = preparedStatement.executeQuery();
             while(rs.next()){
                 list+= "Reply " + rs.getInt("Building_ID") +": "+"\n"+
-                        "School Name: " + rs.getString("Building_Name") + "\n\n ";
+                        "Building Name: " + rs.getString("Building_Name") + "\n\n";
 
             }
 
-            if(list.equals("")){
+            if(list.equals("Please enter the number to select building location")){
                 list+="Sorry, there are no school registered in this system yet";
             }
 
@@ -1932,5 +1932,101 @@ public class DatabaseManager {
             System.out.println(e.getMessage());
         }
     }
+
+    /**
+     *@author Ooi Jun Zhen
+     * check Room Name
+     * @param Room_Name
+     */
+    public boolean checkRoomName(String Room_Name){
+        String RName = "";
+        String q = "SELECT Room_Name FROM Room WHERE Room_Name=?";
+
+
+        try(Connection conn = this.connect()){
+            PreparedStatement preparedStatement = conn.prepareStatement(q);
+
+            preparedStatement.setString(1,Room_Name);
+            ResultSet rs = preparedStatement.executeQuery();
+            while(rs.next()){
+                RName = rs.getString("Room_Name");
+                break;
+            }
+
+        }catch (SQLException e){
+            System.out.println(e.getMessage());
+        }
+
+
+        if(RName == ""){
+            return false;
+        }
+        else
+            return true;
+    }
+
+    /**
+     *@author Ooi Jun Zhen
+     * Get Building Name based on Buiding ID
+     * @param ID
+     */
+    public String getBuildingName(Integer ID){
+        String buildingName = "";
+
+        String stm = "SELECT Building_Name FROM Building WHERE Building_ID = ?";
+
+
+        try(Connection conn = this.connect()){
+            PreparedStatement preparedStatement = conn.prepareStatement(stm);
+
+            preparedStatement.setInt(1,ID);
+            ResultSet rs = preparedStatement.executeQuery();
+            while(rs.next()){
+                buildingName = rs.getString("Building_Name");
+                break;
+            }
+
+        }catch (SQLException e){
+            System.out.println(e.getMessage());
+        }
+
+        return buildingName;
+    }
+
+    /**
+     *@author Ooi Jun Zhen
+     * Add room to the database
+     * @param RoomName
+     * @param RoomDesc
+     * @param RoomMaxCap
+     * @param RoomType
+     * @param buildingID
+     */
+    public void AddRoom(String RoomName, String RoomDesc, String RoomMaxCap, String RoomType, Integer buildingID){
+        try{
+            //set dynamic query
+            String Add_room = "INSERT INTO Room (Room_Name, Room_Description, Maximum_Capacity, Room_Type, /*School_ID,*/ Building_ID) VALUES (?,?,?,?,?)";
+
+
+
+            //Get the preparedStatement Object
+            PreparedStatement preparedStatement = connection.prepareStatement(Add_room);
+
+            //set the values to query
+            preparedStatement.setString(1,RoomName);
+            preparedStatement.setString(2,RoomDesc);
+            preparedStatement.setString(3,RoomMaxCap);
+            preparedStatement.setString(4,RoomType);
+            preparedStatement.setInt(4,buildingID);
+            //preparedStatement.setString(8,UserID);
+
+            preparedStatement.executeUpdate();
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+
 
 }
