@@ -20,12 +20,12 @@ public class PNG_bot extends TelegramLongPollingBot {
 
     @Override
     public String getBotUsername() {
-        return "PNG_bot";
+        return "mikey717_bot";
     }
 
     @Override
     public String getBotToken() {
-        return "5813032321:AAFWCPiKtpUVrPa5mTzu6ZhZhXGVP7Va_vc";
+        return "5915639040:AAHSCCSocMAse9Sd6RqPK8M_dcZlZbIeczA";
     }
 
     /**
@@ -51,7 +51,7 @@ public class PNG_bot extends TelegramLongPollingBot {
     /**
      * Hashmap for adding room information
      */
-    Map<Long, Room> RegisterRoomMap = new HashMap<Long, Room>();
+    Map<Long, Room> addRoomMap = new HashMap<Long, Room>();
 
     /**
      * Hashmap for adding roomlist information
@@ -189,11 +189,22 @@ public class PNG_bot extends TelegramLongPollingBot {
 
 
                 case "/test":
+//                    usersMap.put(message.getChatId(), new Users("", "", "", "", ""));
+                    addRoomMap.put(message.getChatId(), new Room("", "", "", "",""));
                     usersMap.put(message.getChatId(), new Users("", "", "", "", ""));
-                    userState.put(message.getChatId(), "Test:Input");
+                    userState.put(message.getChatId(), "Login:AddRoom");
+                    String info10 = "Please enter your IC and Email to access your account\n\n" +
+                            "Example: 990724070661@MyEmail@hotmail.com";
                     sendMessage = new SendMessage();
-                    sendMessage.setText("Enter Date\n\nExample: 23/02/2023");
+                    sendMessage.setText(info10);
                     sendMessage.setChatId(message.getChatId().toString());
+//                    userState.put(message.getChatId(), "Login:Add_Description");
+//                    sendMessage = new SendMessage();
+//                    sendMessage.setText("Please fill in some details required for a new room." +
+//                            "\nNotes: The room added will be under your school" +
+//                            "\n\nWhat is the room's name?" +
+//                            "\nExample: STML 3");
+//                    sendMessage.setChatId(message.getChatId());
 
                     try {
                         execute(sendMessage);
@@ -1756,6 +1767,152 @@ public class PNG_bot extends TelegramLongPollingBot {
 
                         break;
 
+                    case "Login:AddRoom":
+                        String[] password5 = message.getText().split("@", 2);
+                        //if password verification is true
+//                        if (message.getText().contains("@")) {
+//                            if (databaseManager.passwordCheck(password5[0], password5[1])) {
+
+                                //先把Password里的IC放进去usersMap
+                                usersMap.get(message.getChatId()).setICNO(password5[0]);
+                                usersMap.get(message.getChatId()).setEmail(password5[1]);
+//                            }
+//                        }
+                        userState.put(message.getChatId(), "Login:Add_Description");
+                        sendMessage = new SendMessage();
+                        sendMessage.setText("Please fill in some details required for a new room." +
+                                "\nNotes: The room added will be under your school" +
+                                "\n\nWhat is the room's name?" +
+                                "\nExample: STML 3");
+                        sendMessage.setChatId(message.getChatId());
+
+                        break;
+
+                    case "Login:Add_Description":
+                        addRoomMap.get(message.getChatId()).setRoomName(message.getText());
+                        if (databaseManager.checkRoomName(message.getText())) {
+
+                            sendMessage = new SendMessage();
+                            sendMessage.setText("Room name already exist, Please enter other room name.");
+                            addRoomMap.get(message.getChatId()).setRoomName(message.getText());
+                        } else {
+                            addRoomMap.get(message.getChatId()).setRoomName(message.getText());
+                            userState.put(message.getChatId(), "Login:Add_Maximum_Capacity");
+                            sendMessage = new SendMessage();
+                            sendMessage.setText("Can you give a brief description about the room?" +
+                                    "\nExample: Quite a huge room attached with 2 screen, and provide air conditioning");
+                            sendMessage.setChatId(message.getChatId());
+                        }
+
+                        break;
+
+                    case "Login:Add_Maximum_Capacity":
+                        addRoomMap.get(message.getChatId()).setRoomDesc(message.getText());
+                        userState.put(message.getChatId(), "Login:Add_Type");
+                        sendMessage = new SendMessage();
+                        sendMessage.setText("How about the maximum capacity of the room" +
+                                "\nExample: 40");
+                        sendMessage.setChatId(message.getChatId());
+                        break;
+
+                    case "Login:Add_Type":
+                        addRoomMap.get(message.getChatId()).setRoomMaxCap(message.getText());
+                        userState.put(message.getChatId(), "Login:Add_Building");
+                        sendMessage = new SendMessage();
+                        sendMessage.setText("Almost there! What is the room's type?" +
+                                "\nExample: Meeting room");
+                        sendMessage.setChatId(message.getChatId());
+                        break;
+
+                    case "Login:Add_Building":
+                        String Buildinglist = "";
+                        Buildinglist = databaseManager.buildingList();
+                        addRoomMap.get(message.getChatId()).setRoomType(message.getText());
+                        userState.put(message.getChatId(), "Login:AddConfirm");
+                        sendMessage = new SendMessage();
+                        sendMessage.setText(Buildinglist);
+                        sendMessage.setChatId(message.getChatId());
+                        break;
+
+                    case "Login:AddConfirm":
+                    case "Login:Add_Chan_RoomName":
+                    case "Login:Add_Chan_RoomDesc":
+                    case "Login:Add_Chan_RoomMaxCap":
+                    case "Login:Add_Chan_RoomType":
+                    case "Login:Add_Chan_RoomBuildingLoc":
+
+                        boolean msg = false;
+
+                        if (userState.get(message.getChatId()).equals("Login:AddConfirm")) {
+                            addRoomMap.get(message.getChatId()).setBuildingLoc(message.getText());
+                            msg = true;
+                        }
+                        if (userState.get(message.getChatId()).equals("Login:Add_Chan_RoomName")) {
+                            addRoomMap.get(message.getChatId()).setRoomName(message.getText());
+                            msg = true;
+                        }
+                        if (userState.get(message.getChatId()).equals("Login:Add_Chan_RoomDesc")) {
+                            addRoomMap.get(message.getChatId()).setRoomDesc(message.getText());
+                            msg = true;
+                            sendMessage.setChatId(message.getChatId());
+                        }
+                        if (userState.get(message.getChatId()).equals("Login:Add_Chan_RoomMaxCap")) {
+                            addRoomMap.get(message.getChatId()).setRoomMaxCap(message.getText());
+                            msg = true;
+                        }
+                        if (userState.get(message.getChatId()).equals("Login:Add_Chan_RoomType")) {
+                            addRoomMap.get(message.getChatId()).setRoomType(message.getText());
+                            msg = true;
+                        }
+                        if (userState.get(message.getChatId()).equals("Login:Add_Chan_RoomBuildingLoc")) {
+                            addRoomMap.get(message.getChatId()).setBuildingLoc(message.getText());
+                            msg = true;
+                        }
+
+                        if (msg) {
+                            Integer schoolId = Integer.parseInt(message.getText());
+                            String schoolName = databaseManager.getBuildingName(schoolId);
+                            String RoomInfo = "Add Room Information: \n" +
+                                    "\nRoom Name: " + addRoomMap.get(message.getChatId()).getRoomName() +
+                                    "\nRoom Description: " + addRoomMap.get(message.getChatId()).getRoomDesc() +
+                                    "\nRoom Maximum Capacity: " + addRoomMap.get(message.getChatId()).getRoomMaxCap() +
+                                    "\nRoom Type: " + addRoomMap.get(message.getChatId()).getRoomType() +
+                                    "\nRoom Building Location: " + schoolName +
+                                    "\n\nAre the information correct?";
+
+                            sendMessage = new SendMessage();
+                            sendMessage.setText(RoomInfo);
+                            sendMessage.setParseMode(ParseMode.MARKDOWN);
+                            sendMessage.setChatId(message.getChatId());
+
+                            InlineKeyboardMarkup inlineKeyboardMarkup = new InlineKeyboardMarkup();
+                            List<List<InlineKeyboardButton>> inlineButtons = new ArrayList<>();
+                            List<InlineKeyboardButton> inlineKeyboardButtonList12 = new ArrayList<>();
+                            List<InlineKeyboardButton> inlineKeyboardButtonList13 = new ArrayList<>();
+                            InlineKeyboardButton inlineKeyboardButton12 = new InlineKeyboardButton();
+                            InlineKeyboardButton inlineKeyboardButton13 = new InlineKeyboardButton();
+                            inlineKeyboardButton12.setText("Yes");
+                            inlineKeyboardButton13.setText("No, I would like to change something");
+                            inlineKeyboardButton12.setCallbackData("Login:AddSuccess");
+                            inlineKeyboardButton13.setCallbackData("Login:Add_Change");
+                            inlineKeyboardButtonList12.add(inlineKeyboardButton12);
+                            inlineKeyboardButtonList13.add(inlineKeyboardButton13);
+                            inlineButtons.add(inlineKeyboardButtonList12);
+                            inlineButtons.add(inlineKeyboardButtonList13);
+                            inlineKeyboardMarkup.setKeyboard(inlineButtons);
+                            sendMessage.setReplyMarkup(inlineKeyboardMarkup);
+                        }
+                        break;
+
+                    case "Login:DeleteRoom":
+                        userState.put(message.getChatId(), "Login:DeleteRoom_Confirm");
+                        String roomList = databaseManager.getRoomList(bookingMap.get(message.getChatId()).getRoomID());
+                        roomList += "This room does not exist. Please re-enter the room that you wish to book.\n\nExample reply: 1";
+                        sendMessage = new SendMessage();
+                        sendMessage.setText(roomList);
+                        sendMessage.setChatId(message.getChatId());
+                        break;
+
                 }
 
                 try {
@@ -1764,6 +1921,10 @@ public class PNG_bot extends TelegramLongPollingBot {
                 } catch (TelegramApiException e) {
                     e.printStackTrace();
                 }
+            }
+
+            else if (!String.valueOf(message.getText().charAt(0)).equals("/") && userState.get(message.getChatId()).contains("Login:")) {
+
             }
 
             //Go to check state if no command found AND State have the first word as 'Register'
@@ -2486,6 +2647,115 @@ public class PNG_bot extends TelegramLongPollingBot {
                     list += "\nExample: 14:45";
                     sendMessage.setText(list);
                 }
+                else if(data.equals("Login:AddSuccess")){
+                    String userIC = usersMap.get(message.getChatId()).getICNO();
+                    Integer schoolID = databaseManager.getSchoolId(userIC);
+                    Integer BuildingId = Integer.parseInt(addRoomMap.get(message.getChatId()).getBuildingLoc());
+                    databaseManager.AddRoom(addRoomMap.get(message.getChatId()).getRoomName(), addRoomMap.get(message.getChatId()).getRoomDesc(),
+                            addRoomMap.get(message.getChatId()).getRoomMaxCap(), addRoomMap.get(message.getChatId()).getRoomType(), schoolID, BuildingId);
+                    sendMessage = new SendMessage();
+                    sendMessage.setText("Excellent! The new room had successfully added into the system.");
+                    sendMessage.setChatId(message.getChatId());
+
+                    InlineKeyboardMarkup inlineKeyboardMarkup = new InlineKeyboardMarkup();
+                    List<List<InlineKeyboardButton>> inlineButtons = new ArrayList<>();
+                    List<InlineKeyboardButton> inlineKeyboardButtonList12 = new ArrayList<>();
+                    List<InlineKeyboardButton> inlineKeyboardButtonList13 = new ArrayList<>();
+                    InlineKeyboardButton inlineKeyboardButton12 = new InlineKeyboardButton();
+                    InlineKeyboardButton inlineKeyboardButton13 = new InlineKeyboardButton();
+                    inlineKeyboardButton12.setText("Add another room");
+                    inlineKeyboardButton13.setText("Go back");
+                    inlineKeyboardButton12.setCallbackData("Login:AddRoom");
+                    inlineKeyboardButton13.setCallbackData("Login:Main");
+                    inlineKeyboardButtonList12.add(inlineKeyboardButton12);
+                    inlineKeyboardButtonList13.add(inlineKeyboardButton13);
+                    inlineButtons.add(inlineKeyboardButtonList12);
+                    inlineButtons.add(inlineKeyboardButtonList13);
+                    inlineKeyboardMarkup.setKeyboard(inlineButtons);
+                    sendMessage.setReplyMarkup(inlineKeyboardMarkup);
+
+                }
+                else if(data.equals("Login:Add_Change")){
+                    Integer schoolId = Integer.parseInt(addRoomMap.get(message.getChatId()).getBuildingLoc());
+                    String schoolName = databaseManager.getBuildingName(schoolId);
+                    String RoomInfo = "Room Information: \n" +
+                            "\nRoom Name: " + addRoomMap.get(message.getChatId()).getRoomName() +
+                            "\nRoom Description: " + addRoomMap.get(message.getChatId()).getRoomDesc() +
+                            "\nRoom Maximum Capacity: " + addRoomMap.get(message.getChatId()).getRoomMaxCap() +
+                            "\nRoom Type: " + addRoomMap.get(message.getChatId()).getRoomType() +
+                            "\nRoom Building Location: " + schoolName +
+                            "\n\nWhat would you like to change?";
+                    sendMessage = new SendMessage();
+                    sendMessage.setText(RoomInfo);
+                    sendMessage.setParseMode(ParseMode.MARKDOWN);
+                    sendMessage.setChatId(message.getChatId());
+
+                    InlineKeyboardMarkup inlineKeyboardMarkup = new InlineKeyboardMarkup();
+                    List<List<InlineKeyboardButton>> inlineButtons = new ArrayList<>();
+                    List<InlineKeyboardButton> inlineKeyboardButtonList2 = new ArrayList<>();
+                    List<InlineKeyboardButton> inlineKeyboardButtonList3 = new ArrayList<>();
+                    List<InlineKeyboardButton> inlineKeyboardButtonList4 = new ArrayList<>();
+                    InlineKeyboardButton inlineKeyboardButton3 = new InlineKeyboardButton();
+                    InlineKeyboardButton inlineKeyboardButton4 = new InlineKeyboardButton();
+                    InlineKeyboardButton inlineKeyboardButton5 = new InlineKeyboardButton();
+                    InlineKeyboardButton inlineKeyboardButton6 = new InlineKeyboardButton();
+                    InlineKeyboardButton inlineKeyboardButton7 = new InlineKeyboardButton();
+                    inlineKeyboardButton3.setText("Room Name");
+                    inlineKeyboardButton4.setText("Room Description");
+                    inlineKeyboardButton5.setText("Maximum Capacity");
+                    inlineKeyboardButton6.setText("Room Type");
+                    inlineKeyboardButton7.setText("Building Location");
+                    inlineKeyboardButton3.setCallbackData("Login:Add_Chan_RoomName");
+                    inlineKeyboardButton4.setCallbackData("Login:Add_Chan_RoomDesc");
+                    inlineKeyboardButton5.setCallbackData("Login:Add_Chan_RoomMaxCap");
+                    inlineKeyboardButton6.setCallbackData("Login:Add_Chan_RoomType");
+                    inlineKeyboardButton7.setCallbackData("Login:Add_Chan_RoomBuildingLoc");
+                    inlineKeyboardButtonList2.add(inlineKeyboardButton3);
+                    inlineKeyboardButtonList2.add(inlineKeyboardButton4);
+                    inlineKeyboardButtonList3.add(inlineKeyboardButton5);
+                    inlineKeyboardButtonList3.add(inlineKeyboardButton6);
+                    inlineKeyboardButtonList4.add(inlineKeyboardButton7);
+                    inlineButtons.add(inlineKeyboardButtonList2);
+                    inlineButtons.add(inlineKeyboardButtonList3);
+                    inlineButtons.add(inlineKeyboardButtonList4);
+                    inlineKeyboardMarkup.setKeyboard(inlineButtons);
+                    sendMessage.setReplyMarkup(inlineKeyboardMarkup);
+                }
+                else if (data.equals("Login:Add_Chan_RoomName") || data.equals("Login:Add_Chan_RoomDesc") ||
+                        data.equals("Login:Add_Chan_RoomMaxCap") || data.equals("Login:Add_Chan_RoomType") ||
+                        data.equals("Login:Add_Chan_RoomBuildingLoc")) {
+                    if (data.equals("Login:Add_Chan_RoomName")) {
+                        userState.put(message.getChatId(), "Login:Add_Chan_RoomName");
+                        sendMessage.setText("What do you want to change the room name to?\n\n" +
+                                "Example: STML 3");
+                    }
+                    else if (data.equals("Login:Add_Chan_RoomDesc")) {
+                        userState.put(message.getChatId(), "Login:Add_Chan_RoomDesc");
+                        sendMessage.setText("What do you want to change the room description to?\n\n" +
+                                "Example: Quite a huge room attached with 2 screen, and provide air conditioning");
+                    }
+                    else if (data.equals("Login:Add_Chan_RoomMaxCap")) {
+                        userState.put(message.getChatId(), "Login:Add_Chan_RoomMaxCap");
+                        sendMessage.setText("What do you want to change the room maximum capacity to?\n\n" +
+                                "Example: 50");
+                    }
+                    else if (data.equals("Login:Add_Chan_RoomType")) {
+                        userState.put(message.getChatId(), "Login:Add_Chan_RoomType");
+                        sendMessage = new SendMessage();
+                        sendMessage.setText("What do you want to change the room's type to?\n\n" +
+                                "Example: Meeting Room");
+                    }
+                    else if (data.equals("Login:Add_Chan_RoomBuildingLoc")) {
+                        userState.put(message.getChatId(), "Login:Add_Chan_RoomBuildingLoc");
+                        String Buildinglist = "";
+                        Buildinglist = databaseManager.buildingList1();
+                        sendMessage = new SendMessage();
+                        sendMessage.setText(Buildinglist);
+                    }
+
+                    sendMessage.setChatId(message.getChatId());
+                }
+
             }
 
             else if (buttonData[0].equals("Register")) {

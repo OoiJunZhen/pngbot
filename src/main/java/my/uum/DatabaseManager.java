@@ -2002,11 +2002,10 @@ public class DatabaseManager {
      * @param RoomType
      * @param buildingID
      */
-    public void AddRoom(String RoomName, String RoomDesc, String RoomMaxCap, String RoomType, Integer buildingID){
+    public void AddRoom(String RoomName, String RoomDesc, String RoomMaxCap, String RoomType, Integer SchoolId, Integer buildingID){
         try{
             //set dynamic query
-            String Add_room = "INSERT INTO Room (Room_Name, Room_Description, Maximum_Capacity, Room_Type, /*School_ID,*/ Building_ID) VALUES (?,?,?,?,?)";
-
+            String Add_room = "INSERT INTO Room (Room_Name, Room_Description, Maximum_Capacity, Room_Type, School_ID, Building_ID) VALUES (?,?,?,?,?,?)";
 
 
             //Get the preparedStatement Object
@@ -2017,7 +2016,8 @@ public class DatabaseManager {
             preparedStatement.setString(2,RoomDesc);
             preparedStatement.setString(3,RoomMaxCap);
             preparedStatement.setString(4,RoomType);
-            preparedStatement.setInt(5,buildingID);
+            preparedStatement.setInt(5,SchoolId);
+            preparedStatement.setInt(6,buildingID);
 
             preparedStatement.executeUpdate();
 
@@ -2057,6 +2057,25 @@ public class DatabaseManager {
 
 
         return list;
+    }
+
+    public Integer getSchoolId(String IC){
+        Integer School_ID = 0;
+        String x = "SELECT School_ID FROM School_Admin WHERE User_IC=?";
+
+
+        try(Connection conn = this.connect()){
+            PreparedStatement preparedStatement = conn.prepareStatement(x);
+
+            preparedStatement.setString(1,IC);
+            ResultSet rs = preparedStatement.executeQuery();
+            while(rs.next()){
+               return School_ID = rs.getInt("School_ID");
+            }
+
+        }catch (SQLException e){
+            System.out.println(e.getMessage());       }
+        return School_ID;
     }
 
 
