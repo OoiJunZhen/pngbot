@@ -647,6 +647,42 @@ public class DatabaseManager {
 
     /**
      * @author Ang Toon Ph'ng
+     * @param User_IC
+     */
+    public void resignSchoolAd (String User_IC){
+        String del="";
+        String q = "DELETE From School_Admin WHERE User_IC=?";
+
+        try(Connection conn = this.connect()){
+            PreparedStatement preparedStatement = conn.prepareStatement(q);
+            preparedStatement.setString(1, User_IC);
+            preparedStatement.executeUpdate();
+
+        }catch (SQLException e){
+            System.out.println(e.getMessage());       }
+    }
+
+    /**
+     * @author Ang Toon Ph'ng
+     * @param role
+     * @param User_IC
+     */
+    public void updateUserRole (String role, String User_IC){
+        String q = "UPDATE Users SET User_Role=? WHERE User_IC=?";
+
+        try(Connection conn = this.connect()){
+            PreparedStatement preparedStatement = conn.prepareStatement(q);
+            preparedStatement.setString(1, role);
+            preparedStatement.setString(2, User_IC);
+            preparedStatement.executeUpdate();
+
+
+        }catch (SQLException e){
+            System.out.println(e.getMessage());       }
+    }
+
+    /**
+     * @author Ang Toon Ph'ng
      * This method will display room's details based on the Room ID while asking whether user want to book the room
      * @param Room_ID Room ID
      * @return Room's Details
@@ -1211,6 +1247,11 @@ public class DatabaseManager {
         return list;
     }
 
+    /**
+     * @author Ang Toon Ph'ng
+     * @param SchoolAd_ID
+     * @return
+     */
     public boolean checkSchoolAdInput(String SchoolAd_ID){
         String list = "";
 

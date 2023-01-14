@@ -204,7 +204,22 @@ public class PNG_bot extends TelegramLongPollingBot {
                     userState.put(message.getChatId(), "Test:Input");
                     sendMessage = new SendMessage();
                     sendMessage.setText("Enter Date\n\nExample: 23/02/2023");
-                    sendMessage.setChatId(message.getChatId().toString());
+
+                    //sendMessage.setChatId(message.getChatId().toString());
+                    sendMessage.setParseMode(ParseMode.MARKDOWN);
+                    sendMessage.setChatId(message.getChatId());
+
+                    //Inline Keyboard Button
+                    InlineKeyboardMarkup inlineKeyboardMarkup11 = new InlineKeyboardMarkup();
+                    List<List<InlineKeyboardButton>> inlineButtons11 = new ArrayList<>();
+                    List<InlineKeyboardButton> inlineKeyboardButtonList11 = new ArrayList<>();
+                    InlineKeyboardButton inlineKeyboardButton12 = new InlineKeyboardButton();
+                    inlineKeyboardButton12.setText("Go Resign");
+                    inlineKeyboardButton12.setCallbackData("System:Resign");
+                    inlineKeyboardButtonList11.add(inlineKeyboardButton12);
+                    inlineButtons11.add(inlineKeyboardButtonList11);
+                    inlineKeyboardMarkup11.setKeyboard(inlineButtons11);
+                    sendMessage.setReplyMarkup(inlineKeyboardMarkup11);
 
                     try {
                         execute(sendMessage);
@@ -2047,7 +2062,7 @@ public class PNG_bot extends TelegramLongPollingBot {
 
             }
 
-            //Go to check state if State have the first word as 'Login'
+            //Go to check state if State have the first word as 'System'
             else if (!String.valueOf(message.getText().charAt(0)).equals("/") && userState.get(message.getChatId()).contains("System:")){
                 switch (userState.get(message.getChatId())){
                     case "System:Main":
@@ -2081,9 +2096,28 @@ public class PNG_bot extends TelegramLongPollingBot {
                     case "System:Resign_Confirm":
                         if(!inputFormatChecker.NameFormat(message.getText())){
                             if(databaseManager.checkSchoolAdInput(message.getText())){
+                                usersMap.get(message.getChatId()).setICNO(databaseManager.schoolAdminIC(message.getText()));
                                 usersMap.get(message.getChatId()).setName(databaseManager.schoolAdminName(message.getText()));
+
                                 sendMessage.setText("Are you sure you want to resign " + databaseManager.schoolAdminName(message.getText()) + "?");
 
+                                sendMessage.setParseMode(ParseMode.MARKDOWN);
+
+                                //Inline Keyboard Button
+                                InlineKeyboardMarkup inlineKeyboardMarkup = new InlineKeyboardMarkup();
+                                List<List<InlineKeyboardButton>> inlineButtons = new ArrayList<>();
+                                List<InlineKeyboardButton> inlineKeyboardButtonList1 = new ArrayList<>();
+                                InlineKeyboardButton inlineKeyboardButton1 = new InlineKeyboardButton();
+                                InlineKeyboardButton inlineKeyboardButton2 = new InlineKeyboardButton();
+                                inlineKeyboardButton1.setText("Yes");
+                                inlineKeyboardButton2.setText("No, go back");
+                                inlineKeyboardButton1.setCallbackData("System:Resign_Success");
+                                inlineKeyboardButton2.setCallbackData("System:MainMenu");
+                                inlineKeyboardButtonList1.add(inlineKeyboardButton1);
+                                inlineKeyboardButtonList1.add(inlineKeyboardButton2);
+                                inlineButtons.add(inlineKeyboardButtonList1);
+                                inlineKeyboardMarkup.setKeyboard(inlineButtons);
+                                sendMessage.setReplyMarkup(inlineKeyboardMarkup);
 
                             }else{
                                 sendMessage.setText(databaseManager.schoolAdminList() + "Please enter a valid number thank you. \nExample reply: 1");
@@ -2091,6 +2125,12 @@ public class PNG_bot extends TelegramLongPollingBot {
                         }else{
                             sendMessage.setText(databaseManager.schoolAdminList() + "Please enter a number thank you. \nExample reply: 1");
                         }
+
+                    break;
+
+                    case "System:Resign_Success":
+                        databaseManager.resignSchoolAd(usersMap.get(message.getChatId()).getICNO());
+                        databaseManager.updateUserRole("User",usersMap.get(message.getChatId()).getICNO());
 
                     break;
                 }
