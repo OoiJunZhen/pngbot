@@ -2127,12 +2127,6 @@ public class PNG_bot extends TelegramLongPollingBot {
                         }
 
                     break;
-
-                    case "System:Resign_Success":
-                        databaseManager.resignSchoolAd(usersMap.get(message.getChatId()).getICNO());
-                        databaseManager.updateUserRole("User",usersMap.get(message.getChatId()).getICNO());
-
-                    break;
                 }
 
                 sendMessage.setChatId(message.getChatId());
@@ -2736,7 +2730,7 @@ public class PNG_bot extends TelegramLongPollingBot {
                                 "Example  reply: 1";
                         sendMessage.setText(list);
                     }else{
-                        list = "Sorry there are no school admin application.";
+                        list = "Sorry, there are no school admin.";
                         sendMessage.setText(list);
 
                         //Inline Keyboard Button
@@ -2751,6 +2745,30 @@ public class PNG_bot extends TelegramLongPollingBot {
                         inlineKeyboardMarkup.setKeyboard(inlineButtons);
                         sendMessage.setReplyMarkup(inlineKeyboardMarkup);
                     }
+                }else if(data.equals("System:Resign_Success")){
+                    databaseManager.resignSchoolAd(usersMap.get(message.getChatId()).getICNO());
+                    databaseManager.updateUserRole("User", usersMap.get(message.getChatId()).getICNO());
+
+                    sendMessage.setText("The school admin has been resigned");
+
+                    sendMessage.setParseMode(ParseMode.MARKDOWN);
+
+                    //Inline Keyboard Button
+                    InlineKeyboardMarkup inlineKeyboardMarkup = new InlineKeyboardMarkup();
+                    List<List<InlineKeyboardButton>> inlineButtons = new ArrayList<>();
+                    List<InlineKeyboardButton> inlineKeyboardButtonList1 = new ArrayList<>();
+                    List<InlineKeyboardButton> inlineKeyboardButtonList2 = new ArrayList<>();
+                    InlineKeyboardButton inlineKeyboardButton1 = new InlineKeyboardButton();
+                    InlineKeyboardButton inlineKeyboardButton2 = new InlineKeyboardButton();
+                    inlineKeyboardButton1.setText("Resign another school admin");
+                    inlineKeyboardButton2.setText("Go back");
+                    inlineKeyboardButton1.setCallbackData("System:Resign");
+                    inlineKeyboardButton2.setCallbackData("System:MainMenu");
+                    inlineKeyboardButtonList1.add(inlineKeyboardButton1);
+                    inlineKeyboardButtonList2.add(inlineKeyboardButton2);
+                    inlineButtons.add(inlineKeyboardButtonList1);
+                    inlineKeyboardMarkup.setKeyboard(inlineButtons);
+                    sendMessage.setReplyMarkup(inlineKeyboardMarkup);
                 }
             }
             try {
