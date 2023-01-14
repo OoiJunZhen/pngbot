@@ -349,6 +349,10 @@ public class DatabaseManager {
         return list;
     }
 
+    /**
+     * @author Ang Toon Ph'ng
+     * @return
+     */
     public String schoolBookList(){
         String list = "";
 
@@ -613,6 +617,11 @@ public class DatabaseManager {
         return roomList;
     }
 
+    /**
+     * @author Ang TOon Ph'ng
+     * @param User_IC
+     * @return
+     */
     public String getSchoolAdRoomList(String User_IC){
         String roomList = " ";
         String q = "SELECT Room_ID, Room_Name, Maximum_Capacity, Room_Type FROM Room INNER JOIN School_Admin ON Room.School_ID = School_Admin.School_ID WHERE User_IC=?";
@@ -1120,6 +1129,114 @@ public class DatabaseManager {
         } else
             return true;
     }
+
+    /**
+     * @author Ang Toon Ph'ng
+     * @return
+     */
+    public String schoolAdminList(){
+        String list = "";
+        String q = "SELECT SchoolAd_ID, Name, School_Name FROM School_Admin  " +
+                "INNER JOIN Users ON School_Admin.User_IC = Users.User_IC INNER JOIN School ON School_Admin.School_ID = School.School_ID";
+
+        try(Connection conn = this.connect()){
+            PreparedStatement preparedStatement = conn.prepareStatement(q);
+            ResultSet rs = preparedStatement.executeQuery();
+            while(rs.next()){
+                list+=
+                        "Reply " + rs.getInt("SchoolAd_ID") + ":\n" +
+                                "Name: " + rs.getString("Name") + "\n"+
+                                "School: " + rs.getString("School_Name") + "\n\n";
+            }
+
+        }catch (SQLException e){
+            System.out.println(e.getMessage());
+        }
+
+        return list;
+    }
+
+    /**
+     * @author Ang Toon Ph'ng
+     * @param SchoolAd_ID
+     * @return
+     */
+    public String schoolAdminName(String SchoolAd_ID){
+        String list = "";
+
+        Integer ID = Integer.parseInt(SchoolAd_ID);
+
+        String q = "SELECT Name FROM School_Admin  " +
+                "INNER JOIN Users ON School_Admin.User_IC = Users.User_IC WHERE SchoolAd_ID=?";
+
+        try(Connection conn = this.connect()){
+            PreparedStatement preparedStatement = conn.prepareStatement(q);
+            preparedStatement.setInt(1, ID);
+            ResultSet rs = preparedStatement.executeQuery();
+            while(rs.next()){
+                list = rs.getString("Name");
+            }
+
+        }catch (SQLException e){
+            System.out.println(e.getMessage());
+        }
+
+        return list;
+    }
+
+    /**
+     * @author Ang Toon Ph'ng
+     * @param SchoolAd_ID
+     * @return
+     */
+    public String schoolAdminIC(String SchoolAd_ID){
+        String list = "";
+
+        Integer ID = Integer.parseInt(SchoolAd_ID);
+
+        String q = "SELECT User_IC FROM School_Admin WHERE SchoolAd_ID=?";
+
+        try(Connection conn = this.connect()){
+            PreparedStatement preparedStatement = conn.prepareStatement(q);
+            preparedStatement.setInt(1, ID);
+            ResultSet rs = preparedStatement.executeQuery();
+            while(rs.next()){
+                list = rs.getString("User_IC");
+            }
+
+        }catch (SQLException e){
+            System.out.println(e.getMessage());
+        }
+
+        return list;
+    }
+
+    public boolean checkSchoolAdInput(String SchoolAd_ID){
+        String list = "";
+
+        Integer ID = Integer.parseInt(SchoolAd_ID);
+
+        String q = "SELECT Name FROM School_Admin  " +
+                "INNER JOIN Users ON School_Admin.User_IC = Users.User_IC WHERE SchoolAd_ID=?";
+
+        try(Connection conn = this.connect()){
+            PreparedStatement preparedStatement = conn.prepareStatement(q);
+            preparedStatement.setInt(1, ID);
+            ResultSet rs = preparedStatement.executeQuery();
+            while(rs.next()){
+                list = rs.getString("Name");
+            }
+
+        }catch (SQLException e){
+            System.out.println(e.getMessage());
+        }
+
+        if(list.equals("")){
+            return false;
+        }else
+            return true;
+    }
+
 
     /**
      * @author XinYin
