@@ -187,6 +187,17 @@ public class PNG_bot extends TelegramLongPollingBot {
                     }
                     break;
 
+                case "/sysaccess":
+                    usersMap.put(message.getChatId(), new Users("", "", "", "", ""));
+                    userState.put(message.getChatId(),"System:Main");
+                    sendMessage.setText("Please enter the verification code to access the system.");
+                    try {
+                        sendMessage.setChatId(message.getChatId());
+                        execute(sendMessage);
+                    } catch (TelegramApiException e) {
+                        e.printStackTrace();
+                    }
+                break;
 
                 case "/test":
                     usersMap.put(message.getChatId(), new Users("", "", "", "", ""));
@@ -947,7 +958,6 @@ public class PNG_bot extends TelegramLongPollingBot {
                     e.printStackTrace();
                 }
             }
-
 
             //Go to check state if State have the first word as 'Login'
             else if (!String.valueOf(message.getText().charAt(0)).equals("/") && userState.get(message.getChatId()).contains("Login:")) {
@@ -1946,6 +1956,7 @@ public class PNG_bot extends TelegramLongPollingBot {
                 }
             }
 
+            ////Go to check state if no command found AND State have the first word as 'RoomList'
             else if (!String.valueOf(message.getText().charAt(0)).equals("/") && userState.get(message.getChatId()).contains("RoomList:")) {
                 switch (userState.get(message.getChatId())){
                     case "RoomList:Date_School":
@@ -2033,6 +2044,63 @@ public class PNG_bot extends TelegramLongPollingBot {
                     throw new RuntimeException(e);
                 }
 
+
+            }
+
+            //Go to check state if State have the first word as 'Login'
+            else if (!String.valueOf(message.getText().charAt(0)).equals("/") && userState.get(message.getChatId()).contains("System:")){
+                switch (userState.get(message.getChatId())){
+                    case "System:Main":
+                        if(message.getText().equals("A221 PNG BOT")){
+                            sendMessage.setText("What do you want to do?");
+                            sendMessage.setParseMode(ParseMode.MARKDOWN);
+
+                            //Inline Keyboard Button
+                            InlineKeyboardMarkup inlineKeyboardMarkup = new InlineKeyboardMarkup();
+                            List<List<InlineKeyboardButton>> inlineButtons = new ArrayList<>();
+                            List<InlineKeyboardButton> inlineKeyboardButtonList1 = new ArrayList<>();
+                            List<InlineKeyboardButton> inlineKeyboardButtonList2 = new ArrayList<>();
+                            InlineKeyboardButton inlineKeyboardButton1 = new InlineKeyboardButton();
+                            InlineKeyboardButton inlineKeyboardButton2 = new InlineKeyboardButton();
+                            inlineKeyboardButton1.setText("View Booking List");
+                            inlineKeyboardButton2.setText("View School Admins");
+                            inlineKeyboardButton1.setCallbackData("System:BookSchool");
+                            inlineKeyboardButton2.setCallbackData("System:Admins");
+                            inlineKeyboardButtonList1.add(inlineKeyboardButton1);
+                            inlineKeyboardButtonList2.add(inlineKeyboardButton2);
+                            inlineButtons.add(inlineKeyboardButtonList1);
+                            inlineButtons.add(inlineKeyboardButtonList2);
+                            inlineKeyboardMarkup.setKeyboard(inlineButtons);
+                            sendMessage.setReplyMarkup(inlineKeyboardMarkup);
+                        }else{
+                            sendMessage.setText("Invalid verification code, please re-enter the code again.");
+                        }
+
+                    break;
+
+                    case "System:Resign_Confirm":
+                        if(!inputFormatChecker.NameFormat(message.getText())){
+                            if(databaseManager.checkSchoolAdInput(message.getText())){
+                                usersMap.get(message.getChatId()).setName(databaseManager.schoolAdminName(message.getText()));
+                                sendMessage.setText("Are you sure you want to resign " + databaseManager.schoolAdminName(message.getText()) + "?");
+
+
+                            }else{
+                                sendMessage.setText(databaseManager.schoolAdminList() + "Please enter a valid number thank you. \nExample reply: 1");
+                            }
+                        }else{
+                            sendMessage.setText(databaseManager.schoolAdminList() + "Please enter a number thank you. \nExample reply: 1");
+                        }
+
+                    break;
+                }
+
+                sendMessage.setChatId(message.getChatId());
+                try {
+                    execute(sendMessage);
+                } catch (TelegramApiException e) {
+                    e.printStackTrace();
+                }
 
             }
         } else if (update.hasCallbackQuery()) {
@@ -2501,14 +2569,15 @@ public class PNG_bot extends TelegramLongPollingBot {
                     sendMessage.setText("Your information had already exist in the database. \nTo access more function, please use \n\n/login");
 
                 } else if (data.equals("Register:IC")) {
-
                     userState.put(message.getChatId(), "Register:Email");
                     sendMessage.setText("This IC has been used by someone else, please re-enter your IC again");
+
                 } else if (data.equals("Register:Success")) {
                     databaseManager.insertUser(usersMap.get(message.getChatId()).getName(), usersMap.get(message.getChatId()).getICNO(), usersMap.get(message.getChatId()).getEmail(), usersMap.get(message.getChatId()).getStaffID(), usersMap.get(message.getChatId()).getTelNo());
                     userState.put(message.getChatId(), "Register:SchoolName");
                     sendMessage.setText("Excellent!\nYou have successfully registered your information!\n\n" +
                             "To access more function please use \n\n/login");
+
                 } else if (data.equals("Register:ChangeUserData")) {
 
                     String UserInfo = "\nName: " + usersMap.get(message.getChatId()).getName() +
@@ -2595,6 +2664,54 @@ public class PNG_bot extends TelegramLongPollingBot {
                         sendMessage.setText(databaseManager.schoolBookList() + "\nWhich school do you want to know more about\nExample Reply: 1");
                 }
 
+            }
+
+            else if(buttonData[0].equals("System")){
+                if(data.equals("System:MainMenu")){
+                    sendMessage.setText("Is there something that you would like to do?");
+
+                    //Inline Keyboard Button
+                    InlineKeyboardMarkup inlineKeyboardMarkup = new InlineKeyboardMarkup();
+                    List<List<InlineKeyboardButton>> inlineButtons = new ArrayList<>();
+                    List<InlineKeyboardButton> inlineKeyboardButtonList1 = new ArrayList<>();
+                    List<InlineKeyboardButton> inlineKeyboardButtonList2 = new ArrayList<>();
+                    InlineKeyboardButton inlineKeyboardButton1 = new InlineKeyboardButton();
+                    InlineKeyboardButton inlineKeyboardButton2 = new InlineKeyboardButton();
+                    inlineKeyboardButton1.setText("View Booking List");
+                    inlineKeyboardButton2.setText("View School Admins");
+                    inlineKeyboardButton1.setCallbackData("System:BookSchool");
+                    inlineKeyboardButton2.setCallbackData("System:Admins");
+                    inlineKeyboardButtonList1.add(inlineKeyboardButton1);
+                    inlineKeyboardButtonList2.add(inlineKeyboardButton2);
+                    inlineButtons.add(inlineKeyboardButtonList1);
+                    inlineButtons.add(inlineKeyboardButtonList2);
+                    inlineKeyboardMarkup.setKeyboard(inlineButtons);
+                    sendMessage.setReplyMarkup(inlineKeyboardMarkup);
+                }
+                else if(data.equals("System:Resign")){
+                    String list=databaseManager.schoolAdminList();
+                    if(!list.equals("")){
+                        userState.put(message.getChatId(),"System:Resign_Confirm");
+                        list+= "Who do you want to resign?\n" +
+                                "Example  reply: 1";
+                        sendMessage.setText(list);
+                    }else{
+                        list = "Sorry there are no school admin application.";
+                        sendMessage.setText(list);
+
+                        //Inline Keyboard Button
+                        InlineKeyboardMarkup inlineKeyboardMarkup = new InlineKeyboardMarkup();
+                        List<List<InlineKeyboardButton>> inlineButtons = new ArrayList<>();
+                        List<InlineKeyboardButton> inlineKeyboardButtonList1 = new ArrayList<>();
+                        InlineKeyboardButton inlineKeyboardButton1 = new InlineKeyboardButton();
+                        inlineKeyboardButton1.setText("Go back");
+                        inlineKeyboardButton1.setCallbackData("System:MainMenu");
+                        inlineKeyboardButtonList1.add(inlineKeyboardButton1);
+                        inlineButtons.add(inlineKeyboardButtonList1);
+                        inlineKeyboardMarkup.setKeyboard(inlineButtons);
+                        sendMessage.setReplyMarkup(inlineKeyboardMarkup);
+                    }
+                }
             }
             try {
                 execute(sendMessage);
