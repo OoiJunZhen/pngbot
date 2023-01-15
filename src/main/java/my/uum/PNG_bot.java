@@ -53,10 +53,14 @@ public class PNG_bot extends TelegramLongPollingBot {
      */
     Map<Long, Room> addRoomMap = new HashMap<Long, Room>();
 
+    Map<Long, Room> deleteRoomMap = new HashMap<Long, Room>();
+
     /**
      * Hashmap for adding roomlist information
      */
     Map<Long, RoomList> roomListMap = new HashMap<Long, RoomList>();
+
+
 
     public void onUpdateReceived(Update update) {
         SendMessage sendMessage = new SendMessage();
@@ -190,8 +194,9 @@ public class PNG_bot extends TelegramLongPollingBot {
 
                 case "/test":
 //                    usersMap.put(message.getChatId(), new Users("", "", "", "", ""));
-                    addRoomMap.put(message.getChatId(), new Room("", "", "", "",""));
+                    addRoomMap.put(message.getChatId(), new Room("", "", "", "","","",""));
                     usersMap.put(message.getChatId(), new Users("", "", "", "", ""));
+                    deleteRoomMap.put(message.getChatId(), new Room("", "", "", "","","",""));
                     userState.put(message.getChatId(), "Login:AddRoom");
                     String info10 = "Please enter your IC and Email to access your account\n\n" +
                             "Example: 990724070661@MyEmail@hotmail.com";
@@ -1768,14 +1773,14 @@ public class PNG_bot extends TelegramLongPollingBot {
                         break;
 
                     case "Login:AddRoom":
-                        String[] password5 = message.getText().split("@", 2);
+//                        String[] password5 = message.getText().split("@", 2);
                         //if password verification is true
 //                        if (message.getText().contains("@")) {
 //                            if (databaseManager.passwordCheck(password5[0], password5[1])) {
 
                                 //先把Password里的IC放进去usersMap
-                                usersMap.get(message.getChatId()).setICNO(password5[0]);
-                                usersMap.get(message.getChatId()).setEmail(password5[1]);
+                                usersMap.get(message.getChatId()).setICNO("000315070661");
+                                usersMap.get(message.getChatId()).setEmail("blacknight0315@hotmail.com");
 //                            }
 //                        }
                         userState.put(message.getChatId(), "Login:Add_Description");
@@ -1791,7 +1796,6 @@ public class PNG_bot extends TelegramLongPollingBot {
                     case "Login:Add_Description":
                         addRoomMap.get(message.getChatId()).setRoomName(message.getText());
                         if (databaseManager.checkRoomName(message.getText())) {
-
                             sendMessage = new SendMessage();
                             sendMessage.setText("Room name already exist, Please enter other room name.");
                             addRoomMap.get(message.getChatId()).setRoomName(message.getText());
@@ -1845,11 +1849,22 @@ public class PNG_bot extends TelegramLongPollingBot {
 
                         if (userState.get(message.getChatId()).equals("Login:AddConfirm")) {
                             addRoomMap.get(message.getChatId()).setBuildingLoc(message.getText());
+                            Integer buildingId = Integer.parseInt(message.getText());
+                            String buildingName = databaseManager.getBuildingName(buildingId);
+                            addRoomMap.get(message.getChatId()).setBuildingName(buildingName);
                             msg = true;
                         }
                         if (userState.get(message.getChatId()).equals("Login:Add_Chan_RoomName")) {
-                            addRoomMap.get(message.getChatId()).setRoomName(message.getText());
-                            msg = true;
+                            if (databaseManager.checkRoomName(message.getText())) {
+                                sendMessage = new SendMessage();
+                                sendMessage.setText("Room name already exist, Please enter other room name.");
+                                addRoomMap.get(message.getChatId()).setRoomName(message.getText());
+                            }
+                            else {
+                                addRoomMap.get(message.getChatId()).setRoomName(message.getText());
+                                msg = true;
+                            }
+
                         }
                         if (userState.get(message.getChatId()).equals("Login:Add_Chan_RoomDesc")) {
                             addRoomMap.get(message.getChatId()).setRoomDesc(message.getText());
@@ -1866,18 +1881,19 @@ public class PNG_bot extends TelegramLongPollingBot {
                         }
                         if (userState.get(message.getChatId()).equals("Login:Add_Chan_RoomBuildingLoc")) {
                             addRoomMap.get(message.getChatId()).setBuildingLoc(message.getText());
+                            Integer buildingId = Integer.parseInt(message.getText());
+                            String buildingName = databaseManager.getBuildingName(buildingId);
+                            addRoomMap.get(message.getChatId()).setBuildingName(buildingName);
                             msg = true;
                         }
 
                         if (msg) {
-                            Integer schoolId = Integer.parseInt(message.getText());
-                            String schoolName = databaseManager.getBuildingName(schoolId);
                             String RoomInfo = "Add Room Information: \n" +
                                     "\nRoom Name: " + addRoomMap.get(message.getChatId()).getRoomName() +
                                     "\nRoom Description: " + addRoomMap.get(message.getChatId()).getRoomDesc() +
                                     "\nRoom Maximum Capacity: " + addRoomMap.get(message.getChatId()).getRoomMaxCap() +
                                     "\nRoom Type: " + addRoomMap.get(message.getChatId()).getRoomType() +
-                                    "\nRoom Building Location: " + schoolName +
+                                    "\nRoom Building Location: " + addRoomMap.get(message.getChatId()).getBuildingName() +
                                     "\n\nAre the information correct?";
 
                             sendMessage = new SendMessage();
@@ -1905,12 +1921,44 @@ public class PNG_bot extends TelegramLongPollingBot {
                         break;
 
                     case "Login:DeleteRoom":
+                        usersMap.get(message.getChatId()).setICNO("000315070661");
+                        usersMap.get(message.getChatId()).setEmail("blacknight0315@hotmail.com");
+                        Integer schoolID = databaseManager.getSchoolId(usersMap.get(message.getChatId()).getICNO());
                         userState.put(message.getChatId(), "Login:DeleteRoom_Confirm");
-                        String roomList = databaseManager.getRoomList(bookingMap.get(message.getChatId()).getRoomID());
-                        roomList += "This room does not exist. Please re-enter the room that you wish to book.\n\nExample reply: 1";
+                        String deleteRoomList = databaseManager.getDeleteRoomList(schoolID);
+                        deleteRoomList += "Which room do you wish to delete?\nExample reply: 1";
                         sendMessage = new SendMessage();
-                        sendMessage.setText(roomList);
+                        sendMessage.setText(deleteRoomList);
                         sendMessage.setChatId(message.getChatId());
+                        break;
+
+                    case "Login:DeleteRoom_Confirm":
+                        deleteRoomMap.get(message.getChatId()).setRoomID(message.getText());
+                        Integer roomID = Integer.parseInt(deleteRoomMap.get(message.getChatId()).getRoomID());
+                        String deleteRoomInfo = databaseManager.getDeleteRoomInfo(roomID);
+                        deleteRoomInfo += "Are you sure you want to delete this room?";
+
+                        sendMessage = new SendMessage();
+                        sendMessage.setText(deleteRoomInfo);
+                        sendMessage.setParseMode(ParseMode.MARKDOWN);
+                        sendMessage.setChatId(message.getChatId());
+
+                        InlineKeyboardMarkup inlineKeyboardMarkup = new InlineKeyboardMarkup();
+                        List<List<InlineKeyboardButton>> inlineButtons = new ArrayList<>();
+                        List<InlineKeyboardButton> inlineKeyboardButtonList12 = new ArrayList<>();
+                        List<InlineKeyboardButton> inlineKeyboardButtonList13 = new ArrayList<>();
+                        InlineKeyboardButton inlineKeyboardButton12 = new InlineKeyboardButton();
+                        InlineKeyboardButton inlineKeyboardButton13 = new InlineKeyboardButton();
+                        inlineKeyboardButton12.setText("Yes");
+                        inlineKeyboardButton13.setText("No, go back");
+                        inlineKeyboardButton12.setCallbackData("Login:DeleteRoom_Success");
+                        inlineKeyboardButton13.setCallbackData("Login:Main");
+                        inlineKeyboardButtonList12.add(inlineKeyboardButton12);
+                        inlineKeyboardButtonList13.add(inlineKeyboardButton13);
+                        inlineButtons.add(inlineKeyboardButtonList12);
+                        inlineButtons.add(inlineKeyboardButtonList13);
+                        inlineKeyboardMarkup.setKeyboard(inlineButtons);
+                        sendMessage.setReplyMarkup(inlineKeyboardMarkup);
                         break;
 
                 }
@@ -2652,7 +2700,8 @@ public class PNG_bot extends TelegramLongPollingBot {
                     Integer schoolID = databaseManager.getSchoolId(userIC);
                     Integer BuildingId = Integer.parseInt(addRoomMap.get(message.getChatId()).getBuildingLoc());
                     databaseManager.AddRoom(addRoomMap.get(message.getChatId()).getRoomName(), addRoomMap.get(message.getChatId()).getRoomDesc(),
-                            addRoomMap.get(message.getChatId()).getRoomMaxCap(), addRoomMap.get(message.getChatId()).getRoomType(), schoolID, BuildingId);
+                            addRoomMap.get(message.getChatId()).getRoomMaxCap(), addRoomMap.get(message.getChatId()).getRoomType(),
+                            schoolID, BuildingId);
                     sendMessage = new SendMessage();
                     sendMessage.setText("Excellent! The new room had successfully added into the system.");
                     sendMessage.setChatId(message.getChatId());
@@ -2676,14 +2725,12 @@ public class PNG_bot extends TelegramLongPollingBot {
 
                 }
                 else if(data.equals("Login:Add_Change")){
-                    Integer schoolId = Integer.parseInt(addRoomMap.get(message.getChatId()).getBuildingLoc());
-                    String schoolName = databaseManager.getBuildingName(schoolId);
                     String RoomInfo = "Room Information: \n" +
                             "\nRoom Name: " + addRoomMap.get(message.getChatId()).getRoomName() +
                             "\nRoom Description: " + addRoomMap.get(message.getChatId()).getRoomDesc() +
                             "\nRoom Maximum Capacity: " + addRoomMap.get(message.getChatId()).getRoomMaxCap() +
                             "\nRoom Type: " + addRoomMap.get(message.getChatId()).getRoomType() +
-                            "\nRoom Building Location: " + schoolName +
+                            "\nRoom Building Location: " + addRoomMap.get(message.getChatId()).getBuildingName() +
                             "\n\nWhat would you like to change?";
                     sendMessage = new SendMessage();
                     sendMessage.setText(RoomInfo);
@@ -2753,6 +2800,53 @@ public class PNG_bot extends TelegramLongPollingBot {
                         sendMessage.setText(Buildinglist);
                     }
 
+                    sendMessage.setChatId(message.getChatId());
+                }
+
+                else if (data.equals("Login:DeleteRoom_Success")) {
+                    Integer roomID = Integer.parseInt(deleteRoomMap.get(message.getChatId()).getRoomID());
+                    String deleteRoom = databaseManager.deleteRoom(roomID);
+
+                    sendMessage = new SendMessage();
+                    sendMessage.setText(deleteRoom);
+                    sendMessage.setParseMode(ParseMode.MARKDOWN);
+                    sendMessage.setChatId(message.getChatId());
+
+                    InlineKeyboardMarkup inlineKeyboardMarkup = new InlineKeyboardMarkup();
+                    List<List<InlineKeyboardButton>> inlineButtons = new ArrayList<>();
+                    List<InlineKeyboardButton> inlineKeyboardButtonList12 = new ArrayList<>();
+                    List<InlineKeyboardButton> inlineKeyboardButtonList13 = new ArrayList<>();
+                    InlineKeyboardButton inlineKeyboardButton12 = new InlineKeyboardButton();
+                    InlineKeyboardButton inlineKeyboardButton13 = new InlineKeyboardButton();
+                    inlineKeyboardButton12.setText("Delete another room");
+                    inlineKeyboardButton13.setText("Go back");
+                    inlineKeyboardButton12.setCallbackData("Login:DeleteRoom");
+                    inlineKeyboardButton13.setCallbackData("Login:Main");
+                    inlineKeyboardButtonList12.add(inlineKeyboardButton12);
+                    inlineKeyboardButtonList13.add(inlineKeyboardButton13);
+                    inlineButtons.add(inlineKeyboardButtonList12);
+                    inlineButtons.add(inlineKeyboardButtonList13);
+                    inlineKeyboardMarkup.setKeyboard(inlineButtons);
+                    sendMessage.setReplyMarkup(inlineKeyboardMarkup);
+                }
+
+                else if (data.equals("Login:AddRoom")) {
+                    userState.put(message.getChatId(), "Login:Add_Description");
+                    sendMessage = new SendMessage();
+                    sendMessage.setText("Please fill in some details required for a new room." +
+                            "\nNotes: The room added will be under your school" +
+                            "\n\nWhat is the room's name?" +
+                            "\nExample: STML 3");
+                    sendMessage.setChatId(message.getChatId());
+                }
+
+                else if (data.equals("Login:DeleteRoom")) {
+                    Integer schoolID = databaseManager.getSchoolId(usersMap.get(message.getChatId()).getICNO());
+                    userState.put(message.getChatId(), "Login:DeleteRoom_Confirm");
+                    String deleteRoomList = databaseManager.getDeleteRoomList(schoolID);
+                    deleteRoomList += "Which room do you wish to delete?\nExample reply: 1";
+                    sendMessage = new SendMessage();
+                    sendMessage.setText(deleteRoomList);
                     sendMessage.setChatId(message.getChatId());
                 }
 
