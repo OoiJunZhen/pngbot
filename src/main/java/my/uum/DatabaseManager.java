@@ -2059,6 +2059,12 @@ public class DatabaseManager {
         return list;
     }
 
+    /**
+     * @author Ooi Jun Zhen
+     * Get the school id from USER_IC
+     * @param IC
+     * @return school id
+     */
     public Integer getSchoolId(String IC){
         Integer School_ID = 0;
         String x = "SELECT School_ID FROM School_Admin WHERE User_IC=?";
@@ -2079,5 +2085,89 @@ public class DatabaseManager {
     }
 
 
+    /**
+     * @author Ooi Jun Zhen
+     * Get the delete room list from school id
+     * @param School_ID
+     * @return Delete room list
+     */
+    public String getDeleteRoomList(Integer School_ID){
+        String deleteRoomList = "";
+        String x = "SELECT Room_ID, Room_Name, Room_Type FROM Room WHERE School_ID = ?";
+
+
+        try (Connection conn = this.connect()){
+            PreparedStatement preparedStatement = conn.prepareStatement(x);
+
+            preparedStatement.setInt(1, School_ID);
+            ResultSet rs = preparedStatement.executeQuery();
+            while(rs.next()){
+                deleteRoomList +=
+                                "Reply " + rs.getInt("Room_ID") + ":\n" +
+                                "Room Name: " + rs.getString("Room_Name") + "\n" +
+                                "Room Type: " + rs.getString("Room_Type") + "\n\n";
+            }
+
+
+        }catch (SQLException e){
+            System.out.println(e.getMessage());
+        }
+        return deleteRoomList;
+    }
+
+    /**
+     * @author Ooi Jun Zhen
+     * Get delete room info
+     * @param Room_ID
+     * @return Delete room info
+     */
+    public String getDeleteRoomInfo(Integer Room_ID){
+        String deleteRoomInfo = "";
+        String x = "SELECT Room_ID, Room_Name, Room_Description, Maximum_Capacity, Room_Type FROM Room WHERE Room_ID = ?";
+
+
+        try (Connection conn = this.connect()){
+            PreparedStatement preparedStatement = conn.prepareStatement(x);
+
+            preparedStatement.setInt(1, Room_ID);
+            ResultSet rs = preparedStatement.executeQuery();
+            while(rs.next()){
+                deleteRoomInfo =
+                                "Reply " + rs.getInt("Room_ID") + ":\n" +
+                                "Room Name: " + rs.getString("Room_Name") + "\n" +
+                                "Room Description: " + rs.getString("Room_Description") + "\n" +
+                                "Room Maximum Capacity: " + rs.getString("Maximum_Capacity") + "\n" +
+                                "Room Type: " + rs.getString("Room_Type") + "\n\n";
+            }
+
+
+        }catch (SQLException e){
+            System.out.println(e.getMessage());
+        }
+        return deleteRoomInfo;
+    }
+
+    /**
+     * @author Ooi Jun Zhen
+     * Delete room from database based on the room id
+     * @param Room_ID
+     * @return Delete room
+     */
+    public String deleteRoom (Integer Room_ID){
+        String deleteRoom = " ";
+        String delRoom = "DELETE From Room WHERE Room_ID = ?";
+
+        try(Connection conn = this.connect()){
+            PreparedStatement preparedStatement = conn.prepareStatement(delRoom);
+
+            preparedStatement.setInt(1, Room_ID);
+            preparedStatement.executeUpdate();
+
+            deleteRoom = "The room is successfully deleted.";
+
+        }catch (SQLException e){
+            System.out.println(e.getMessage());       }
+        return deleteRoom;
+    }
 
 }
