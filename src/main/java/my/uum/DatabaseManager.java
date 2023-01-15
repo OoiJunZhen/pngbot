@@ -2165,8 +2165,6 @@ public class DatabaseManager {
             //set dynamic query
             String Add_room = "INSERT INTO Room (Room_Name, Room_Description, Maximum_Capacity, Room_Type, /*School_ID,*/ Building_ID) VALUES (?,?,?,?,?)";
 
-
-
             //Get the preparedStatement Object
             PreparedStatement preparedStatement = connection.prepareStatement(Add_room);
 
@@ -2217,6 +2215,39 @@ public class DatabaseManager {
         return list;
     }
 
+    /**
+     * @author Ang Toon Ph'ng
+     */
+    public void autoDeleteBookRecord(){
+        String del="";
+        java.util.Date utilDate = new java.util.Date();
+        String date;
+        SimpleDateFormat databaseDateFormat = new SimpleDateFormat("yyyy-MM-dd");
 
+        date = databaseDateFormat.format(utilDate);
+        java.sql.Date sqlDate = java.sql.Date.valueOf(date);
+        String q = "SELECT * From Booking";
+
+        try(Connection conn = this.connect()){
+            PreparedStatement preparedStatement = conn.prepareStatement(q);
+            ResultSet rs = preparedStatement.executeQuery();
+            while(rs.next()){
+                long difference_In_Time
+                        = sqlDate.getTime() - rs.getDate("Book_EndTime").getTime();
+                long difference_In_Days
+                        = (difference_In_Time
+                        / (1000 * 60 * 60 * 24))
+                        % 365;
+                if(difference_In_Days > 7) {
+                    deleteBook(rs.getString("User_IC"), rs.getInt("Booking_ID"));
+                }
+            }
+
+
+
+        }catch (SQLException e){
+            System.out.println(e.getMessage());       }
+    }
 
 }
+
