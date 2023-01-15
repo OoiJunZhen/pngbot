@@ -2217,6 +2217,373 @@ public class DatabaseManager {
         return list;
     }
 
+    /**
+     * @author Tan Zhi Yang
+     * This method will display all the school admin information
+     * @return school admins' information
+     */
+    public String getSchoolAdInfo(){
+        String schoolAdInfo = "";
+        String q = "SELECT School_Admin.School_ID, School.School_Name,  School_Admin.Office_TelNo, Users.Name FROM School_Admin INNER JOIN School ON School_Admin.School_ID = School.School_ID " +
+                "LEFT JOIN Users ON School_Admin.User_IC = Users.User_IC " +
+                "ORDER BY School_Admin.School_ID";
 
+        try(Connection conn = this.connect()){
+            PreparedStatement preparedStatement = conn.prepareStatement(q);
+            ResultSet rs = preparedStatement.executeQuery();
+            while(rs.next()){
+                    schoolAdInfo+=
+                            "School ID: " + rs.getInt("School_ID") + "\n"+
+                                    "School Name: " + rs.getString("School_Name") + "\n" +
+                                    "School Admin: " + rs.getString("name") + "\n\n";
+                                    // "Office Number: " + rs.getString("Office_TelNo") + "\n\n";
+
+            }
+
+            if(schoolAdInfo.equals("")){
+                schoolAdInfo+="There are no school admin yet)";
+            }else{
+                schoolAdInfo+="\n\nWhat do you want to do?";
+            }
+
+        }catch (SQLException e){
+            System.out.println(e.getMessage());       }
+        return schoolAdInfo;
+    }
+
+    /**
+     * @author Tan Zhi Yang
+     * This method will display all applicant school admin
+     * @return all applicant school admin
+     */
+    public String getRegSchoolAd(){
+        String new1 = "";
+        String new2 = "";
+        String occupied1 = "";
+        String occupied2 = "";
+        String applicantInfo = "";
+        String q = "SELECT Register_SchoolAd.Register_ID, School.School_ID, School.School_Name, Users.Name FROM Register_SchoolAd INNER JOIN School ON Register_SchoolAd.School_ID = School.School_ID " +
+                "INNER JOIN Users ON Register_SchoolAd.User_IC = Users.User_IC " +
+                "ORDER BY Register_SchoolAd.Register_ID";
+
+        try(Connection conn = this.connect()){
+            PreparedStatement preparedStatement = conn.prepareStatement(q);
+            ResultSet rs = preparedStatement.executeQuery();
+            while(rs.next()){
+                if (checkSchoolAdminExist(rs.getInt("School_ID"))){
+                    occupied1 = " <Occupied>";
+                    occupied2 = "<Occupied>: This school has already assigned an admin.\n";
+
+                } else {
+                    occupied1 = "";
+                }
+
+                if (!checkSchoolAdminExist(rs.getInt("School_ID"))){
+                    new1 = " <new>";
+                    new2 = "<new>:This school hasn’t been registered into the database.\n";
+
+                } else {
+                    new1 = "";
+                }
+
+
+                applicantInfo+=
+                        "Reply: " + rs.getInt("Register_ID") + "\n"+
+                                "Name: " + rs.getString("Name") + "\n" +
+                                "Applying: " + rs.getString("School_Name") + new1 + occupied1 + "\n\n";
+            }
+            applicantInfo+= occupied2;
+            applicantInfo+= new2;
+
+            if(applicantInfo.equals("")){
+                applicantInfo+="There are no application yet)";
+            }else{
+                applicantInfo+="Which application form are you interested in?";
+            }
+
+        }catch (SQLException e){
+            System.out.println(e.getMessage());       }
+        return applicantInfo;
+    }
+
+    /**
+     * @author Tan Zhi Yang
+     * This method checks if that school has a school admin
+     * @return
+     */
+    public boolean checkSchoolAdminExist(Integer School_ID) {
+        String list = "";
+
+        String q = "SELECT School_Admin.User_IC FROM School_Admin  " +
+                "WHERE School_ID=?";
+
+        try (Connection conn = this.connect()) {
+            PreparedStatement preparedStatement = conn.prepareStatement(q);
+            preparedStatement.setInt(1, School_ID);
+            ResultSet rs = preparedStatement.executeQuery();
+            while (rs.next()) {
+                list = rs.getString("User_IC");
+            }
+
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+
+        if (list.equals("")) {
+            return false;
+        } else
+            return true;
+    }
+
+    /**
+     * @author Tan Zhi Yang
+     * This method will display specific applicant information
+     * @return applicant information
+     */
+    public String getApplicantInfo(String User_IC){
+        String new1 = "";
+        String new2 = "";
+        String occupied1 = "";
+        String occupied2 = "";
+        String applicantInfo = "";
+        String q = "SELECT Users.User_IC, Users.Name,  Users.Email,  Users.Mobile_TelNo, School.School_ID, School.School_Name FROM Register_SchoolAd INNER JOIN School ON Register_SchoolAd.School_ID = School.School_ID " +
+                "INNER JOIN Users ON Register_SchoolAd.User_IC = Users.User_IC WHERE Register_SchoolAd.User_IC = ?";
+
+        try(Connection conn = this.connect()){
+            PreparedStatement preparedStatement = conn.prepareStatement(q);
+            preparedStatement.setString(1, User_IC);
+            ResultSet rs = preparedStatement.executeQuery();
+            while(rs.next()){
+                if (checkSchoolAdminExist(rs.getInt("School_ID"))){
+                    occupied1 = " <Occupied>";
+                    occupied2 = "<Occupied>: This school has already assigned an admin.\n";
+
+                } else {
+                    occupied1 = "";
+                }
+
+                if (!checkSchoolAdminExist(rs.getInt("School_ID"))){
+                    new1 = " <new>";
+                    new2 = "<new>:This school hasn’t been registered into the database.\n";
+
+                } else {
+                    new1 = "";
+                }
+
+
+                applicantInfo+=
+                        "Name: " + rs.getString("Name") + "\n" +
+                                "IC Number: " + rs.getInt("User_IC") + "\n"+
+                                "Email: " + rs.getString("Email") + "\n"+
+                                "Mobile Number: " + rs.getInt("Mobile_TelNo") + "\n"+
+                                "School Name: " + rs.getString("School_Name") + new1 + occupied1 + "\n\n";
+            }
+            applicantInfo+= occupied2;
+            applicantInfo+= new2;
+            applicantInfo+="Are you sure you want to appoint this user as school admin?";
+
+
+        }catch (SQLException e){
+            System.out.println(e.getMessage());       }
+        return applicantInfo;
+    }
+
+    /**
+     * @author Tan Zhi Yang
+     * This method is used to check if the register id entered by the user is correct
+     * @param Register_ID
+     * @return
+     */
+    public boolean checkApplicantInput(String Register_ID){
+        String list = "";
+
+        Integer ID = Integer.parseInt(Register_ID);
+
+        String q = "SELECT Name FROM Register_SchoolAD  " +
+                "INNER JOIN Users ON Register_SchoolAD.User_IC = Users.User_IC WHERE Register_ID=?";
+
+        try(Connection conn = this.connect()){
+            PreparedStatement preparedStatement = conn.prepareStatement(q);
+            preparedStatement.setInt(1, ID);
+            ResultSet rs = preparedStatement.executeQuery();
+            while(rs.next()){
+                list = rs.getString("Name");
+            }
+
+        }catch (SQLException e){
+            System.out.println(e.getMessage());
+        }
+
+        if(list.equals("")){
+            return false;
+        }else
+            return true;
+    }
+
+    /**
+     * @author Tan Zhi Yang
+     * This method is used to get applicant IC Number
+     * @param Register_ID
+     * @return Applicant's IC NUmber
+     */
+    public String applicantIC(String Register_ID){
+        String list = "";
+
+        Integer ID = Integer.parseInt(Register_ID);
+
+        String q = "SELECT User_IC FROM Register_SchoolAD WHERE Register_ID = ?";
+
+        try(Connection conn = this.connect()){
+            PreparedStatement preparedStatement = conn.prepareStatement(q);
+            preparedStatement.setInt(1, ID);
+            ResultSet rs = preparedStatement.executeQuery();
+            while(rs.next()){
+                list = rs.getString("User_IC");
+            }
+
+        }catch (SQLException e){
+            System.out.println(e.getMessage());
+        }
+
+        return list;
+    }
+
+    /**
+     * @author Tan Zhi Yang
+     * This method is used to get the school id applied by the applicant
+     * @param User_IC
+     * @return School ID
+     */
+    public int checkSchoolID(String User_IC){
+        int list=0;
+
+        String q = "SELECT School_ID FROM Register_SchoolAD WHERE User_IC = ?";
+
+        try(Connection conn = this.connect()){
+            PreparedStatement preparedStatement = conn.prepareStatement(q);
+            preparedStatement.setString(1, User_IC);
+            ResultSet rs = preparedStatement.executeQuery();
+            while(rs.next()){
+                list = rs.getInt("School_ID");
+            }
+
+        }catch (SQLException e){
+            System.out.println(e.getMessage());
+        }
+
+        return list;
+    }
+
+    /**
+     * @author Tan Zhi Yang
+     * This method is used to check occupied
+     * @param School_ID
+     * @return
+     */
+    public boolean checkOccupied(Integer School_ID){
+        String User_IC = "";
+
+        String q = "SELECT School_Admin.User_IC FROM School_Admin WHERE School_ID= ?";
+
+
+        try(Connection conn = this.connect()){
+            PreparedStatement preparedStatement = conn.prepareStatement(q);
+            preparedStatement.setInt(1,School_ID);
+
+            ResultSet rs = preparedStatement.executeQuery();
+            while(rs.next()){
+                User_IC = rs.getString("User_IC");
+                break;
+            }
+
+        }catch (SQLException e){
+            System.out.println(e.getMessage());
+        }
+
+        if(User_IC.equals("")){
+            return false;
+        }else
+            return true;
+    }
+
+    /**
+     * @author Tan Zhi Yang
+     * This method is used to get the assigned school admin information
+     * @param School_ID
+     * @return information
+     */
+    public String getAssigSchoolAd(Integer School_ID){
+        String list= "";
+
+        String q = "SELECT Users.Name, School.School_Name, School_Admin.Office_TelNo FROM School_Admin INNER JOIN Users ON School_Admin.User_IC = Users.User_IC " +
+                "INNER JOIN School ON School.School_ID = School_Admin.School_ID WHERE School_Admin.School_ID = ?";
+
+        try(Connection conn = this.connect()){
+            PreparedStatement preparedStatement = conn.prepareStatement(q);
+            preparedStatement.setInt(1, School_ID);
+            ResultSet rs = preparedStatement.executeQuery();
+            while(rs.next()){
+                list +=
+                        "Assigned School Admin: " + rs.getString("Name") + "\n"+
+                                "School: " + rs.getString("School_Name")+"\n"+
+                                "Office number: " + rs.getString("Office_TelNo")+"\n\n";
+            }
+
+            list+="This school has already assigned an admin. Do you want to replace the school admin with a new one?";
+
+        }catch (SQLException e){
+            System.out.println(e.getMessage());
+        }
+        return list;
+    }
+
+    /**
+     * @author Tan Zhi Yang
+     * This method is used to replace school admin
+     * @param User_IC
+     * @return Name
+     */
+    public void replace(String User_IC) {
+        String q = "UPDATE Booking SET Room_ID=? WHERE User_IC =? AND Booking_ID =?";
+
+        try (Connection conn = this.connect()) {
+            PreparedStatement preparedStatement = conn.prepareStatement(q);
+            preparedStatement.setString(1, User_IC);
+            preparedStatement.executeUpdate();
+
+
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+    }
 
 }
+
+
+
+//    public boolean checkSchool(Integer School_ID){
+//
+//        Integer check_ID = 0;
+//
+//        String q = "SELECT School_ID FROM School WHERE School_ID=?";
+//        try(Connection conn = this.connect()){
+//            PreparedStatement preparedStatement = conn.prepareStatement(q);
+//
+//            preparedStatement.setInt(1,School_ID);
+//            ResultSet rs = preparedStatement.executeQuery();
+//            while(rs.next()){
+//                check_ID = rs.getInt("School_ID");
+//                break;
+//            }
+//
+//        }catch (SQLException e){
+//            System.out.println(e.getMessage());
+//        }
+//
+//
+//        if(check_ID == 0){
+//            return false;
+//        }
+//        else
+//            return true;
+//    }
