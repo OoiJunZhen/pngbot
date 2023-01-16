@@ -2505,7 +2505,7 @@ public class DatabaseManager {
             applicantInfo+= new2;
 
             if(applicantInfo.equals("")){
-                applicantInfo+="There are no application yet)";
+                applicantInfo+="There are no application yet.";
             }else{
                 applicantInfo+="Which application form are you interested in?";
             }

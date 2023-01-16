@@ -3265,12 +3265,6 @@ public class PNG_bot extends TelegramLongPollingBot {
                     sendMessage.setReplyMarkup(inlineKeyboardMarkup);
 
                 }
-
-
-
-
-
-
             }
             try {
                 execute(sendMessage);
