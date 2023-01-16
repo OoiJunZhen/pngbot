@@ -2479,21 +2479,16 @@ public class DatabaseManager {
             PreparedStatement preparedStatement = conn.prepareStatement(q);
             ResultSet rs = preparedStatement.executeQuery();
             while(rs.next()){
-                if (checkSchoolAdminExist(rs.getInt("School_ID"))){
-                    occupied1 = " <Occupied>";
-                    occupied2 = "<Occupied>: This school has already assigned an admin.\n";
+                    if (checkSchoolAdminExist(rs.getInt("School_ID"))){
+                        occupied1 = " <Occupied>";
+                        occupied2 = "<Occupied>: This school has already assigned an admin.\n";
 
-                } else {
-                    occupied1 = "";
-                }
+                    }
 
-                if (!checkHaveRoom(rs.getInt("School_ID"))){
-                    new1 = " <new>";
-                    new2 = "<new>:This school hasn’t been registered into the database.\n";
-
-                } else {
-                    new1 = "";
-                }
+                    else if(!checkHaveRoom(rs.getInt("School_ID"))){
+                        new1 = " <new>";
+                        new2 = "<new>:This room hasn’t been registered into the database.\n";
+                    }
 
 
                 applicantInfo+=
@@ -2569,7 +2564,7 @@ public class DatabaseManager {
 
                 }
 
-                if(!checkHaveRoom(rs.getInt("School_ID"))){
+                else if(!checkHaveRoom(rs.getInt("School_ID"))){
                     new1 = " <new>";
                     new2 = "<new>:This room hasn’t been registered into the database.\n";
                 }
