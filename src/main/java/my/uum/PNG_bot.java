@@ -3085,6 +3085,10 @@ public class PNG_bot extends TelegramLongPollingBot {
                     inlineButtons.add(inlineKeyboardButtonList1);
                     inlineKeyboardMarkup.setKeyboard(inlineButtons);
                     sendMessage.setReplyMarkup(inlineKeyboardMarkup);
+                }else if(data.equals("System:BookSchool")){
+                    userState.put(message.getChatId(),"System:Book");
+                    databaseManager.schoolBookList();
+
                 }
             }
             try {

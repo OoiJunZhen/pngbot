@@ -14,8 +14,6 @@ public class Booking {
     private String userIC;
 
 
-
-
     public Booking(Date startDate, Date endDate, Date timeStamp, Integer bookID, String bookPurpose, String temp, Integer roomID,String userIC){
         this.startDate = startDate;
         this.endDate = endDate;
