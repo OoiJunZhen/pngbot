@@ -1144,7 +1144,6 @@ public class PNG_bot extends TelegramLongPollingBot {
 
                         } else if (userState.get(message.getChatId()).equals("Login:EditProfile_Email")) {
                             if (inputFormatChecker.EmailFormat(message.getText())) {
-                                System.out.println("Hello");
                                 usersMap.get(message.getChatId()).setEmail(message.getText());
                                 databaseManager.editProfileEmail(usersMap.get(message.getChatId()).getICNO(), usersMap.get(message.getChatId()).getEmail());
                                 editOutput = true;
@@ -1736,8 +1735,6 @@ public class PNG_bot extends TelegramLongPollingBot {
                                         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
                                         String startDate = sdf.format(bookingMap.get(message.getChatId()).getStartDate());
                                         String endDate = sdf.format(bookingMap.get(message.getChatId()).getEndDate());
-                                        System.out.println(startDate);
-                                        System.out.println(endDate);
                                         databaseManager.editBookingDateTime(usersMap.get(message.getChatId()).getICNO(), startDate, endDate, bookID);
                                         String list3 = databaseManager.getBookList(bookID);
                                         list3 += "Excellent! Your new Booking information has been updated";
@@ -2053,7 +2050,6 @@ public class PNG_bot extends TelegramLongPollingBot {
                             if (inputFormatChecker.TelNumFormat(message.getText())) {
                                 usersMap.get(message.getChatId()).setTelNo(message.getText());
                                 msg1 = true;
-                                System.out.println(msg1);
                             } else {
                                 sendMessage.setText("Please enter your phone number in correct format thank you.\n\n" +
                                         "Example: 0124773579");
@@ -3206,7 +3202,6 @@ public class PNG_bot extends TelegramLongPollingBot {
                     sendMessage.setParseMode(ParseMode.MARKDOWN);
                 }else if(data.equals("System:Approve_Check")){
                     int schoolID = databaseManager.checkSchoolID(usersMap.get(message.getChatId()).getICNO());
-                    System.out.println(schoolID);
                     if(databaseManager.checkOccupied(schoolID)) {
                         String list = databaseManager.getAssigSchoolAd(schoolID);
                         sendMessage.setText(list);
