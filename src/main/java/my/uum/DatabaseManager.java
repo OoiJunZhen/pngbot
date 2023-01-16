@@ -2232,12 +2232,11 @@ public class DatabaseManager {
             PreparedStatement preparedStatement = conn.prepareStatement(q);
             ResultSet rs = preparedStatement.executeQuery();
             while(rs.next()){
-                    schoolAdInfo+=
-                            "School ID: " + rs.getInt("School_ID") + "\n"+
-                                    "School Name: " + rs.getString("School_Name") + "\n" +
-                                    "School Admin: " + rs.getString("name") + "\n\n";
-                                    // "Office Number: " + rs.getString("Office_TelNo") + "\n\n";
-
+                schoolAdInfo+=
+                    "School ID: " + rs.getInt("School_ID") + "\n"+
+                            "School Name: " + rs.getString("School_Name") + "\n" +
+                            "School Admin: " + rs.getString("name") + "\n"+
+                            "Office Number: " + rs.getString("Office_TelNo") + "\n\n";
             }
 
             if(schoolAdInfo.equals("")){
@@ -2262,7 +2261,7 @@ public class DatabaseManager {
         String occupied1 = "";
         String occupied2 = "";
         String applicantInfo = "";
-        String q = "SELECT Register_SchoolAd.Register_ID, School.School_ID, School.School_Name, Users.Name FROM Register_SchoolAd INNER JOIN School ON Register_SchoolAd.School_ID = School.School_ID " +
+        String q = "SELECT Register_SchoolAd.Register_ID, Register_SchoolAd.School_ID, School.School_Name, Users.Name FROM Register_SchoolAd INNER JOIN School ON Register_SchoolAd.School_ID = School.School_ID " +
                 "INNER JOIN Users ON Register_SchoolAd.User_IC = Users.User_IC " +
                 "ORDER BY Register_SchoolAd.Register_ID";
 
@@ -2272,10 +2271,19 @@ public class DatabaseManager {
             while(rs.next()){
                 if (checkSchoolAdminExist(rs.getInt("School_ID"))){
                     occupied1 = " <Occupied>";
-                    occupied2 = "<Occupied>: This school has already assigned an admin. \n";
+                    occupied2 = "<Occupied>: This school has already assigned an admin.\n";
 
+                } else {
+                    occupied1 = "";
                 }
 
+                if (!checkSchoolAdminExist(rs.getInt("School_ID"))){
+                    new1 = " <new>";
+                    new2 = "<new>:This school hasn’t been registered into the database.\n";
+
+                } else {
+                    new1 = "";
+                }
 
 
                 applicantInfo+=
@@ -2285,7 +2293,7 @@ public class DatabaseManager {
             }
             applicantInfo+= occupied2;
             applicantInfo+= new2;
-            applicantInfo+= "\n";
+
             if(applicantInfo.equals("")){
                 applicantInfo+="There are no application yet)";
             }else{
@@ -2305,7 +2313,7 @@ public class DatabaseManager {
     public boolean checkSchoolAdminExist(Integer School_ID) {
         String list = "";
 
-        String q = "SELECT School_Admin.User_IC FROM School_Admin  " +
+        String q = "SELECT User_IC FROM School_Admin " +
                 "WHERE School_ID=?";
 
         try (Connection conn = this.connect()) {
