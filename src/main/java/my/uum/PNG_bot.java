@@ -2799,6 +2799,7 @@ public class PNG_bot extends TelegramLongPollingBot {
                     inlineKeyboardButtonList1.add(inlineKeyboardButton1);
                     inlineKeyboardButtonList2.add(inlineKeyboardButton2);
                     inlineButtons.add(inlineKeyboardButtonList1);
+                    inlineButtons.add(inlineKeyboardButtonList2);
                     inlineKeyboardMarkup.setKeyboard(inlineButtons);
                     sendMessage.setReplyMarkup(inlineKeyboardMarkup);
                 }else if(data.equals("System:Admins")){
@@ -2858,7 +2859,7 @@ public class PNG_bot extends TelegramLongPollingBot {
                         inlineButtons.add(inlineKeyboardButtonList1);
                         inlineKeyboardMarkup.setKeyboard(inlineButtons);
                         sendMessage.setReplyMarkup(inlineKeyboardMarkup);
-                    }else if(!databaseManager.checkOccupied(schoolID)){
+                    }else{
                         databaseManager.assginSchoolAd(schoolID, usersMap.get(message.getChatId()).getICNO());
                         String list = "Excellent! School admin has been assigned.";
                         sendMessage.setText(list);

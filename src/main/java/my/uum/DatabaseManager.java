@@ -1628,7 +1628,6 @@ public class DatabaseManager {
             ResultSet rs = preparedStatement.executeQuery();
             String input = getBookedRoomDate(ICNO, Booking_ID);
             System.out.println(input);
-            System.out.println(checkBook(rs.getInt("Room_ID"), input));
             while (rs.next()) {
                 if (checkBook(rs.getInt("Room_ID"), input)) {
                     book = " <book>";
@@ -2225,7 +2224,7 @@ public class DatabaseManager {
     public String getSchoolAdInfo(){
         String schoolAdInfo = "";
         String q = "SELECT School_Admin.School_ID, School.School_Name,  School_Admin.Office_TelNo, Users.Name FROM School_Admin INNER JOIN School ON School_Admin.School_ID = School.School_ID " +
-                "LEFT JOIN Users ON School_Admin.User_IC = Users.User_IC " +
+                "INNER JOIN Users ON School_Admin.User_IC = Users.User_IC " +
                 "ORDER BY School_Admin.School_ID";
 
         try(Connection conn = this.connect()){
@@ -2277,7 +2276,7 @@ public class DatabaseManager {
                     occupied1 = "";
                 }
 
-                if (!checkSchoolAdminExist(rs.getInt("School_ID"))){
+                if (!checkHaveRoom(rs.getInt("School_ID"))){
                     new1 = " <new>";
                     new2 = "<new>:This school hasn’t been registered into the database.\n";
 
@@ -2565,9 +2564,7 @@ public class DatabaseManager {
     public void assginSchoolAd(Integer School_ID, String User_IC) {
 
         if(checkOccupied(School_ID)){
-            System.out.println("Occupied：" +checkOccupied(School_ID)) ;
             String initialSchoolAdIC = getSchoolAdIC(School_ID);
-            System.out.println(initialSchoolAdIC);
             String q = "UPDATE Users SET User_Role = ? WHERE User_IC =?";
             try (Connection conn = this.connect()) {
                 PreparedStatement preparedStatement2 = conn.prepareStatement(q);
@@ -2579,19 +2576,34 @@ public class DatabaseManager {
             } catch (SQLException e) {
                 System.out.println(e.getMessage());
             }
+
+            String q2 = "UPDATE School_Admin SET Office_TelNo=?, User_IC =? WHERE School_ID =?";
+            try (Connection conn = this.connect()) {
+                PreparedStatement preparedStatement = conn.prepareStatement(q2);
+                preparedStatement.setString(1, "-");
+                preparedStatement.setString(2, User_IC);
+                preparedStatement.setInt(3, School_ID);
+                preparedStatement.executeUpdate();
+
+
+            } catch (SQLException e) {
+                System.out.println(e.getMessage());
+            }
         }
-        System.out.println("Assign Step Occupied：" +checkOccupied(School_ID)) ;
-        String q2 = "UPDATE School_Admin SET Office_TelNo=?, User_IC =? WHERE School_ID =?";
-        try (Connection conn = this.connect()) {
-            PreparedStatement preparedStatement = conn.prepareStatement(q2);
-            preparedStatement.setString(1, "");
-            preparedStatement.setString(2, User_IC);
-            preparedStatement.setInt(3, School_ID);
-            preparedStatement.executeUpdate();
+
+        if(!checkOccupied(School_ID)) {
+            String sql = "INSERT INTO School_Admin (Office_TelNo, School_ID, User_IC)VALUES (?,?,?)";
+            try (Connection conn = this.connect()) {
+                PreparedStatement preparedStatement = conn.prepareStatement(sql);
+                preparedStatement.setString(1, "-");
+                preparedStatement.setInt(2, School_ID);
+                preparedStatement.setString(3, User_IC);
+                preparedStatement.executeUpdate();
 
 
-        } catch (SQLException e) {
-            System.out.println(e.getMessage());
+            } catch (SQLException e) {
+                System.out.println(e.getMessage());
+            }
         }
 
         String q3 = "UPDATE Users SET User_Role = ? WHERE User_IC =?";
@@ -2651,29 +2663,3 @@ public class DatabaseManager {
 
 
 
-//    public boolean checkSchool(Integer School_ID){
-//
-//        Integer check_ID = 0;
-//
-//        String q = "SELECT School_ID FROM School WHERE School_ID=?";
-//        try(Connection conn = this.connect()){
-//            PreparedStatement preparedStatement = conn.prepareStatement(q);
-//
-//            preparedStatement.setInt(1,School_ID);
-//            ResultSet rs = preparedStatement.executeQuery();
-//            while(rs.next()){
-//                check_ID = rs.getInt("School_ID");
-//                break;
-//            }
-//
-//        }catch (SQLException e){
-//            System.out.println(e.getMessage());
-//        }
-//
-//
-//        if(check_ID == 0){
-//            return false;
-//        }
-//        else
-//            return true;
-//    }
