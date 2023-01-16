@@ -2859,11 +2859,41 @@ public class PNG_bot extends TelegramLongPollingBot {
                         inlineKeyboardMarkup.setKeyboard(inlineButtons);
                         sendMessage.setReplyMarkup(inlineKeyboardMarkup);
                     }else if(!databaseManager.checkOccupied(schoolID)){
+                        databaseManager.assginSchoolAd(schoolID, usersMap.get(message.getChatId()).getICNO());
+                        String list = "Excellent! School admin has been assigned.";
+                        sendMessage.setText(list);
 
+                        sendMessage.setParseMode(ParseMode.MARKDOWN);
+                        //Inline Keyboard Button
+                        InlineKeyboardMarkup inlineKeyboardMarkup = new InlineKeyboardMarkup();
+                        List<List<InlineKeyboardButton>> inlineButtons = new ArrayList<>();
+                        List<InlineKeyboardButton> inlineKeyboardButtonList1 = new ArrayList<>();
+                        InlineKeyboardButton inlineKeyboardButton1 = new InlineKeyboardButton();
+                        inlineKeyboardButton1.setText("Go back");
+                        inlineKeyboardButton1.setCallbackData("System:Admins");
+                        inlineKeyboardButtonList1.add(inlineKeyboardButton1);
+                        inlineButtons.add(inlineKeyboardButtonList1);
+                        inlineKeyboardMarkup.setKeyboard(inlineButtons);
+                        sendMessage.setReplyMarkup(inlineKeyboardMarkup);
                     }
                 }else if(data.equals("System:Replace")){
                     int schoolID = databaseManager.checkSchoolID(usersMap.get(message.getChatId()).getICNO());
-                    databaseManager.replace(usersMap.get(message.getChatId()).getICNO());
+                    databaseManager.assginSchoolAd(schoolID, usersMap.get(message.getChatId()).getICNO());
+                    String list = "Excellent! School admin has been updated.";
+                    sendMessage.setText(list);
+
+                    sendMessage.setParseMode(ParseMode.MARKDOWN);
+                    //Inline Keyboard Button
+                    InlineKeyboardMarkup inlineKeyboardMarkup = new InlineKeyboardMarkup();
+                    List<List<InlineKeyboardButton>> inlineButtons = new ArrayList<>();
+                    List<InlineKeyboardButton> inlineKeyboardButtonList1 = new ArrayList<>();
+                    InlineKeyboardButton inlineKeyboardButton1 = new InlineKeyboardButton();
+                    inlineKeyboardButton1.setText("Go back");
+                    inlineKeyboardButton1.setCallbackData("System:Admins");
+                    inlineKeyboardButtonList1.add(inlineKeyboardButton1);
+                    inlineButtons.add(inlineKeyboardButtonList1);
+                    inlineKeyboardMarkup.setKeyboard(inlineButtons);
+                    sendMessage.setReplyMarkup(inlineKeyboardMarkup);
 
                 }
 
