@@ -2274,17 +2274,8 @@ public class DatabaseManager {
                     occupied1 = " <Occupied>";
                     occupied2 = "<Occupied>: This school has already assigned an admin. \n";
 
-                } else {
-                    occupied1 = "";
                 }
 
-                if (!checkSchoolAdminExist(rs.getInt("School_ID"))){
-                    new1 = " <new>";
-                    new2 = "<new>:This school hasn’t been registered into the database. \n";
-
-                } else {
-                    new1 = "";
-                }
 
 
                 applicantInfo+=
@@ -2360,7 +2351,7 @@ public class DatabaseManager {
 
                 }
 
-                else {
+               if(!checkHaveRoom(rs.getInt("School_ID"))){
                     new1 = " <new>";
                     new2 = "<new>:This room hasn’t been registered into the database.\n";
                 }
@@ -2616,48 +2607,6 @@ public class DatabaseManager {
             }catch (SQLException e){
                 System.out.println(e.getMessage());       }
     }
-    /**
-     * @author Tan Zhi Yang
-     * This method is used to assign school admin
-     * @param School_ID
-     * @return Name
-     */
-//    public void assignSchoolAd(Integer School_ID, String User_IC) {
-//
-//        String q = "UPDATE School_Admin SET Office_TelNo=?, User_IC =? WHERE School_ID =?";
-//        try (Connection conn = this.connect()) {
-//            PreparedStatement preparedStatement = conn.prepareStatement(q);
-//            preparedStatement.setString(1, "");
-//            preparedStatement.setString(2, User_IC);
-//            preparedStatement.setInt(3, School_ID);
-//            preparedStatement.executeUpdate();
-//
-//
-//        } catch (SQLException e) {
-//            System.out.println(e.getMessage());
-//        }
-//
-//        String q2 = "UPDATE Users SET User_Role = ? WHERE User_IC =?";
-//        try (Connection conn = this.connect()) {
-//            PreparedStatement preparedStatement3 = conn.prepareStatement(q2);
-//            preparedStatement3.setString(1, "School Admin");
-//            preparedStatement3.setString(2, User_IC);
-//            preparedStatement3.executeUpdate();
-//
-//        } catch (SQLException e) {
-//            System.out.println(e.getMessage());
-//        }
-//
-//        String q3 = "DELETE FROM Register_SchoolAd WHERE User_IC=?";
-//
-//        try(Connection conn = this.connect()){
-//            PreparedStatement preparedStatement4 = conn.prepareStatement(q3);
-//            preparedStatement4.setString(1, User_IC);
-//            preparedStatement4.executeUpdate();
-//
-//        }catch (SQLException e){
-//            System.out.println(e.getMessage());       }
-//    }
 
     /**
      * @author Tan Zhi Yang
