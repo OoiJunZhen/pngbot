@@ -2348,8 +2348,7 @@ public class DatabaseManager {
                                 "Room Name: " + rs.getString("Room_Name") + "\n"+
                                 "Room Description: : " + rs.getString("Room_Description") + "\n" +
                                 "Maximum Capacity: " + rs.getString("Maximum_Capacity") + "\n" +
-                                "Room Type: " + rs.getString("Room_Type") + "\n\n" +
-                                "Do you want to edit this room?";
+                                "Room Type: " + rs.getString("Room_Type") + "\n\n";
             }
 
         }catch (SQLException e){
@@ -2357,6 +2356,67 @@ public class DatabaseManager {
         return getRoomInfo;
     }
 
+    public void editRoomName (Integer roomID, String roomName){
+
+        String q = "UPDATE Room SET Room_Name=? WHERE Room_ID=?";
+
+        try(Connection conn = this.connect()){
+            PreparedStatement preparedStatement = conn.prepareStatement(q);
+
+            preparedStatement.setString(1, roomName);
+            preparedStatement.setInt(2, roomID);
+            preparedStatement.executeUpdate();
 
 
+        }catch (SQLException e){
+            System.out.println(e.getMessage());       }
+    }
+
+    public void editRoomDesc (Integer roomID, String description){
+
+        String q = "UPDATE Room SET Room_Description=? WHERE Room_ID=?";
+
+        try(Connection conn = this.connect()){
+            PreparedStatement preparedStatement = conn.prepareStatement(q);
+
+            preparedStatement.setString(1, description);
+            preparedStatement.setInt(2, roomID);
+            preparedStatement.executeUpdate();
+
+
+        }catch (SQLException e){
+            System.out.println(e.getMessage());       }
+    }
+
+    public void editRoomMaxCap (Integer roomID, String maxCap){
+
+        String q = "UPDATE Room SET Maximum_Capacity=? WHERE Room_ID=?";
+
+        try(Connection conn = this.connect()){
+            PreparedStatement preparedStatement = conn.prepareStatement(q);
+
+            preparedStatement.setString(1, maxCap);
+            preparedStatement.setInt(2, roomID);
+            preparedStatement.executeUpdate();
+
+
+        }catch (SQLException e){
+            System.out.println(e.getMessage());       }
+    }
+
+    public void editRoomType (Integer roomID, String type){
+
+        String q = "UPDATE Room SET Room_Type=? WHERE Room_ID=?";
+
+        try(Connection conn = this.connect()){
+            PreparedStatement preparedStatement = conn.prepareStatement(q);
+
+            preparedStatement.setString(1, type);
+            preparedStatement.setInt(2, roomID);
+            preparedStatement.executeUpdate();
+
+
+        }catch (SQLException e){
+            System.out.println(e.getMessage());       }
+    }
 }
