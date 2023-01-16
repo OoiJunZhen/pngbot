@@ -1974,7 +1974,7 @@ public class PNG_bot extends TelegramLongPollingBot {
                                 sendMessage.setReplyMarkup(inlineKeyboardMarkup1);
                             }
                             else {
-                                String editRoomList = databaseManager.getDeleteRoomList(schoolID);
+                                String editRoomList = databaseManager.getAdminRoomList(schoolID);
                                 editRoomList += "The format reply is incorrect, please re-enter the room id. \nExample reply: 1";
                                 sendMessage = new SendMessage();
                                 sendMessage.setText(editRoomList);
@@ -1983,7 +1983,7 @@ public class PNG_bot extends TelegramLongPollingBot {
                         }else{
                             Integer schoolID = databaseManager.getSchoolId(usersMap.get(message.getChatId()).getICNO());
                             sendMessage = new SendMessage();
-                            sendMessage.setText(databaseManager.getDeleteRoomList(schoolID) + "Please enter a number thank you. \nExample reply: 2");
+                            sendMessage.setText(databaseManager.getAdminRoomList(schoolID) + "Please enter a number thank you. \nExample reply: 2");
                             sendMessage.setChatId(message.getChatId());
                         }
                         break;
@@ -3071,7 +3071,7 @@ public class PNG_bot extends TelegramLongPollingBot {
                     } else if (data.equals("Login:DeleteRoom")) {
                         Integer schoolID = databaseManager.getSchoolId(usersMap.get(message.getChatId()).getICNO());
                         userState.put(message.getChatId(), "Login:DeleteRoom_Confirm");
-                        String deleteRoomList = databaseManager.getDeleteRoomList(schoolID);
+                        String deleteRoomList = databaseManager.getAdminRoomList(schoolID);
                         deleteRoomList += "Which room do you wish to delete?\nExample reply: 1";
                         sendMessage = new SendMessage();
                         sendMessage.setText(deleteRoomList);
@@ -3079,7 +3079,7 @@ public class PNG_bot extends TelegramLongPollingBot {
                     } else if (data.equals("Login:EditRoom")) {
                         Integer schoolID = databaseManager.getSchoolId(usersMap.get(message.getChatId()).getICNO());
                         userState.put(message.getChatId(), "Login:EditRoom_Confirm");
-                        String editRoomList = databaseManager.getDeleteRoomList(schoolID);
+                        String editRoomList = databaseManager.getAdminRoomList(schoolID);
                         editRoomList += "Which room do you want to edit?\nExample reply: 2";
                         sendMessage = new SendMessage();
                         sendMessage.setText(editRoomList);

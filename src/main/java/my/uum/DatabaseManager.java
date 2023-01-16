@@ -1280,7 +1280,8 @@ public class DatabaseManager {
 
 
     /**
-     * @author XinYin
+     * @author Low Xin Yin
+     * view booked
      * @param User_IC
      * @param viewordetails
      * @return
@@ -1339,7 +1340,8 @@ public class DatabaseManager {
     }
 
     /**
-     * @author XinYin
+     * @author Low Xin Yin
+     * Display view and edit user information
      * @param User_IC
      * @param vieworedit
      * @return
@@ -1385,7 +1387,8 @@ public class DatabaseManager {
     }
 
     /**
-     * @author XinYin
+     * @author Low Xin Yin
+     * User edit users name
      * @param User_IC
      * @param Name
      */
@@ -1407,7 +1410,8 @@ public class DatabaseManager {
 
 
     /**
-     * @author XinYin
+     * @author Low Xin Yin
+     * User edit users email
      * @param User_IC
      * @param Email
      */
@@ -1426,7 +1430,8 @@ public class DatabaseManager {
     }
 
     /**
-     * @author XinYin
+     * @author Low Xin Yin
+     * User edit users staffID
      * @param User_IC
      * @param SatffID
      */
@@ -1445,7 +1450,8 @@ public class DatabaseManager {
     }
 
     /**
-     * @author XinYin
+     * @author Low Xin Yin
+     * User edit users telefon number
      * @param User_IC
      * @param TelNo
      */
@@ -1464,7 +1470,8 @@ public class DatabaseManager {
     }
 
     /**
-     * @author XinYin
+     * @author Low Xin Yin
+     * User delete booked room
      * @param User_IC
      * @param Booking_ID
      * @return
@@ -1488,7 +1495,8 @@ public class DatabaseManager {
     }
 
     /**
-     * @author XinYIn
+     * @author Low Xin Yin
+     * Get users booking list
      * @param Booking_ID
      * @return
      */
@@ -1536,7 +1544,8 @@ public class DatabaseManager {
     }
 
     /**
-     * @author XinYin
+     * @author Low Xin Yin
+     * Check exists booking ID
      * @param input
      * @return
      */
@@ -1579,7 +1588,8 @@ public class DatabaseManager {
     }
 
     /**
-     * @author XinYin
+     * @author Low Xin Yin
+     * Check booking users IC
      * @param User_IC
      * @return
      */
@@ -2245,12 +2255,12 @@ public class DatabaseManager {
 
     /**
      * @author Ooi Jun Zhen
-     * Get the delete room list from school id
+     * Get the delete and edit room list from school id
      * @param School_ID
-     * @return Delete room list
+     * @return Room list
      */
-    public String getDeleteRoomList(Integer School_ID){
-        String deleteRoomList = "";
+    public String getAdminRoomList(Integer School_ID){
+        String RoomList = "";
         String x = "SELECT Room_ID, Room_Name, Room_Type FROM Room WHERE School_ID = ?";
 
 
@@ -2260,7 +2270,7 @@ public class DatabaseManager {
             preparedStatement.setInt(1, School_ID);
             ResultSet rs = preparedStatement.executeQuery();
             while(rs.next()){
-                deleteRoomList +=
+                RoomList +=
                         "Reply " + rs.getInt("Room_ID") + ":\n" +
                                 "Room Name: " + rs.getString("Room_Name") + "\n" +
                                 "Room Type: " + rs.getString("Room_Type") + "\n\n";
@@ -2272,7 +2282,7 @@ public class DatabaseManager {
         }catch (SQLException e){
             System.out.println(e.getMessage());
         }
-        return deleteRoomList;
+        return RoomList;
     }
 
     /**
@@ -2330,6 +2340,13 @@ public class DatabaseManager {
         return deleteRoom;
     }
 
+    /**
+     * @author Low Xin Yin
+     * Get details choose edit room information
+     * @param Room_ID
+     * @param School_ID
+     * @return
+     */
     public String getEditRoomInfo(Integer Room_ID, Integer School_ID){
         String getRoomInfo = "";
         String q = "SELECT * FROM Room WHERE Room_ID=? AND School_ID=?";
@@ -2356,6 +2373,12 @@ public class DatabaseManager {
         return getRoomInfo;
     }
 
+    /**
+     * @author Low Xin Yin
+     * Admin edit room name
+     * @param roomID
+     * @param roomName
+     */
     public void editRoomName (Integer roomID, String roomName){
 
         String q = "UPDATE Room SET Room_Name=? WHERE Room_ID=?";
@@ -2372,6 +2395,12 @@ public class DatabaseManager {
             System.out.println(e.getMessage());       }
     }
 
+    /**
+     * @author Low Xin Yin
+     * Admin edit room description
+     * @param roomID
+     * @param description
+     */
     public void editRoomDesc (Integer roomID, String description){
 
         String q = "UPDATE Room SET Room_Description=? WHERE Room_ID=?";
@@ -2388,6 +2417,12 @@ public class DatabaseManager {
             System.out.println(e.getMessage());       }
     }
 
+    /**
+     * @author Low Xin Yin
+     * Admin edit room maximum capacity
+     * @param roomID
+     * @param maxCap
+     */
     public void editRoomMaxCap (Integer roomID, Integer maxCap){
 
         String q = "UPDATE Room SET Maximum_Capacity=? WHERE Room_ID=?";
@@ -2404,6 +2439,12 @@ public class DatabaseManager {
             System.out.println(e.getMessage());       }
     }
 
+    /**
+     * @author Low Xin Yin
+     * Admin edit room type
+     * @param roomID
+     * @param type
+     */
     public void editRoomType (Integer roomID, String type){
 
         String q = "UPDATE Room SET Room_Type=? WHERE Room_ID=?";
