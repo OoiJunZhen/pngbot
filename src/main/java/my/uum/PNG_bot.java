@@ -21,6 +21,7 @@ public class PNG_bot extends TelegramLongPollingBot {
     @Override
     public String getBotUsername() {
         return "PNG_bot";
+
     }
 
     @Override
@@ -218,8 +219,8 @@ public class PNG_bot extends TelegramLongPollingBot {
                     List<List<InlineKeyboardButton>> inlineButtons11 = new ArrayList<>();
                     List<InlineKeyboardButton> inlineKeyboardButtonList11 = new ArrayList<>();
                     InlineKeyboardButton inlineKeyboardButton12 = new InlineKeyboardButton();
-                    inlineKeyboardButton12.setText("Go Resign");
-                    inlineKeyboardButton12.setCallbackData("System:Resign");
+                    inlineKeyboardButton12.setText("Go System:BookSchool");
+                    inlineKeyboardButton12.setCallbackData("System:BookSchool");
                     inlineKeyboardButtonList11.add(inlineKeyboardButton12);
                     inlineButtons11.add(inlineKeyboardButtonList11);
                     inlineKeyboardMarkup11.setKeyboard(inlineButtons11);
@@ -2287,6 +2288,39 @@ public class PNG_bot extends TelegramLongPollingBot {
                         }
 
                     break;
+
+                    case "System:Book":
+                        if(!inputFormatChecker.NameFormat(message.getText())){
+                            if(databaseManager.checkSchool(message.getText())){
+                                sendMessage.setText(databaseManager.SchoolBookedList(message.getText()));
+
+                                sendMessage.setParseMode(ParseMode.MARKDOWN);
+
+                                //Inline Keyboard Button
+                                InlineKeyboardMarkup inlineKeyboardMarkup = new InlineKeyboardMarkup();
+                                List<List<InlineKeyboardButton>> inlineButtons = new ArrayList<>();
+                                List<InlineKeyboardButton> inlineKeyboardButtonList1 = new ArrayList<>();
+                                List<InlineKeyboardButton> inlineKeyboardButtonList2 = new ArrayList<>();
+                                InlineKeyboardButton inlineKeyboardButton1 = new InlineKeyboardButton();
+                                InlineKeyboardButton inlineKeyboardButton2 = new InlineKeyboardButton();
+                                inlineKeyboardButton1.setText("Go back");
+                                inlineKeyboardButton2.setText("Choose another school");
+                                inlineKeyboardButton1.setCallbackData("System:MainMenu");
+                                inlineKeyboardButton2.setCallbackData("System:BookSchool");
+                                inlineKeyboardButtonList1.add(inlineKeyboardButton1);
+                                inlineKeyboardButtonList2.add(inlineKeyboardButton2);
+                                inlineButtons.add(inlineKeyboardButtonList1);
+                                inlineButtons.add(inlineKeyboardButtonList2);
+                                inlineKeyboardMarkup.setKeyboard(inlineButtons);
+                                sendMessage.setReplyMarkup(inlineKeyboardMarkup);
+
+                            }else{
+                                sendMessage.setText("Please enter a valid school id.");
+                            }
+                        }else{
+                            sendMessage.setText("Please enter a number.");
+                        }
+                    break;
                 }
 
                 sendMessage.setChatId(message.getChatId());
@@ -3087,8 +3121,12 @@ public class PNG_bot extends TelegramLongPollingBot {
                     sendMessage.setReplyMarkup(inlineKeyboardMarkup);
                 }else if(data.equals("System:BookSchool")){
                     userState.put(message.getChatId(),"System:Book");
-                    databaseManager.schoolBookList();
+                    String list = databaseManager.schoolBookList();
 
+                    list += "Which school do you want to view on?\n" +
+                            "Example reply: 1";
+
+                    sendMessage.setText(list);
                 }
             }
             try {

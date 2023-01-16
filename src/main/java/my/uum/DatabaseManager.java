@@ -520,8 +520,8 @@ public class DatabaseManager {
     }
 
     /**
-     * @Author Ang Toon Ph'ng
-     *Check whether the school id inputted by user exist in database
+     * Check whether the school id inputted by user have rooms or exist
+     * @author Ang Toon Ph'ng
      * @param id
      * @return
      */
@@ -541,7 +541,7 @@ public class DatabaseManager {
         }
 
 
-        String q = "SELECT School_ID FROM School WHERE School_ID=?";
+        String q = "SELECT School_ID FROM Room WHERE School_ID=?";
 
 
         try(Connection conn = this.connect()){
@@ -592,6 +592,50 @@ public class DatabaseManager {
             System.out.println(e.getMessage());
         }
         return roomList;
+    }
+
+    public String SchoolBookedList(String School_ID){
+
+        Integer ID = Integer.parseInt(School_ID);
+
+        String list = "";
+        String q = "SELECT Booking_ID, Name, Room_Name, Room_Description, Maximum_Capacity, Book_StartTime, Book_EndTime FROM Booking INNER JOIN Room ON Booking.Room_ID = Room.Room_ID " +
+                "INNER JOIN Users ON Booking.User_IC = Users.User_IC WHERE Room.School_ID=?";
+
+        SimpleDateFormat bookDateFormat = new SimpleDateFormat("dd/MM/yyyy");
+        SimpleDateFormat bookTimeFormat = new SimpleDateFormat("hh:mm a");
+
+        try(Connection conn = this.connect()){
+            PreparedStatement preparedStatement = conn.prepareStatement(q);
+
+            preparedStatement.setInt(1,ID);
+            ResultSet rs = preparedStatement.executeQuery();
+            while(rs.next()){
+                java.sql.Date startDate = rs.getDate("Book_StartTime");
+                java.sql.Date endDate = rs.getDate("Book_EndTime");
+
+                java.util.Date convertedStart = new java.util.Date(startDate.getTime());
+                java.util.Date convertedEnd = new java.util.Date(endDate.getTime());
+
+
+                String date = bookDateFormat.format(convertedStart);
+                String startTime = bookTimeFormat.format(convertedStart);
+                String endTime = bookTimeFormat.format(convertedEnd);
+
+                list+=
+                        "Booking ID: " + rs.getInt("Booking_ID") + ":\n" +
+                                "User's Name: " + rs.getString("Name") + "\n"+
+                                "Room's Name: " + rs.getString("Room_Name") + "\n" +
+                                "Description: " + rs.getString("Room_Description") + "\n" +
+                                "Maximum Capacity: " + rs.getInt("Maximum_Capacity") + "\n" +
+                                "Booking Date: " + date + "\n" +
+                                "Booking Time: "+startTime+" - "+endTime+"\n\n";
+            }
+
+        }catch (SQLException e){
+            System.out.println(e.getMessage());
+        }
+        return list;
     }
 
     /**
@@ -1942,7 +1986,6 @@ public class DatabaseManager {
 
                 SimpleDateFormat bookDateFormat = new SimpleDateFormat("dd/MM/yyyy");
                 SimpleDateFormat bookTimeFormat = new SimpleDateFormat("hh:mm a");
-                String date = bookDateFormat.format(convertedStart);
                 String startTime = bookTimeFormat.format(convertedStart);
                 String endTime = bookTimeFormat.format(convertedEnd);
 
