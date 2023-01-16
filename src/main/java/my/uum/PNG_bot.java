@@ -1914,32 +1914,42 @@ public class PNG_bot extends TelegramLongPollingBot {
                         break;
 
                     case "Login:DeleteRoom_Confirm":
-                        deleteRoomMap.get(message.getChatId()).setRoomID(message.getText());
-                        Integer roomID = Integer.parseInt(deleteRoomMap.get(message.getChatId()).getRoomID());
-                        String deleteRoomInfo = databaseManager.getDeleteRoomInfo(roomID);
-                        deleteRoomInfo += "Are you sure you want to delete this room?";
+                        if (inputFormatChecker.checkRoomIDInput(message.getText())) {
+                            deleteRoomMap.get(message.getChatId()).setRoomID(message.getText());
+                            Integer roomID = Integer.parseInt(deleteRoomMap.get(message.getChatId()).getRoomID());
+                            String deleteRoomInfo = databaseManager.getDeleteRoomInfo(roomID);
+                            deleteRoomInfo += "Are you sure you want to delete this room?";
 
-                        sendMessage = new SendMessage();
-                        sendMessage.setText(deleteRoomInfo);
-                        sendMessage.setParseMode(ParseMode.MARKDOWN);
-                        sendMessage.setChatId(message.getChatId());
+                            sendMessage = new SendMessage();
+                            sendMessage.setText(deleteRoomInfo);
+                            sendMessage.setParseMode(ParseMode.MARKDOWN);
+                            sendMessage.setChatId(message.getChatId());
 
-                        InlineKeyboardMarkup inlineKeyboardMarkup = new InlineKeyboardMarkup();
-                        List<List<InlineKeyboardButton>> inlineButtons = new ArrayList<>();
-                        List<InlineKeyboardButton> inlineKeyboardButtonList12 = new ArrayList<>();
-                        List<InlineKeyboardButton> inlineKeyboardButtonList13 = new ArrayList<>();
-                        InlineKeyboardButton inlineKeyboardButton12 = new InlineKeyboardButton();
-                        InlineKeyboardButton inlineKeyboardButton13 = new InlineKeyboardButton();
-                        inlineKeyboardButton12.setText("Yes");
-                        inlineKeyboardButton13.setText("No, go back");
-                        inlineKeyboardButton12.setCallbackData("Login:DeleteRoom_Success");
-                        inlineKeyboardButton13.setCallbackData("Login:Main");
-                        inlineKeyboardButtonList12.add(inlineKeyboardButton12);
-                        inlineKeyboardButtonList13.add(inlineKeyboardButton13);
-                        inlineButtons.add(inlineKeyboardButtonList12);
-                        inlineButtons.add(inlineKeyboardButtonList13);
-                        inlineKeyboardMarkup.setKeyboard(inlineButtons);
-                        sendMessage.setReplyMarkup(inlineKeyboardMarkup);
+                            InlineKeyboardMarkup inlineKeyboardMarkup = new InlineKeyboardMarkup();
+                            List<List<InlineKeyboardButton>> inlineButtons = new ArrayList<>();
+                            List<InlineKeyboardButton> inlineKeyboardButtonList12 = new ArrayList<>();
+                            List<InlineKeyboardButton> inlineKeyboardButtonList13 = new ArrayList<>();
+                            InlineKeyboardButton inlineKeyboardButton12 = new InlineKeyboardButton();
+                            InlineKeyboardButton inlineKeyboardButton13 = new InlineKeyboardButton();
+                            inlineKeyboardButton12.setText("Yes");
+                            inlineKeyboardButton13.setText("No, go back");
+                            inlineKeyboardButton12.setCallbackData("Login:DeleteRoom_Success");
+                            inlineKeyboardButton13.setCallbackData("Login:Main");
+                            inlineKeyboardButtonList12.add(inlineKeyboardButton12);
+                            inlineKeyboardButtonList13.add(inlineKeyboardButton13);
+                            inlineButtons.add(inlineKeyboardButtonList12);
+                            inlineButtons.add(inlineKeyboardButtonList13);
+                            inlineKeyboardMarkup.setKeyboard(inlineButtons);
+                            sendMessage.setReplyMarkup(inlineKeyboardMarkup);
+                        }
+                        else {
+                            Integer schoolID1 = databaseManager.getSchoolId(usersMap.get(message.getChatId()).getICNO());
+                            String deleteRoomList1 = databaseManager.getDeleteRoomList(schoolID1);
+                            deleteRoomList1 += "The format reply is incorrect, please re-enter the room id\nExample reply: 1";
+                            sendMessage = new SendMessage();
+                            sendMessage.setText(deleteRoomList1);
+                            sendMessage.setChatId(message.getChatId());
+                        }
                         break;
 
                 }
