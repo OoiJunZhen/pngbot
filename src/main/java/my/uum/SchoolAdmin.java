@@ -12,7 +12,6 @@ public class SchoolAdmin extends Users {
         this.officeTelNo = officeTelNo;
         this.buildingLoc = buildingLoc;
     }
-
     public void setSchoolName(String schoolName){
         this.schoolName = schoolName;
     }

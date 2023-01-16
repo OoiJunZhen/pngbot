@@ -270,7 +270,19 @@ public class InputFormatChecker {
             return false;
         else
             return true;
+    }
 
 
+    public boolean checkRoomID(String room_id) {
+        Integer Room_ID = 0;
+
+        try {
+            Room_ID = Integer.parseInt(room_id);
+            return true;
+        } catch (NumberFormatException e) {
+            e.printStackTrace();
+            System.out.println("User mis-input room id in incorrect format");
+            return false;
+        }
     }
 }

@@ -2388,14 +2388,14 @@ public class DatabaseManager {
             System.out.println(e.getMessage());       }
     }
 
-    public void editRoomMaxCap (Integer roomID, String maxCap){
+    public void editRoomMaxCap (Integer roomID, Integer maxCap){
 
         String q = "UPDATE Room SET Maximum_Capacity=? WHERE Room_ID=?";
 
         try(Connection conn = this.connect()){
             PreparedStatement preparedStatement = conn.prepareStatement(q);
 
-            preparedStatement.setString(1, maxCap);
+            preparedStatement.setInt(1, maxCap);
             preparedStatement.setInt(2, roomID);
             preparedStatement.executeUpdate();
 
@@ -2417,6 +2417,10 @@ public class DatabaseManager {
 
 
         }catch (SQLException e){
-            System.out.println(e.getMessage());       }
+            System.out.println(e.getMessage());
+        }
     }
+
+
+
 }
