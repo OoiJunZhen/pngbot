@@ -2652,6 +2652,8 @@ public class PNG_bot extends TelegramLongPollingBot {
                 } else if (data.equals("Login:Main")) {
                     System.out.println(usersMap.get(message.getChatId()).getICNO());
                     System.out.println(databaseManager.getUserRole(usersMap.get(message.getChatId()).getICNO()));
+                    System.out.println(databaseManager.getUserRole(usersMap.get(message.getChatId()).getICNO()).equals("User"));
+
                     if (databaseManager.getUserRole(usersMap.get(message.getChatId()).getICNO()).equals("User")) {
                         String bookedRooms = databaseManager.viewBooked(usersMap.get(message.getChatId()).getICNO(), "view");
 
@@ -2669,18 +2671,22 @@ public class PNG_bot extends TelegramLongPollingBot {
                         List<InlineKeyboardButton> inlineKeyboardButtonList1 = new ArrayList<>();
                         List<InlineKeyboardButton> inlineKeyboardButtonList2 = new ArrayList<>();
                         List<InlineKeyboardButton> inlineKeyboardButtonList3 = new ArrayList<>();
+                        List<InlineKeyboardButton> inlineKeyboardButtonList4 = new ArrayList<>();
                         InlineKeyboardButton inlineKeyboardButton1 = new InlineKeyboardButton();
                         InlineKeyboardButton inlineKeyboardButton2 = new InlineKeyboardButton();
                         InlineKeyboardButton inlineKeyboardButton3 = new InlineKeyboardButton();
                         InlineKeyboardButton inlineKeyboardButton4 = new InlineKeyboardButton();
+                        InlineKeyboardButton inlineKeyboardButton5 = new InlineKeyboardButton();
                         inlineKeyboardButton1.setText("View Booking Details");
                         inlineKeyboardButton2.setText("Edit Booking");
                         inlineKeyboardButton3.setText("Cancel Booking");
                         inlineKeyboardButton4.setText("Edit Profile");
+                        inlineKeyboardButton5.setText("Register as School Admin");
                         inlineKeyboardButton1.setCallbackData("Login:ViewBook");
                         inlineKeyboardButton2.setCallbackData("Login:EditBook");
                         inlineKeyboardButton3.setCallbackData("Login:CancelBook");
                         inlineKeyboardButton4.setCallbackData("Login:EditProfile");
+                        inlineKeyboardButton5.setCallbackData("Login:RegisterSchoolAdmin");
                         inlineKeyboardButtonList1.add(inlineKeyboardButton1);
                         if (databaseManager.checkBook(usersMap.get(message.getChatId()).getICNO())) {
                             //if user have booking{
@@ -2688,15 +2694,17 @@ public class PNG_bot extends TelegramLongPollingBot {
                             inlineKeyboardButtonList2.add(inlineKeyboardButton3);
                         }
                         inlineKeyboardButtonList3.add(inlineKeyboardButton4);
+                        inlineKeyboardButtonList4.add(inlineKeyboardButton5);
                         inlineButtons.add(inlineKeyboardButtonList1);
                         if (databaseManager.checkBook(usersMap.get(message.getChatId()).getICNO())) {
                             inlineButtons.add(inlineKeyboardButtonList2);
                         }
                         inlineButtons.add(inlineKeyboardButtonList3);
+                        inlineButtons.add(inlineKeyboardButtonList4);
                         inlineKeyboardMarkup.setKeyboard(inlineButtons);
                         sendMessage.setReplyMarkup(inlineKeyboardMarkup);
+
                     } else if (databaseManager.getUserRole(usersMap.get(message.getChatId()).getICNO()).equals("School Admin")) {
-                        if (databaseManager.checkOfficeNum(usersMap.get(message.getChatId()).getICNO())) {
                             String output = "School Name: " + databaseManager.getSchoolName(usersMap.get(message.getChatId()).getICNO()) + "\n";
                             output += databaseManager.getSchoolAdRoomList(usersMap.get(message.getChatId()).getICNO());
 
@@ -2705,6 +2713,7 @@ public class PNG_bot extends TelegramLongPollingBot {
                             sendMessage = new SendMessage();
                             sendMessage.setText(output);
                             sendMessage.setParseMode(ParseMode.MARKDOWN);
+                            sendMessage.setChatId(message.getChatId());
 
                             //Inline Keyboard Button
                             InlineKeyboardMarkup inlineKeyboardMarkup = new InlineKeyboardMarkup();
@@ -2756,16 +2765,7 @@ public class PNG_bot extends TelegramLongPollingBot {
                             inlineKeyboardMarkup.setKeyboard(inlineButtons);
                             sendMessage.setReplyMarkup(inlineKeyboardMarkup);
 
-
-                        } else {
-                            userState.put(message.getChatId(), "Login:SchoolAd_AddRoom");
-                            sendMessage.setText("Congratulation on becoming school admin of " + databaseManager.getSchoolName(usersMap.get(message.getChatId()).getICNO())
-                                    + "!\n\nPlease add office number to complete your school admin's information.\n" +
-                                    "What is the best Office contact number to reach you?");
                         }
-                    }
-
-
 
                     } else if (data.equals("Login:EditProfile")) {
                         String edit = databaseManager.userProfile(usersMap.get(message.getChatId()).getICNO(), "view");
@@ -2789,7 +2789,7 @@ public class PNG_bot extends TelegramLongPollingBot {
                         inlineKeyboardButton2.setText("Email");
                         inlineKeyboardButton3.setText("Staff ID");
                         inlineKeyboardButton4.setText("Mobile Number");
-                        inlineKeyboardButton5.setText("No, I had changed my mine");
+                        inlineKeyboardButton5.setText("No, I had changed my mind");
                         inlineKeyboardButton1.setCallbackData("Login:EditProfile_Name");
                         inlineKeyboardButton2.setCallbackData("Login:EditProfile_Email");
                         inlineKeyboardButton3.setCallbackData("Login:EditProfile_StaffID");

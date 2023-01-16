@@ -491,7 +491,7 @@ public class DatabaseManager {
         }catch (SQLException e){
             System.out.println(e.getMessage());
         }
-        if(no.equals("")){
+        if(no.equals("-")){
             return false;
         }else
             return true;
