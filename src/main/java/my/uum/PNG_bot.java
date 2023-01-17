@@ -1294,7 +1294,7 @@ public class PNG_bot extends TelegramLongPollingBot {
 
 
                         } else {
-                            String list2 = databaseManager.schoolList();
+                            String list2 = databaseManager.schoolRoomList();
                             list2 += "This school does not exist. Please re-enter the school that you wish to book in.\nExample reply: 1";
                             sendMessage = new SendMessage();
                             sendMessage.setChatId(message.getChatId());
@@ -2970,7 +2970,7 @@ public class PNG_bot extends TelegramLongPollingBot {
 
                 } else if (data.equals("Login:EditBook_Location")) {
                     userState.put(message.getChatId(), "Login:EditBook_Location_Room");
-                    String list = databaseManager.schoolList();
+                    String list = databaseManager.schoolRoomList();
                     list += "\n\n" + "Which School do you want to book from?";
                     sendMessage.setText(list);
                 } else if (data.equals("Login:EditBook_Location_Update3")) {

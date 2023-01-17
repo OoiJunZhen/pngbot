@@ -3178,5 +3178,41 @@ public class DatabaseManager {
             System.out.println(e.getMessage());
         }
     }
+
+    /**
+     * @author Tan Zhi Yang
+     * Display a list of schools with rooms
+     * @return school list
+     */
+    public String schoolRoomList(){
+        String list = "";
+
+        String q = "SELECT * FROM School";
+
+
+        try(Connection conn = this.connect()){
+            PreparedStatement preparedStatement = conn.prepareStatement(q);
+
+            ResultSet rs = preparedStatement.executeQuery();
+            while(rs.next()){
+
+                if(checkHaveRoom(rs.getInt("School_ID"))) {
+                    list += "Reply " + rs.getInt("School_ID") + ": " + "\n" +
+                            "School Name: " + rs.getString("School_Name") + "\n\n ";
+                }
+            }
+
+            if(list.equals("")){
+                list+="Sorry, there are no school registered in this system yet";
+            }
+
+        }catch (SQLException e){
+            System.out.println(e.getMessage());
+        }
+
+
+        return list;
+    }
+
 }
 
