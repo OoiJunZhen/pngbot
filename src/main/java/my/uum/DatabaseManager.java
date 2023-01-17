@@ -524,7 +524,7 @@ public class DatabaseManager {
      * @return
      */
     public boolean checkOfficeNum(String User_IC){
-        String no = "";
+        String no = "-";
         String q = "SELECT Office_TelNo FROM School_Admin WHERE User_IC=?";
 
         try(Connection conn = this.connect()){
@@ -541,7 +541,7 @@ public class DatabaseManager {
         }
 
 
-        if(no.equals("0")){
+        if(no.equals("-")){
             return false;
         }else
             return true;
