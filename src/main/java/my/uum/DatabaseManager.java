@@ -439,9 +439,9 @@ public class DatabaseManager {
     }
 
     /**
-     * @author Ang Toon Ph'ng
      * get School name based on school admin's IC
-     * @return school list
+     * @author Ang Toon Ph'ng
+     * @return school name
      */
     public String getSchoolName(String User_IC){
         String schoolName = "";
@@ -456,13 +456,40 @@ public class DatabaseManager {
             ResultSet rs = preparedStatement.executeQuery();
             while(rs.next()){
                 schoolName = rs.getString("School_Name");
-                break;
+                return schoolName;
             }
 
         }catch (SQLException e){
             System.out.println(e.getMessage());
         }
         
+        return schoolName;
+    }
+    /**
+     * get School name based on school admin *registration's* IC
+     * @author Ang Toon Ph'ng
+     * @return school name
+     */
+    public String getSchoolName2(String User_IC){
+        String schoolName = "";
+
+        String q = "SELECT School_Name FROM School INNER JOIN Register_SchoolAd ON Register_SchoolAd.School_ID = School.School_ID WHERE Register_SchoolAd.User_IC=?";
+
+
+        try(Connection conn = this.connect()){
+            PreparedStatement preparedStatement = conn.prepareStatement(q);
+
+            preparedStatement.setString(1,User_IC);
+            ResultSet rs = preparedStatement.executeQuery();
+            while(rs.next()){
+                schoolName = rs.getString("School_Name");
+                return schoolName;
+            }
+
+        }catch (SQLException e){
+            System.out.println(e.getMessage());
+        }
+
         return schoolName;
     }
 
@@ -497,7 +524,6 @@ public class DatabaseManager {
      * @return
      */
     public boolean checkOfficeNum(String User_IC){
-        boolean check = false;
         String no = "";
         String q = "SELECT Office_TelNo FROM School_Admin WHERE User_IC=?";
 
@@ -513,7 +539,9 @@ public class DatabaseManager {
         }catch (SQLException e){
             System.out.println(e.getMessage());
         }
-        if(no.equals("")){
+
+
+        if(no.equals("0")){
             return false;
         }else
             return true;
@@ -567,8 +595,8 @@ public class DatabaseManager {
     }
 
     /**
-     * @author Ang Toon Ph'ng
      * This method will display all rooms from the Room table
+     * @author Ang Toon Ph'ng
      * @return room list
      */
     public String getBookRoomList(Integer School_ID){
@@ -594,6 +622,11 @@ public class DatabaseManager {
         return roomList;
     }
 
+    /**
+     * @author Ang Toon Ph'ng
+     * @param School_ID
+     * @return
+     */
     public String SchoolBookedList(String School_ID){
 
         Integer ID = Integer.parseInt(School_ID);
@@ -1344,6 +1377,26 @@ public class DatabaseManager {
             return true;
     }
 
+    public String getRegisterInfo(String User_IC){
+        String info="";
+
+        String q = "SELECT Register_ID,  School_Name FROM Register_SchoolAd INNER JOIN School ON Register_SchoolAd.School_D = School.School_ID WHERE User_IC=?";
+
+        try(Connection conn = this.connect()){
+            PreparedStatement preparedStatement = conn.prepareStatement(q);
+            preparedStatement.setString(1, User_IC);
+            ResultSet rs = preparedStatement.executeQuery();
+            while(rs.next()){
+                info += "Register ID: " + rs.getInt("Register_ID") + "\n" +
+                        "School Name: " + rs.getString("School_Name") + "\n\n";
+            }
+
+        }catch (SQLException e){
+            System.out.println(e.getMessage());
+        }
+        return info;
+
+    }
 
     /**
      * @author Low Xin Yin
@@ -2999,6 +3052,62 @@ public class DatabaseManager {
         }catch (SQLException e){
             System.out.println(e.getMessage());
         }
+    }
+
+    /**
+     * Check whether user registered to become school admin, if yes return true
+     * @author Ang Toon ph'ng
+     * @param User_IC
+     * @return
+     */
+    public boolean UserinRegister(String User_IC){
+        Integer getUser = 0;
+        String q = "SELECT * FROM Register_SchoolAd WHERE User_IC=?";
+
+
+        try(Connection conn = this.connect()){
+            PreparedStatement preparedStatement = conn.prepareStatement(q);
+
+            preparedStatement.setString(1, User_IC);
+            ResultSet rs = preparedStatement.executeQuery();
+
+            while(rs.next()){
+                getUser = rs.getInt("Register_ID");
+            }
+
+        }catch (SQLException e){
+            System.out.println(e.getMessage());       }
+
+        if(getUser == 0)
+            return false;
+        else
+            return true;
+    }
+
+    /**
+     * @author Ang Toon Ph'ng
+     * @param User_IC
+     * @param School_ID
+     */
+    public void insertRegister(String User_IC, String School_ID){
+        Integer schoolID = Integer.parseInt(School_ID);
+
+        try{
+            //set dynamic query
+            String q = "INSERT INTO Register_SchoolAd (User_IC, School_ID)VALUES (?,?)";
+
+            //Get the preparedStatement Object
+            PreparedStatement preparedStatement = connection.prepareStatement(q);
+
+            //set the values to query
+            preparedStatement.setString(1, User_IC);
+            preparedStatement.setInt(2, schoolID);
+            preparedStatement.executeUpdate();
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
     }
 }
 

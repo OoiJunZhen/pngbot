@@ -21,7 +21,6 @@ public class PNG_bot extends TelegramLongPollingBot {
     @Override
     public String getBotUsername() {
         return "PNG_bot";
-
     }
 
     @Override
@@ -2062,7 +2061,39 @@ public class PNG_bot extends TelegramLongPollingBot {
                             inlineKeyboardMarkup2.setKeyboard(inlineButtons2);
                             sendMessage.setReplyMarkup(inlineKeyboardMarkup2);
                         }
-                        break;
+                    break;
+
+                    case "Login:RegisterSchoolAdmin_Confirm":
+                    if(!inputFormatChecker.NameFormat(message.getText())){
+                        if(databaseManager.checkSchool(message.getText())){
+                            databaseManager.insertRegister(usersMap.get(message.getChatId()).getICNO(),message.getText());
+
+                            sendMessage = new SendMessage();
+                            sendMessage.setText("Registration completed :)");
+                            sendMessage.setParseMode(ParseMode.MARKDOWN);
+                            sendMessage.setChatId(message.getChatId());
+
+
+                            //Inline Keyboard Button
+                            InlineKeyboardMarkup inlineKeyboardMarkup2 = new InlineKeyboardMarkup();
+                            List<List<InlineKeyboardButton>> inlineButtons2 = new ArrayList<>();
+                            List<InlineKeyboardButton> inlineKeyboardButtonList3 = new ArrayList<>();
+                            InlineKeyboardButton inlineKeyboardButton3 = new InlineKeyboardButton();
+                            inlineKeyboardButton3.setText("Go back");
+                            inlineKeyboardButton3.setCallbackData("Login:Main");
+                            inlineKeyboardButtonList3.add(inlineKeyboardButton3);
+                            inlineButtons2.add(inlineKeyboardButtonList3);
+                            inlineKeyboardMarkup2.setKeyboard(inlineButtons2);
+                            sendMessage.setReplyMarkup(inlineKeyboardMarkup2);
+
+                        }else{
+                            sendMessage.setText("Please enter a valid number.");
+                        }
+                    }else{
+                        sendMessage.setText("Please enter a number.");
+                    }
+
+                    break;
                 }
 
                 try {
@@ -2632,7 +2663,7 @@ public class PNG_bot extends TelegramLongPollingBot {
                     databaseManager.insertBook(bookingMap.get(message.getChatId()).getBookPurpose(), startDate, endDate, bookingMap.get(message.getChatId()).getRoomID(),bookingMap.get(message.getChatId()).getUserIC(), bookTime);
 
                     sendMessage.setText("You have successfully booked the room!" +
-                            "\n\nYou can review the booked room(s) by using /room");
+                            "\n\nYou can review the booked room(s) by /login into the system.");
                     sendMessage.setChatId(message.getChatId());
 
                 } else if (data.equals("Book:Booking_Conf_N")) {
@@ -3245,7 +3276,42 @@ public class PNG_bot extends TelegramLongPollingBot {
                 inlineKeyboardMarkup.setKeyboard(inlineButtons);
                 sendMessage.setReplyMarkup(inlineKeyboardMarkup);
 
-            }
+            } else if(data.equals("Login:RegisterSchoolAdmin")){
+
+                 if(databaseManager.UserinRegister(usersMap.get(message.getChatId()).getICNO())){
+                    String info = databaseManager.getRegisterInfo(usersMap.get(message.getChatId()).getICNO());
+                    info += "You have registered as school admin under " + databaseManager.getSchoolName2(usersMap.get(message.getChatId()).getICNO())
+                            + "Which is still pending for approval. Do you wish to change school?";
+
+                     sendMessage.setText(info);
+                     sendMessage.setParseMode(ParseMode.MARKDOWN);
+
+                     //Inline Keyboard Button
+                     InlineKeyboardMarkup inlineKeyboardMarkup = new InlineKeyboardMarkup();
+                     List<List<InlineKeyboardButton>> inlineButtons = new ArrayList<>();
+                     List<InlineKeyboardButton> inlineKeyboardButtonList1 = new ArrayList<>();
+                     InlineKeyboardButton inlineKeyboardButton1 = new InlineKeyboardButton();
+                     InlineKeyboardButton inlineKeyboardButton2 = new InlineKeyboardButton();
+                     inlineKeyboardButton1.setText("Yes");
+                     inlineKeyboardButton2.setText("No");
+                     inlineKeyboardButton1.setCallbackData("Login:RegisterSchoolAdmin_Update");
+                     inlineKeyboardButton2.setCallbackData("Login:Main");
+                     inlineKeyboardButtonList1.add(inlineKeyboardButton1);
+                     inlineKeyboardButtonList1.add(inlineKeyboardButton2);
+                     inlineButtons.add(inlineKeyboardButtonList1);
+                     inlineKeyboardMarkup.setKeyboard(inlineButtons);
+                     sendMessage.setReplyMarkup(inlineKeyboardMarkup);
+
+                 }else{
+                     userState.put(message.getChatId(), "Login:RegisterSchoolAdmin_Confirm");
+                     String schoolList = databaseManager.schoolList();
+                     schoolList += "Which school do you want to register in as?\n"
+                             + "Example reply: 1";
+                     sendMessage.setText(schoolList);
+                 }
+
+
+                }
             }else if (buttonData[0].equals("Register")) {
                 if (data.equals("Register:Register_Y")) {
 

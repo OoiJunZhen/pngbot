@@ -18,6 +18,7 @@ public class App {
         } catch (TelegramApiException e) {
             e.printStackTrace();
         }
+
         Calendar date = Calendar.getInstance();
         date.set(Calendar.HOUR_OF_DAY, 0);
         date.set(Calendar.MINUTE, 1);
