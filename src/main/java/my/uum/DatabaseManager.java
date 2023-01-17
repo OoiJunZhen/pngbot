@@ -2584,22 +2584,26 @@ public class DatabaseManager {
         String occupied2 = "";
         String applicantInfo = "";
         String q = "SELECT Register_SchoolAd.Register_ID, Register_SchoolAd.School_ID, School.School_Name, Users.Name FROM Register_SchoolAd INNER JOIN School ON Register_SchoolAd.School_ID = School.School_ID " +
-                "INNER JOIN Users ON Register_SchoolAd.User_IC = Users.User_IC " +
-                "ORDER BY Register_SchoolAd.Register_ID";
+                "INNER JOIN Users ON Register_SchoolAd.User_IC = Users.User_IC";
 
         try(Connection conn = this.connect()){
             PreparedStatement preparedStatement = conn.prepareStatement(q);
             ResultSet rs = preparedStatement.executeQuery();
             while(rs.next()){
+                 // System.out.println(checkSchoolAdminExist(rs.getInt("School_ID")));
+                    if(!checkHaveRoom(rs.getInt("School_ID"))){
+                        new1 = " <new>";
+                        new2 = "<new>:This room hasn’t been registered into the database.\n";
+                    }else{
+                        new1="";
+                    }
+
                     if (checkSchoolAdminExist(rs.getInt("School_ID"))){
                         occupied1 = " <Occupied>";
                         occupied2 = "<Occupied>: This school has already assigned an admin.\n";
 
-                    }
-
-                    else if(!checkHaveRoom(rs.getInt("School_ID"))){
-                        new1 = " <new>";
-                        new2 = "<new>:This room hasn’t been registered into the database.\n";
+                    }else{
+                        occupied1 = "";
                     }
 
 
@@ -2628,9 +2632,9 @@ public class DatabaseManager {
      * @return
      */
     public boolean checkSchoolAdminExist(Integer School_ID) {
-        String list = "";
+        Integer list = 0;
 
-        String q = "SELECT User_IC FROM School_Admin " +
+        String q = "SELECT SchoolAd_ID FROM School_Admin " +
                 "WHERE School_ID=?";
 
         try (Connection conn = this.connect()) {
@@ -2638,14 +2642,14 @@ public class DatabaseManager {
             preparedStatement.setInt(1, School_ID);
             ResultSet rs = preparedStatement.executeQuery();
             while (rs.next()) {
-                list = rs.getString("User_IC");
+                list = rs.getInt("SchoolAd_ID");
             }
 
         } catch (SQLException e) {
             System.out.println(e.getMessage());
         }
 
-        if (list.equals("")) {
+        if (list==0) {
             return false;
         } else
             return true;
@@ -2670,16 +2674,21 @@ public class DatabaseManager {
             preparedStatement.setString(1, User_IC);
             ResultSet rs = preparedStatement.executeQuery();
             while(rs.next()){
+                if(!checkHaveRoom(rs.getInt("School_ID"))){
+                    new1 = " <new>";
+                    new2 = "<new>:This room hasn’t been registered into the database.\n";
+                }else{
+                    new1="";
+                }
+
                 if (checkSchoolAdminExist(rs.getInt("School_ID"))){
                     occupied1 = " <Occupied>";
                     occupied2 = "<Occupied>: This school has already assigned an admin.\n";
 
+                }else{
+                    occupied1 = "";
                 }
 
-                else if(!checkHaveRoom(rs.getInt("School_ID"))){
-                    new1 = " <new>";
-                    new2 = "<new>:This room hasn’t been registered into the database.\n";
-                }
 
 
                 applicantInfo+=
