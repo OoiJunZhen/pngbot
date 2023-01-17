@@ -2593,7 +2593,7 @@ public class DatabaseManager {
                  // System.out.println(checkSchoolAdminExist(rs.getInt("School_ID")));
                     if(!checkHaveRoom(rs.getInt("School_ID"))){
                         new1 = " <new>";
-                        new2 = "<new>:This room hasn’t been registered into the database.\n";
+                        new2 = "<new>:There are no rooms registered under this school.\n";
                     }else{
                         new1="";
                     }
@@ -2676,7 +2676,7 @@ public class DatabaseManager {
             while(rs.next()){
                 if(!checkHaveRoom(rs.getInt("School_ID"))){
                     new1 = " <new>";
-                    new2 = "<new>:This room hasn’t been registered into the database.\n";
+                    new2 = "<new>:There are no rooms registered under this school.\n";
                 }else{
                     new1="";
                 }
