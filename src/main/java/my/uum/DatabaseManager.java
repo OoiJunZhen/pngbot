@@ -595,6 +595,50 @@ public class DatabaseManager {
     }
 
     /**
+     * This method checks whether the schoolID exist in the database
+     * @param school_ID
+     * @return
+     */
+    public boolean checkSchool2(String school_ID){
+        Integer schoolID = 0;
+        String schoolName = "";
+
+        try{
+            schoolID=Integer.parseInt(school_ID);
+
+        }catch (NumberFormatException e){
+
+            e.printStackTrace();
+            System.out.println("User mis-input school id in incorrect format");
+            return false;
+        }
+
+
+        String q = "SELECT School_Name FROM School WHERE School_ID=?";
+
+
+        try(Connection conn = this.connect()){
+            PreparedStatement preparedStatement = conn.prepareStatement(q);
+
+            preparedStatement.setInt(1,schoolID);
+            ResultSet rs = preparedStatement.executeQuery();
+            while(rs.next()){
+                schoolName = rs.getString("School_Name");
+                break;
+            }
+
+        }catch (SQLException e){
+            System.out.println(e.getMessage());
+        }
+
+        if(schoolName.equals("")){
+            return false;
+        }
+        else
+            return true;
+    }
+
+    /**
      * This method will display all rooms from the Room table
      * @author Ang Toon Ph'ng
      * @return room list
@@ -1345,6 +1389,8 @@ public class DatabaseManager {
 
         return list;
     }
+
+
 
     /**
      * @author Ang Toon Ph'ng
@@ -3108,6 +3154,29 @@ public class DatabaseManager {
             e.printStackTrace();
         }
 
+    }
+
+    /**
+     * @author Ang Toon Ph'ng
+     * @param User_IC
+     * @param School_ID
+     */
+    public void updateRegister(String User_IC, String School_ID){
+
+        Integer schoolID = Integer.parseInt(School_ID);
+
+        String q = "UPDATE Register_SchoolAd SET School_ID=? WHERE User_IC=?";
+
+        try(Connection conn = this.connect()){
+            PreparedStatement preparedStatement = conn.prepareStatement(q);
+
+            preparedStatement.setInt(1, schoolID);
+            preparedStatement.setString(2, User_IC);
+            preparedStatement.executeUpdate();
+
+        }catch (SQLException e){
+            System.out.println(e.getMessage());
+        }
     }
 }
 

@@ -2064,12 +2064,22 @@ public class PNG_bot extends TelegramLongPollingBot {
                     break;
 
                     case "Login:RegisterSchoolAdmin_Confirm":
+                    case  "Login:RegisterSchoolAdmin_Update_Success":
                     if(!inputFormatChecker.NameFormat(message.getText())){
-                        if(databaseManager.checkSchool(message.getText())){
-                            databaseManager.insertRegister(usersMap.get(message.getChatId()).getICNO(),message.getText());
+                        if(databaseManager.checkSchool2(message.getText())) {
+                            if (userState.get(message.getChatId()).equals("Login:RegisterSchoolAdmin_Confirm")){
+                                databaseManager.insertRegister(usersMap.get(message.getChatId()).getICNO(), message.getText());
+                                sendMessage = new SendMessage();
+                                sendMessage.setText("Your registration has been submitted! You will be notified in the /login section once the application " +
+                                    "has been approved.");
 
-                            sendMessage = new SendMessage();
-                            sendMessage.setText("Registration completed :)");
+                            }else{
+                                databaseManager.updateRegister(usersMap.get(message.getChatId()).getICNO(), message.getText());
+                                sendMessage = new SendMessage();
+                                sendMessage.setText("Your registration has been updated! You will be notified in the /login section once the application " +
+                                        "has been approved.");
+                            }
+
                             sendMessage.setParseMode(ParseMode.MARKDOWN);
                             sendMessage.setChatId(message.getChatId());
 
@@ -3277,11 +3287,10 @@ public class PNG_bot extends TelegramLongPollingBot {
                 sendMessage.setReplyMarkup(inlineKeyboardMarkup);
 
             } else if(data.equals("Login:RegisterSchoolAdmin")){
-
                  if(databaseManager.UserinRegister(usersMap.get(message.getChatId()).getICNO())){
                     String info = databaseManager.getRegisterInfo(usersMap.get(message.getChatId()).getICNO());
                     info += "You have registered as school admin under " + databaseManager.getSchoolName2(usersMap.get(message.getChatId()).getICNO())
-                            + "Which is still pending for approval. Do you wish to change school?";
+                            + " which is still pending for approval. Do you wish to change school?";
 
                      sendMessage.setText(info);
                      sendMessage.setParseMode(ParseMode.MARKDOWN);
@@ -3310,7 +3319,12 @@ public class PNG_bot extends TelegramLongPollingBot {
                      sendMessage.setText(schoolList);
                  }
 
-
+                }else if(data.equals("Login:RegisterSchoolAdmin_Update")){
+                    userState.put(message.getChatId(),"Login:RegisterSchoolAdmin_Update_Success");
+                    String schoolList = databaseManager.schoolList();
+                    schoolList += "Which school do you want to change to?\n"
+                            + "Example reply: 1";
+                    sendMessage.setText(schoolList);
                 }
             }else if (buttonData[0].equals("Register")) {
                 if (data.equals("Register:Register_Y")) {
