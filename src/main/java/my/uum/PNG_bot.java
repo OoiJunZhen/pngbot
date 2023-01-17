@@ -41,7 +41,7 @@ public class PNG_bot extends TelegramLongPollingBot {
     /**
      * Hashmap for adding school admin information
      */
-    //Map<Long, SchoolAdmin> schoolAdminMap = new HashMap<Long, SchoolAdmin>();
+    Map<Long, SchoolAdmin> schoolAdminMap = new HashMap<Long, SchoolAdmin>();
 
     /**
      * Hashmap for adding booking information
@@ -130,6 +130,7 @@ public class PNG_bot extends TelegramLongPollingBot {
                     usersMap.put(message.getChatId(), new Users("", "", "", "", ""));
                     addRoomMap.put(message.getChatId(), new Room("", "", "", "","","",""));
                     deleteRoomMap.put(message.getChatId(), new Room("", "", "", "","","",""));
+                    schoolAdminMap.put(message.getChatId(), new SchoolAdmin("", "", "", "","","","",""));
                     userState.put(message.getChatId(), "Login:Verification");
                     String info3 = "Please enter your IC and Email to access your account\n\n" +
                             "Example: 990724070661@MyEmail@hotmail.com";
@@ -1124,6 +1125,38 @@ public class PNG_bot extends TelegramLongPollingBot {
                         }
 
                         break;
+                    case "Login:SchoolAd_AddRoom":
+
+                        if (inputFormatChecker.TelNumFormat(message.getText())) {
+                            schoolAdminMap.get(message.getChatId()).setOfficeTelNo(message.getText());
+                            databaseManager.AddOfficeNo(schoolAdminMap.get(message.getChatId()).getOfficeTelNo(), usersMap.get(message.getChatId()).getICNO());
+                            sendMessage = new SendMessage();
+                            sendMessage.setText("Do you want to add a room to your school?");
+                            sendMessage.setChatId(message.getChatId());
+                            sendMessage.setParseMode(ParseMode.MARKDOWN);
+
+                            InlineKeyboardMarkup inlineKeyboardMarkup2 = new InlineKeyboardMarkup();
+                            List<List<InlineKeyboardButton>> inlineButtons2 = new ArrayList<>();
+                            List<InlineKeyboardButton> inlineKeyboardButtonList = new ArrayList<>();
+                            List<InlineKeyboardButton> inlineKeyboardButtonList2 = new ArrayList<>();
+                            InlineKeyboardButton inlineKeyboardButtonYes = new InlineKeyboardButton();
+                            InlineKeyboardButton inlineKeyboardButtonBack = new InlineKeyboardButton();
+                            inlineKeyboardButtonYes.setText("Yes");
+                            inlineKeyboardButtonBack.setText("No");
+                            inlineKeyboardButtonYes.setCallbackData("Login:AddRoom");
+                            inlineKeyboardButtonBack.setCallbackData("Login:Main");
+                            inlineKeyboardButtonList.add(inlineKeyboardButtonYes);
+                            inlineKeyboardButtonList2.add(inlineKeyboardButtonBack);
+                            inlineButtons2.add(inlineKeyboardButtonList);
+                            inlineButtons2.add(inlineKeyboardButtonList2);
+                            inlineKeyboardMarkup2.setKeyboard(inlineButtons2);
+                            sendMessage.setReplyMarkup(inlineKeyboardMarkup2);
+                        } else {
+                            sendMessage.setText("Please re-enter the date in correct format.");
+                        }
+                        break;
+
+
 
                     case "Login:EditProfile_Name":
                     case "Login:EditProfile_Email":

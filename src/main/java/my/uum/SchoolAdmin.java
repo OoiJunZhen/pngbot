@@ -22,7 +22,7 @@ public class SchoolAdmin extends Users {
     }
 
     public void setOfficeTelNo(String officeTelNo){
-        this.schoolName = schoolName;
+        this.officeTelNo = officeTelNo;
     }
 
     public String getOfficeTelNo() {

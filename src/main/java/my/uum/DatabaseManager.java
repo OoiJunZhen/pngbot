@@ -3223,5 +3223,31 @@ public class DatabaseManager {
         return list;
     }
 
+    /**
+     * @author Low Xin Yin
+     * Add the shcool admin office number
+     * @param officeNo
+     * @param userIc
+     */
+    public void AddOfficeNo(String officeNo, String userIc){
+        try{
+            //set dynamic query
+            String Add_room = "UPDATE School_Admin SET office_TelNo=? WHERE User_IC=?";
+
+
+            //Get the preparedStatement Object
+            PreparedStatement preparedStatement = connection.prepareStatement(Add_room);
+
+            //set the values to query
+            preparedStatement.setString(1,officeNo);
+            preparedStatement.setString(2, userIc);
+
+            preparedStatement.executeUpdate();
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
 }
 
