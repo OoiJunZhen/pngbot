@@ -1802,7 +1802,7 @@ public class DatabaseManager {
 
             ResultSet rs = preparedStatement.executeQuery();
             String input = getBookedRoomDate(ICNO, Booking_ID);
-            System.out.println(input);
+//            System.out.println(input);
             System.out.println(checkBook(rs.getInt("Room_ID"), input));
             while (rs.next()) {
                 if (checkBook(rs.getInt("Room_ID"), input)) {
