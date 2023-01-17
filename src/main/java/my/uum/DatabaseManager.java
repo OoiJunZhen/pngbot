@@ -2693,9 +2693,9 @@ public class DatabaseManager {
 
                 applicantInfo+=
                         "Name: " + rs.getString("Name") + "\n" +
-                                "IC Number: " + rs.getInt("User_IC") + "\n"+
+                                "IC Number: " + rs.getString("User_IC") + "\n"+
                                 "Email: " + rs.getString("Email") + "\n"+
-                                "Mobile Number: " + rs.getInt("Mobile_TelNo") + "\n"+
+                                "Mobile Number: " + rs.getString("Mobile_TelNo") + "\n"+
                                 "School Name: " + rs.getString("School_Name") + new1 + occupied1 + "\n\n";
             }
             applicantInfo+= occupied2;
