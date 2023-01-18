@@ -67,7 +67,7 @@ The additional telegram bot booking system will be a great help for staffs who a
 ## User manual/guideline for testing the system
 ## Result/Output (Screenshot of the output)
 ## Use Case Diagram
-![image](https://user-images.githubusercontent.com/80701138/201608575-185ea5c5-9f8e-4733-a693-6c26806a3b29.png)
+![image](https://user-images.githubusercontent.com/80701138/213088182-709b99f4-679f-4f61-b8a6-aef319fc87ca.png)
 
 ## UML Class Diagram
 ![image](https://user-images.githubusercontent.com/116187610/213084527-e377e3c6-663c-49b9-b5eb-f1733096345a.png)
