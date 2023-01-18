@@ -94,6 +94,7 @@ The additional telegram bot booking system will be a great help for staffs who a
 </li>SendPulse Team. (2022, November 18). How to Create and Connect a Telegram Chatbot. SendPulse. Retrieved December 10, 2022, from https://sendpulse.com/knowledge-base/chatbot/telegram/create-telegram-chatbot </li>
 <li>SQLite java: Select data. SQLite Tutorial. (2022, August 28). Retrieved December 13, 2022, from https://www.sqlitetutorial.net/sqlite-java/select/ </li>
 <li>Using SimpleDateFormat for custom date formatting and parsing. (n.d.). Retrieved December 17, 2022, from http://web.cs.ucla.edu/classes/winter15/cs144/projects/java/simpledateformat.html </li>
+<li>Stack Abuse. (2021). Java: Check if String is a Number. Retrieved January 10, 2023, from https://stackabuse.com/java-check-if-string-is-a-number/.</li>
 </ol>
 
 ## JavaDoc
