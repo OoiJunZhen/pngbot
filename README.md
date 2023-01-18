@@ -48,8 +48,6 @@
   </tr>
 </table>
 
-1. Other related info (if any)
-
 ## Title of your application
 <h3>Telegram Bot Booking System: PNG Bot</h3>
 
