@@ -524,7 +524,7 @@ public class DatabaseManager {
      * @return
      */
     public boolean checkOfficeNum(String User_IC){
-        String no = "";
+        String no = "-";
         String q = "SELECT Office_TelNo FROM School_Admin WHERE User_IC=?";
 
         try(Connection conn = this.connect()){
@@ -541,7 +541,7 @@ public class DatabaseManager {
         }
 
 
-        if(no.equals("0")){
+        if(no.equals("-")){
             return false;
         }else
             return true;
@@ -2593,7 +2593,7 @@ public class DatabaseManager {
                  // System.out.println(checkSchoolAdminExist(rs.getInt("School_ID")));
                     if(!checkHaveRoom(rs.getInt("School_ID"))){
                         new1 = " <new>";
-                        new2 = "<new>:This room hasn’t been registered into the database.\n";
+                        new2 = "<new>:There are no rooms registered under this school.\n";
                     }else{
                         new1="";
                     }
@@ -2676,7 +2676,7 @@ public class DatabaseManager {
             while(rs.next()){
                 if(!checkHaveRoom(rs.getInt("School_ID"))){
                     new1 = " <new>";
-                    new2 = "<new>:This room hasn’t been registered into the database.\n";
+                    new2 = "<new>:There are no rooms registered under this school.\n";
                 }else{
                     new1="";
                 }
@@ -2693,9 +2693,9 @@ public class DatabaseManager {
 
                 applicantInfo+=
                         "Name: " + rs.getString("Name") + "\n" +
-                                "IC Number: " + rs.getInt("User_IC") + "\n"+
+                                "IC Number: " + rs.getString("User_IC") + "\n"+
                                 "Email: " + rs.getString("Email") + "\n"+
-                                "Mobile Number: " + rs.getInt("Mobile_TelNo") + "\n"+
+                                "Mobile Number: " + rs.getString("Mobile_TelNo") + "\n"+
                                 "School Name: " + rs.getString("School_Name") + new1 + occupied1 + "\n\n";
             }
             applicantInfo+= occupied2;
@@ -3221,6 +3221,32 @@ public class DatabaseManager {
 
 
         return list;
+    }
+
+    /**
+     * @author Low Xin Yin
+     * Add the shcool admin office number
+     * @param officeNo
+     * @param userIc
+     */
+    public void AddOfficeNo(String officeNo, String userIc){
+        try{
+            //set dynamic query
+            String Add_room = "UPDATE School_Admin SET office_TelNo=? WHERE User_IC=?";
+
+
+            //Get the preparedStatement Object
+            PreparedStatement preparedStatement = connection.prepareStatement(Add_room);
+
+            //set the values to query
+            preparedStatement.setString(1,officeNo);
+            preparedStatement.setString(2, userIc);
+
+            preparedStatement.executeUpdate();
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 
 }
