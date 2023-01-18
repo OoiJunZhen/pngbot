@@ -65,7 +65,10 @@ The additional telegram bot booking system will be a great help for staffs who a
 
 ## User manual for installing your application on Heroku Server
 ## User manual/guideline for testing the system
-## Result/Output (Screenshot of the output)
+[User Manual.pdf](https://github.com/STIW3054-A221/group-project-png/files/10442345/User.Manual.pdf)
+
+## Result/Output (Scr[Uploading User Manual.pdf…]()
+eenshot of the output)
 ## Use Case Diagram
 ![image](https://user-images.githubusercontent.com/80701138/213088182-709b99f4-679f-4f61-b8a6-aef319fc87ca.png)
 
