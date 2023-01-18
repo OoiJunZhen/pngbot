@@ -3224,22 +3224,59 @@ public class PNG_bot extends TelegramLongPollingBot {
 
                 else if (data.equals("Login:DeleteRoom")) {
                     Integer schoolID = databaseManager.getSchoolId(usersMap.get(message.getChatId()).getICNO());
-                    userState.put(message.getChatId(), "Login:DeleteRoom_Confirm");
-                    String deleteRoomList = databaseManager.getAdminRoomList(schoolID);
-                    deleteRoomList += "Which room do you wish to delete?\nExample reply: 1";
-                    sendMessage = new SendMessage();
-                    sendMessage.setText(deleteRoomList);
-                    sendMessage.setChatId(message.getChatId());
+                    if(databaseManager.checkSchool(schoolID.toString())){
+                        userState.put(message.getChatId(), "Login:DeleteRoom_Confirm");
+                        String deleteRoomList = databaseManager.getAdminRoomList(schoolID);
+                        deleteRoomList += "Which room do you wish to delete?\nExample reply: 1";
+                        sendMessage = new SendMessage();
+                        sendMessage.setText(deleteRoomList);
+                        sendMessage.setChatId(message.getChatId());
+                    }else{
+                        sendMessage.setText("There are no room to delete");
+
+                        sendMessage.setParseMode(ParseMode.MARKDOWN);
+
+                        InlineKeyboardMarkup inlineKeyboardMarkup = new InlineKeyboardMarkup();
+                        List<List<InlineKeyboardButton>> inlineButtons = new ArrayList<>();
+                        List<InlineKeyboardButton> inlineKeyboardButtonList13 = new ArrayList<>();
+                        InlineKeyboardButton inlineKeyboardButton12 = new InlineKeyboardButton();
+                        InlineKeyboardButton inlineKeyboardButton13 = new InlineKeyboardButton();
+                        inlineKeyboardButton13.setText("Go back");
+                        inlineKeyboardButton13.setCallbackData("Login:Main");
+                        inlineKeyboardButtonList13.add(inlineKeyboardButton13);
+                        inlineButtons.add(inlineKeyboardButtonList13);
+                        inlineKeyboardMarkup.setKeyboard(inlineButtons);
+                        sendMessage.setReplyMarkup(inlineKeyboardMarkup);
+                    }
+
                 }
 
              else if (data.equals("Login:EditRoom")) {
                 Integer schoolID = databaseManager.getSchoolId(usersMap.get(message.getChatId()).getICNO());
-                userState.put(message.getChatId(), "Login:EditRoom_Confirm");
-                String editRoomList = databaseManager.getAdminRoomList(schoolID);
-                editRoomList += "Which room do you want to edit?\nExample reply: 2";
-                sendMessage = new SendMessage();
-                sendMessage.setText(editRoomList);
-                sendMessage.setChatId(message.getChatId());
+                if(databaseManager.checkSchool(schoolID.toString())){
+                    userState.put(message.getChatId(), "Login:EditRoom_Confirm");
+                    String editRoomList = databaseManager.getAdminRoomList(schoolID);
+                    editRoomList += "Which room do you want to edit?\nExample reply: 2";
+                    sendMessage = new SendMessage();
+                    sendMessage.setText(editRoomList);
+                    sendMessage.setChatId(message.getChatId());
+                }else{
+                    sendMessage.setText("There are no room to edit.");
+                    sendMessage.setParseMode(ParseMode.MARKDOWN);
+
+                    InlineKeyboardMarkup inlineKeyboardMarkup = new InlineKeyboardMarkup();
+                    List<List<InlineKeyboardButton>> inlineButtons = new ArrayList<>();
+                    List<InlineKeyboardButton> inlineKeyboardButtonList13 = new ArrayList<>();
+                    InlineKeyboardButton inlineKeyboardButton12 = new InlineKeyboardButton();
+                    InlineKeyboardButton inlineKeyboardButton13 = new InlineKeyboardButton();
+                    inlineKeyboardButton13.setText("Go back");
+                    inlineKeyboardButton13.setCallbackData("Login:Main");
+                    inlineKeyboardButtonList13.add(inlineKeyboardButton13);
+                    inlineButtons.add(inlineKeyboardButtonList13);
+                    inlineKeyboardMarkup.setKeyboard(inlineButtons);
+                    sendMessage.setReplyMarkup(inlineKeyboardMarkup);
+                }
+
             } else if (data.equals("Login:EditRoom_Change")) {
                 Integer schoolID = databaseManager.getSchoolId(usersMap.get(message.getChatId()).getICNO());
                 Integer roomID = Integer.valueOf(addRoomMap.get(message.getChatId()).getRoomID());
