@@ -159,7 +159,13 @@ The additional telegram bot booking system will be a great help for staffs who a
 <li>SendPulse Team. (2022, November 18). How to Create and Connect a Telegram Chatbot. SendPulse. Retrieved December 10, 2022, from https://sendpulse.com/knowledge-base/chatbot/telegram/create-telegram-chatbot </li>
 <li>SQLite java: Select data. SQLite Tutorial. (2022, August 28). Retrieved December 13, 2022, from https://www.sqlitetutorial.net/sqlite-java/select/ </li>
 <li>Using SimpleDateFormat for custom date formatting and parsing. (n.d.). Retrieved December 17, 2022, from http://web.cs.ucla.edu/classes/winter15/cs144/projects/java/simpledateformat.html </li>
+<li>SQLite Tutorial. (2022, August 28). SQLite java: Deleting data. SQLite Tutorial. Retrieved December 19, 2022, from https://www.sqlitetutorial.net/sqlite-java/delete/</li>
+<li>SQLite Tutorial. (2022, April 3). SQLite inner join with examples. SQLite Tutorial. Retrieved December 19, 2022, from https://www.sqlitetutorial.net/sqlite-inner-join/</li>
+<li>SQLite Tutorial. (2022, August 28). SQLite java: Inserting data. SQLite Tutorial. Retrieved December 19, 2022, from https://www.sqlitetutorial.net/sqlite-java/insert/</li>
+<li>SQLite Tutorial. (2022, August 28). SQLite java: Update data. SQLite Tutorial. Retrieved December 19, 2022, from https://www.sqlitetutorial.net/sqlite-java/update/ </li>
+<li> Khan, I. (2021, October 18). Input validation in Java using scanner. Java2Blog. Retrieved December 28, 2022, from https://java2blog.com/input-validation-java/  </li>
 <li>Stack Abuse. (2021). Java: Check if String is a Number. Retrieved January 10, 2023, from https://stackabuse.com/java-check-if-string-is-a-number/.</li>
+<li>GeeksforGeeks. (2021, December 7). Daemon thread in Java. GeeksforGeeks. Retrieved January 12, 2023, from https://www.geeksforgeeks.org/daemon-thread-java/ </li>
 <li>Isakovinc. (2022, June 22). Deploy java telegram bot on Heroku server. Medium. Retrieved January 18, 2023, from https://medium.com/@learntodevelop2020/deploy-java-telegram-bot-on-heroku-server-42bfcfc311d3 </li>
 </ol>
 
