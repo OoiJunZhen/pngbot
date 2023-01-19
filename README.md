@@ -67,41 +67,41 @@ The additional telegram bot booking system will be a great help for staffs who a
 
 ## Result/Output
 
-<u><strong>Register User</strong>
+<u><strong>Register User</strong></u>
 <br>Command: /registeruser
 <br>![img.png](img.png)
 <br>![img_1.png](img_1.png)
 <br>
 <br>
-<u><strong>User Login</strong>
+<u><strong>User Login</strong></u>
 <br>Command: /login
-<br><u>View Booking Details
+<br><u>View Booking Details</u>
 <br>![img_2.png](img_2.png)
 <br>![img_3.png](img_3.png)
-<br><u>Edit Booking
+<br><u>Edit Booking</u>
 <br>![img_4.png](img_4.png)
 <br>![img_5.png](img_5.png)
 <br>![img_6.png](img_6.png)
 <br>![img_7.png](img_7.png)
-<br><u>Cancel Booking
+<br><u>Cancel Booking</u>
 <br>![img_8.png](img_8.png)
 <br>![img_9.png](img_9.png)
-<br><u>Edit Profile
+<br><u>Edit Profile</u>
 <br>![img_10.png](img_10.png)
 <br>![img_11.png](img_11.png)
-<br><u>Add Room
+<br><u>Add Room</u>
 <br>![img_12.png](img_12.png)
 <br>![img_13.png](img_13.png)
 <br>![img_14.png](img_14.png)
-<br><u>Edit Room
+<br><u>Edit Room</u>
 <br>![img_15.png](img_15.png)
 <br>![img_16.png](img_16.png)
-<br><u>Delete Room
+<br><u>Delete Room</u>
 <br>![img_17.png](img_17.png)
 <br>![img_18.png](img_18.png)
 <br>
 <br>
-<u><strong>Booking A Room</strong>
+<u><strong>Booking A Room</strong></u>
 <br>Command: /book
 <br>![img_19.png](img_19.png)
 <br>![img_20.png](img_20.png)
@@ -110,24 +110,24 @@ The additional telegram bot booking system will be a great help for staffs who a
 <br>![img_23.png](img_23.png)
 <br>
 <br>
-<u><strong>Available Room List Based On Date</strong>
+<u><strong>Available Room List Based On Date</strong></u>
 <br>Command: /roomlist
 <br>![img_24.png](img_24.png)
 <br>![img_25.png](img_25.png)
 <br>
 <br>
-<u><strong>System Admin Access</strong>
+<u><strong>System Admin Access</strong></u>
 <br>Command: /roomlist
 <br>System admin verification code: A221 PNG BOT
-<br><u>View Booking List
+<br><u>View Booking List</u>
 <br>![img_26.png](img_26.png)
 <br>![img_27.png](img_27.png)
-<br><u>View School Admin
+<br><u>View School Admin</u>
 <br>![img_28.png](img_28.png)
-<br><u>Approve School Admin
+<br><u>Approve School Admin</u>
 <br>![img_29.png](img_29.png)
 <br>![img_30.png](img_30.png)
-<br><u>Resign School Admin
+<br><u>Resign School Admin</u>
 <br>![img_31.png](img_31.png)
 <br>![img_32.png](img_32.png)
 
