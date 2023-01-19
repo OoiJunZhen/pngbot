@@ -5,10 +5,16 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 
+/**
+ * This class mainly is executed the database controller for use in PNG_bot
+ */
 public class DatabaseManager {
 
     Connection connection = null;
 
+    /**
+     * This method is to connect the jdbc database for onUpdateReceived in PNG_bot and auto delete book timer
+     */
     public DatabaseManager(){
         String url = "jdbc:sqlite:database.db";
         try {
@@ -19,6 +25,9 @@ public class DatabaseManager {
 
     }
 
+    /**
+     * This method is to connect the jdbc database for the sql statement
+     */
     private Connection connect() {
         // SQLite connection string
         String url = "jdbc:sqlite:database.db";
@@ -32,6 +41,7 @@ public class DatabaseManager {
     }
 
     /**
+     * @author Ang Toon Ph'ng
      * This method is to check the user exist in the database based on Identification Number and Email Inputed
      * @param User_IC Identification Number inputted
      * @param Email Email Inputted
@@ -64,26 +74,6 @@ public class DatabaseManager {
         }
         else
             return true;
-    }
-
-
-    public String getUserIC(String Email){
-        String User_IC = "";
-        String q = "SELECT User_IC FROM Users WHERE Email=?";
-
-
-        try(Connection conn = this.connect()){
-            PreparedStatement preparedStatement = conn.prepareStatement(q);
-
-            preparedStatement.setString(1,Email);
-            ResultSet rs = preparedStatement.executeQuery();
-            while(rs.next()){
-                return User_IC = rs.getString("User_IC");
-            }
-
-        }catch (SQLException e){
-            System.out.println(e.getMessage());       }
-        return User_IC;
     }
 
     /**
@@ -351,7 +341,8 @@ public class DatabaseManager {
 
     /**
      * @author Ang Toon Ph'ng
-     * @return
+     * Display a list of registered school
+     * @return registered school list
      */
     public String schoolBookList(){
         String list = "";
@@ -383,6 +374,12 @@ public class DatabaseManager {
         return list;
     }
 
+    /**
+     * @author Ang Toon Ph'ng
+     * Display the number of room for each school
+     * @param School_ID
+     * @return number of room
+     */
     public int NumberofRooms(Integer School_ID){
         int num = 0;
         String q = "SELECT * FROM Room WHERE School_ID=?";
@@ -408,7 +405,7 @@ public class DatabaseManager {
      * @author Ang Toon Ph'ng
      * Check whether the school has room under it, if yes return True
      * @param School_ID
-     * @return
+     * @return true = has room under the school, false = no room under the school
      */
     protected boolean SchoolHaveRoom(Integer School_ID){
         Integer check = 0;
@@ -439,8 +436,8 @@ public class DatabaseManager {
     }
 
     /**
-     * get School name based on school admin's IC
      * @author Ang Toon Ph'ng
+     * get School name based on school admin's IC
      * @return school name
      */
     public String getSchoolName(String User_IC){
@@ -462,12 +459,12 @@ public class DatabaseManager {
         }catch (SQLException e){
             System.out.println(e.getMessage());
         }
-        
+
         return schoolName;
     }
     /**
-     * get School name based on school admin *registration's* IC
      * @author Ang Toon Ph'ng
+     * get School name based on school admin *registration's* IC
      * @return school name
      */
     public String getSchoolName2(String User_IC){
@@ -494,10 +491,10 @@ public class DatabaseManager {
     }
 
     /**
-     *get User's role either is User or School Admin
-     *@author Ang Toon Ph'ng
+     * @author Ang Toon Ph'ng
+     * get User's role either is User or School Admin
      * @param User_IC
-     * @return
+     * @return user role
      */
     public String getUserRole(String User_IC){
         String userRole = "";
@@ -519,9 +516,10 @@ public class DatabaseManager {
     }
 
     /**
+     * @author Ang Toon Ph'ng
      * Check whether the school admin have office number, return true if got
      * @param User_IC
-     * @return
+     * @return true = have office number, false = no office number
      */
     public boolean checkOfficeNum(String User_IC){
         String no = "-";
@@ -548,10 +546,10 @@ public class DatabaseManager {
     }
 
     /**
-     * Check whether the school id inputted by user have rooms or exist
      * @author Ang Toon Ph'ng
+     * Check whether the school id inputted by user have rooms or exist
      * @param id
-     * @return
+     * @return true = exists, false = no exists
      */
     public boolean checkSchool(String id){
 
@@ -595,9 +593,10 @@ public class DatabaseManager {
     }
 
     /**
+     * @author Ang Toon Ph'ng
      * This method checks whether the schoolID exist in the database
      * @param school_ID
-     * @return
+     * @return true = exists, false = no exists
      */
     public boolean checkSchool2(String school_ID){
         Integer schoolID = 0;
@@ -639,8 +638,8 @@ public class DatabaseManager {
     }
 
     /**
-     * This method will display all rooms from the Room table
      * @author Ang Toon Ph'ng
+     * This method will display all rooms from the Room table
      * @return room list
      */
     public String getBookRoomList(Integer School_ID){
@@ -668,8 +667,9 @@ public class DatabaseManager {
 
     /**
      * @author Ang Toon Ph'ng
+     * This method will display all rooms for booking
      * @param School_ID
-     * @return
+     * @return booking list
      */
     public String SchoolBookedList(String School_ID){
 
@@ -716,12 +716,12 @@ public class DatabaseManager {
     }
 
     /**
+     * @author Ang Toon Ph'ng
      * List out all available room while checking whether that day are booked or not
-     *
      * @param School_ID
-     * @return
+     * @return room list
      */
-    public String RoomListwDate(Integer School_ID, String date) {
+    public String RoomListDate(Integer School_ID, String date) {
         String book = "";
         String book2 = "";
         String roomList = " ";
@@ -761,7 +761,8 @@ public class DatabaseManager {
     }
 
     /**
-     * @author Ang TOon Ph'ng
+     * @author Ang Toon Ph'ng
+     * This method will display all school admin added room
      * @param User_IC
      * @return
      */
@@ -790,6 +791,7 @@ public class DatabaseManager {
 
     /**
      * @author Ang Toon Ph'ng
+     * This method will delete the school admin who want to resign
      * @param User_IC
      */
     public void resignSchoolAd (String User_IC){
@@ -807,6 +809,7 @@ public class DatabaseManager {
 
     /**
      * @author Ang Toon Ph'ng
+     * This method will change the role of user who want to register as school admin
      * @param role
      * @param User_IC
      */
@@ -895,7 +898,7 @@ public class DatabaseManager {
      * Check whether the room id inputted by user exist in database
      * @param input
      * @param School_ID
-     * @return
+     * @return true = exists, false = no exists
      */
     public boolean checkRoom(String input, Integer School_ID){
         Integer Room_ID = 0;
@@ -1070,7 +1073,7 @@ public class DatabaseManager {
      * @param Room_ID
      * @param Date
      * @param Time
-     * @return
+     * @return  true = contradicted with booked time, false = no contradicted with booked time
      */
     public boolean checkTimeDatabase(Integer Room_ID, String Date, String Time){
 
@@ -1148,7 +1151,7 @@ public class DatabaseManager {
      * @param Date
      * @param StartDate
      * @param EndTime
-     * @return
+     * @return true = contradicted with booked time while acquired, false = no contradicted with booked time while acquired
      */
     public boolean checkTimeDatabase2(Integer Room_ID, String Date, java.util.Date StartDate, String EndTime){
 
@@ -1223,7 +1226,7 @@ public class DatabaseManager {
      * @author Ang Toon Ph'ng
      * Get room name based on room ID
      * @param Room_ID
-     * @return
+     * @return room name
      */
     public String getRoomName(Integer Room_ID){
         String roomName ="";
@@ -1248,6 +1251,7 @@ public class DatabaseManager {
 
     /**
      * @author Ang Toon Ph'ng
+     * This method is to add booking while the user booked room
      * @param Booking_Purpose
      * @param Book_StartTime
      * @param Book_EndTime
@@ -1280,10 +1284,10 @@ public class DatabaseManager {
     }
 
     /**
-     * This is to check whether user have made booking
      * @author Ang Toon Ph'ng
+     * This is to check whether user have made booking
      * @param User_IC
-     * @return
+     * @return true= made booking, false no made booking
      */
     public boolean checkBook(String User_IC) {
         Integer check_ID = 0;
@@ -1311,7 +1315,8 @@ public class DatabaseManager {
 
     /**
      * @author Ang Toon Ph'ng
-     * @return
+     * This metho is to display school admin list
+     * @return list
      */
     public String schoolAdminList(){
         String list = "";
@@ -1337,8 +1342,9 @@ public class DatabaseManager {
 
     /**
      * @author Ang Toon Ph'ng
+     * This method is to display school admin name
      * @param SchoolAd_ID
-     * @return
+     * @return list
      */
     public String schoolAdminName(String SchoolAd_ID){
         String list = "";
@@ -1365,8 +1371,9 @@ public class DatabaseManager {
 
     /**
      * @author Ang Toon Ph'ng
+     * This method is to confirm school admin IC
      * @param SchoolAd_ID
-     * @return
+     * @return list
      */
     public String schoolAdminIC(String SchoolAd_ID){
         String list = "";
@@ -1394,8 +1401,9 @@ public class DatabaseManager {
 
     /**
      * @author Ang Toon Ph'ng
+     * This method is to check the school admin name
      * @param SchoolAd_ID
-     * @return
+     * @return true=have name, no=no name
      */
     public boolean checkSchoolAdInput(String SchoolAd_ID){
         String list = "";
@@ -1423,6 +1431,12 @@ public class DatabaseManager {
             return true;
     }
 
+    /**
+     * @author Ang Toon Ph'ng
+     * This method is to get register school admin name and ID
+     * @param User_IC
+     * @return info
+     */
     public String getRegisterInfo(String User_IC){
         String info="";
 
@@ -1446,10 +1460,10 @@ public class DatabaseManager {
 
     /**
      * @author Low Xin Yin
-     * view booked
+     * This methdo is to view booked for user
      * @param User_IC
      * @param viewordetails
-     * @return
+     * @return room info
      */
     public String viewBooked (String User_IC, String viewordetails){
         String roomInfo = "";
@@ -1506,10 +1520,10 @@ public class DatabaseManager {
 
     /**
      * @author Low Xin Yin
-     * Display view and edit user information
+     * This method is to display view and edit user information
      * @param User_IC
      * @param vieworedit
-     * @return
+     * @return user info
      */
     public String userProfile (String User_IC, String vieworedit){
         String userInfo = "";
@@ -1553,7 +1567,7 @@ public class DatabaseManager {
 
     /**
      * @author Low Xin Yin
-     * User edit users name
+     * This method is able user edit users name
      * @param User_IC
      * @param Name
      */
@@ -1576,7 +1590,7 @@ public class DatabaseManager {
 
     /**
      * @author Low Xin Yin
-     * User edit users email
+     * This method is able user edit users email
      * @param User_IC
      * @param Email
      */
@@ -1596,7 +1610,7 @@ public class DatabaseManager {
 
     /**
      * @author Low Xin Yin
-     * User edit users staffID
+     * This method is able user edit users staffID
      * @param User_IC
      * @param SatffID
      */
@@ -1616,7 +1630,7 @@ public class DatabaseManager {
 
     /**
      * @author Low Xin Yin
-     * User edit users telefon number
+     * This method is able user edit users telefon number
      * @param User_IC
      * @param TelNo
      */
@@ -1636,7 +1650,7 @@ public class DatabaseManager {
 
     /**
      * @author Low Xin Yin
-     * User delete booked room
+     * This method is able user delete booked room
      * @param User_IC
      * @param Booking_ID
      * @return
@@ -1661,9 +1675,9 @@ public class DatabaseManager {
 
     /**
      * @author Low Xin Yin
-     * Get users booking list
+     * This method is to get users booking list
      * @param Booking_ID
-     * @return
+     * @return room info
      */
     public String getBookList(Integer Booking_ID) {
         String roomInfo = "";
@@ -1710,9 +1724,9 @@ public class DatabaseManager {
 
     /**
      * @author Low Xin Yin
-     * Check exists booking ID
+     * This method is to check exists booking ID
      * @param input
-     * @return
+     * @return true = exists booking ID, false = no exists booking ID
      */
     public boolean checkBookId(String User_IC, String input) {
 
@@ -1754,9 +1768,9 @@ public class DatabaseManager {
 
     /**
      * @author Low Xin Yin
-     * Check booking users IC
+     * This method is to check booking users IC
      * @param User_IC
-     * @return
+     * @return true = exists users IC, false = no exists users IC
      */
     public boolean checkUserIC(String User_IC) {
         Integer checkNum = 0;
@@ -1782,7 +1796,7 @@ public class DatabaseManager {
     }
 
     /**
-     *@author Tan Zhi Yang
+     * @author Tan Zhi Yang
      * Get room based on School ID and add "<book>" on it
      * @param School_ID
      * @param ICNO
@@ -1802,7 +1816,6 @@ public class DatabaseManager {
 
             ResultSet rs = preparedStatement.executeQuery();
             String input = getBookedRoomDate(ICNO, Booking_ID);
-//            System.out.println(input);
             System.out.println(checkBook(rs.getInt("Room_ID"), input));
             while (rs.next()) {
                 if (checkBook(rs.getInt("Room_ID"), input)) {
@@ -1833,7 +1846,7 @@ public class DatabaseManager {
     }
 
     /**
-     *@author Tan Zhi Yang
+     * @author Tan Zhi Yang
      * Get booking date based on User IC and Booking ID
      * @param ICNO
      * @param bookingID
@@ -1866,7 +1879,7 @@ public class DatabaseManager {
     }
 
     /**
-     *@author Tan Zhi Yang
+     * @author Tan Zhi Yang
      * Get timestamp based on User IC and Booking ID
      * @param ICNO
      * @param bookingID
@@ -1898,7 +1911,7 @@ public class DatabaseManager {
         return getDate;
     }
     /**
-     *@author Tan Zhi Yang
+     * @author Tan Zhi Yang
      * Get room detail based on Room ID
      * @param Room_ID
      * @return roomInfo
@@ -1932,7 +1945,7 @@ public class DatabaseManager {
     }
 
     /**
-     *@author Tan Zhi Yang
+     * @author Tan Zhi Yang
      * Get booking start time and booking end time based on Room ID
      * @param Room_ID
      * @param ICNO
@@ -1998,7 +2011,7 @@ public class DatabaseManager {
         return list;
     }
     /**
-     *@author Tan Zhi Yang
+     * @author Tan Zhi Yang
      * Get booking start time based on User IC and Booking ID
      * @param ICNO
      * @param bookingID
@@ -2033,7 +2046,7 @@ public class DatabaseManager {
     }
 
     /**
-     *@author Tan Zhi Yang
+     * @author Tan Zhi Yang
      * Get booking end time based on User IC and Booking ID
      * @param ICNO
      * @param bookingID
@@ -2068,7 +2081,7 @@ public class DatabaseManager {
     }
 
     /**
-     *@author Tan Zhi Yang
+     * @author Tan Zhi Yang
      * Get booking start time and booking end time based on User IC and Booking ID
      * @param ICNO
      * @param bookingID
@@ -2110,7 +2123,7 @@ public class DatabaseManager {
     }
 
     /**
-     *@author Tan Zhi Yang
+     * @author Tan Zhi Yang
      * Get room name based on User IC and Booking ID
      * @param ICNO
      * @param Booking_ID
@@ -2137,7 +2150,7 @@ public class DatabaseManager {
     }
 
     /**
-     *@author Tan Zhi Yang
+     * @author Tan Zhi Yang
      * Get room detail based on School ID
      * @param School_ID
      * @return roomList
@@ -2165,7 +2178,7 @@ public class DatabaseManager {
         return roomList;
     }
     /**
-     *@author Tan Zhi Yang
+     * @author Tan Zhi Yang
      * Edit booking location, booking start time and booking end time based on User IC and Booking ID
      * @param ICNO
      * @param Room_ID
@@ -2193,7 +2206,7 @@ public class DatabaseManager {
     }
 
     /**
-     *@author Tan Zhi Yang
+     * @author Tan Zhi Yang
      * Edit booking start time and booking end time based on User IC and Booking ID
      * @param ICNO
      * @param Book_StartTime
@@ -2219,7 +2232,7 @@ public class DatabaseManager {
     }
 
     /**
-     *@author Tan Zhi Yang
+     * @author Tan Zhi Yang
      * Edit booking location based on User IC and Booking ID
      * @param ICNO
      * @param Room_ID
@@ -2242,7 +2255,7 @@ public class DatabaseManager {
         }
     }
     /**
-     *@author Tan Zhi Yang
+     * @author Tan Zhi Yang
      * Edit booking date based on User IC and Booking ID
      * @param Book_StartTime
      * @param Book_EndTime
@@ -2266,7 +2279,7 @@ public class DatabaseManager {
     }
 
     /**
-     *@author Ooi Jun Zhen
+     * @author Ooi Jun Zhen
      * check Room Name
      * @param Room_Name
      */
@@ -2298,7 +2311,7 @@ public class DatabaseManager {
     }
 
     /**
-     *@author Ooi Jun Zhen
+     * @author Ooi Jun Zhen
      * Get Building Name based on Buiding ID
      * @param ID
      */
@@ -2326,7 +2339,7 @@ public class DatabaseManager {
     }
 
     /**
-     *@author Ooi Jun Zhen
+     * @author Ooi Jun Zhen
      * Add room to the database
      * @param RoomName
      * @param RoomDesc
@@ -2392,6 +2405,7 @@ public class DatabaseManager {
 
     /**
      * @author Ang Toon Ph'ng
+     * This method is to make the book record to be auto delete
      */
     public void autoDeleteBookRecord(){
         String del="";
@@ -2590,21 +2604,21 @@ public class DatabaseManager {
             PreparedStatement preparedStatement = conn.prepareStatement(q);
             ResultSet rs = preparedStatement.executeQuery();
             while(rs.next()){
-                 // System.out.println(checkSchoolAdminExist(rs.getInt("School_ID")));
-                    if(!checkHaveRoom(rs.getInt("School_ID"))){
-                        new1 = " <new>";
-                        new2 = "<new>:There are no rooms registered under this school.\n";
-                    }else{
-                        new1="";
-                    }
+                // System.out.println(checkSchoolAdminExist(rs.getInt("School_ID")));
+                if(!checkHaveRoom(rs.getInt("School_ID"))){
+                    new1 = " <new>";
+                    new2 = "<new>:There are no rooms registered under this school.\n";
+                }else{
+                    new1="";
+                }
 
-                    if (checkSchoolAdminExist(rs.getInt("School_ID"))){
-                        occupied1 = " <Occupied>";
-                        occupied2 = "<Occupied>: This school has already assigned an admin.\n";
+                if (checkSchoolAdminExist(rs.getInt("School_ID"))){
+                    occupied1 = " <Occupied>";
+                    occupied2 = "<Occupied>: This school has already assigned an admin.\n";
 
-                    }else{
-                        occupied1 = "";
-                    }
+                }else{
+                    occupied1 = "";
+                }
 
 
                 applicantInfo+=
@@ -2629,7 +2643,7 @@ public class DatabaseManager {
     /**
      * @author Tan Zhi Yang
      * This method checks if that school has a school admin
-     * @return
+     * @return true = has school admin, false = no school admin
      */
     public boolean checkSchoolAdminExist(Integer School_ID) {
         Integer list = 0;
@@ -2713,7 +2727,7 @@ public class DatabaseManager {
      * @author Tan Zhi Yang
      * This method is used to check if the register id entered by the user is correct
      * @param Register_ID
-     * @return
+     * @return true = correct register ID, false = wrong register ID
      */
     public boolean checkApplicantInput(String Register_ID){
         String list = "";
@@ -2799,7 +2813,7 @@ public class DatabaseManager {
      * @author Tan Zhi Yang
      * This method is used to check occupied
      * @param School_ID
-     * @return
+     * @return true = occupied, false = no occupied
      */
     public boolean checkOccupied(Integer School_ID){
         String User_IC = "";
@@ -2959,7 +2973,7 @@ public class DatabaseManager {
      * @author Tan Zhi Yang
      * This method is used to check whether school have room or not
      * @param School_ID
-     * @return
+     * @return true = have room , false = no have room
      */
     public boolean checkHaveRoom(Integer School_ID){
         int id = 0;
@@ -2992,7 +3006,7 @@ public class DatabaseManager {
      * Get details choose edit room information
      * @param Room_ID
      * @param School_ID
-     * @return
+     * @return room information
      */
     public String getEditRoomInfo(Integer Room_ID, Integer School_ID){
         String getRoomInfo = "";
@@ -3110,10 +3124,10 @@ public class DatabaseManager {
     }
 
     /**
-     * Check whether user registered to become school admin, if yes return true
      * @author Ang Toon ph'ng
+     * Check whether user registered to become school admin, if yes return true
      * @param User_IC
-     * @return
+     * @return true = registered, false = no registered
      */
     public boolean UserinRegister(String User_IC){
         Integer getUser = 0;
@@ -3141,6 +3155,7 @@ public class DatabaseManager {
 
     /**
      * @author Ang Toon Ph'ng
+     * This methos is to add the register school admin information
      * @param User_IC
      * @param School_ID
      */
@@ -3167,6 +3182,7 @@ public class DatabaseManager {
 
     /**
      * @author Ang Toon Ph'ng
+     * This method is to update register school admin status
      * @param User_IC
      * @param School_ID
      */
@@ -3250,4 +3266,3 @@ public class DatabaseManager {
     }
 
 }
-

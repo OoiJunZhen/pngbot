@@ -16,13 +16,24 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 
+/**
+ * This class is mainly for run all the commands and buttons in telegram bot
+ */
 public class PNG_bot extends TelegramLongPollingBot {
 
+    /**
+     * This method is to get bot username
+     * @return PNG_bot
+     */
     @Override
     public String getBotUsername() {
         return "PNG_bot";
     }
 
+    /**
+     * This method is to get bot token
+     * @return bot token
+     */
     @Override
     public String getBotToken() {
         return "5813032321:AAFWCPiKtpUVrPa5mTzu6ZhZhXGVP7Va_vc";
@@ -60,6 +71,10 @@ public class PNG_bot extends TelegramLongPollingBot {
      */
     Map<Long, RoomList> roomListMap = new HashMap<Long, RoomList>();
 
+    /**
+     * This method is to update the message of telegram bot
+     * @param update
+     */
     public void onUpdateReceived(Update update) {
         SendMessage sendMessage = new SendMessage();
         DatabaseManager databaseManager = new DatabaseManager();
@@ -2347,7 +2362,7 @@ public class PNG_bot extends TelegramLongPollingBot {
                             if(databaseManager.SchoolHaveRoom(Integer.parseInt(message.getText()))){
                                 userState.put(message.getChatId(),"RoomList:Date_AvailableTime");
                                 roomListMap.get(message.getChatId()).setSchoolID(Integer.parseInt(message.getText()));
-                                sendMessage.setText(databaseManager.RoomListwDate(Integer.parseInt(message.getText()),roomListMap.get(message.getChatId()).getDate()) +
+                                sendMessage.setText(databaseManager.RoomListDate(Integer.parseInt(message.getText()),roomListMap.get(message.getChatId()).getDate()) +
                                         "You can enter room id if you want to learn more about specific room.\n" +
                                         "Example reply: 2");
                             }else{
