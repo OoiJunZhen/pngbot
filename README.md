@@ -150,6 +150,7 @@ The additional telegram bot booking system will be a great help for staffs who a
 <li>Java Code Junkie. (2021). PreparedStatement | Jdbc Tutorial for Beginners. YouTube. Retrieved December 15, 2022, from https://www.youtube.com/watch?v=T0P-cfsD45o.</li> 
 <li>RedSysTech. (2021). # 111 Internal Working of HashMap in Java | How HashMap works internally in java | Java | RedSysTech. YouTube. Retrieved December 12, 2022, from https://www.youtube.com/watch?v=HArvh9AZ1IE.</li> 
 <li>Sebastian Daschner. (2022). Creating and using a Telegram Bot with Java. YouTube. Retrieved December 10, 2022, from https://www.youtube.com/watch?v=LCuC88s6m4k.</li> 
+<li>SQLite Tutorial. (2021, April 10). Connect to the sqlite database using sqlite JDBC driver. Retrieved December 12, 2022, from https://www.sqlitetutorial.net/sqlite-java/sqlite-jdbc-driver/ </li>
 <li>Cameron McKenzie. (2020). Multiple Values Per Key in Java Maps Example. YouTube. Retrieved December 13, 2022, from https://www.youtube.com/watch?v=6Zlo5Kf-CV4&amp;t=199s.</li>
 <li>Class SimpleDateFormat. Java™ Platform Standard Ed. 7. (2020, June 24). Retrieved December 15, 2022, from https://docs.oracle.com/javase/7/docs/api/java/text/SimpleDateFormat.html </li>
 <li>Crack Concepts. (2019). How To Join 3 Or More Tables In Sql | Two Ways. YouTube. Retrieved December 16, 2022, from https://www.youtube.com/watch?v=wdz4MRlzOyE. </li>
