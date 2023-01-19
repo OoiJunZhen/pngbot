@@ -69,67 +69,67 @@ The additional telegram bot booking system will be a great help for staffs who a
 
 <u><strong>Register User</strong></u>
 <br>Command: /registeruser
-<br>![img.png](img.png)
-<br>![img_1.png](img_1.png)
+<br>![img.png](images/img.png)
+<br>![img_1.png](images/img_1.png)
 <br>
 <br>
 <u><strong>User Login</strong></u>
 <br>Command: /login
 <br><u>View Booking Details</u>
-<br>![img_2.png](img_2.png)
-<br>![img_3.png](img_3.png)
+<br>![img_2.png](images/img_2.png)
+<br>![img_3.png](images/img_3.png)
 <br><u>Edit Booking</u>
-<br>![img_4.png](img_4.png)
-<br>![img_5.png](img_5.png)
-<br>![img_6.png](img_6.png)
-<br>![img_7.png](img_7.png)
+<br>![img_4.png](images/img_4.png)
+<br>![img_5.png](images/img_5.png)
+<br>![img_6.png](images/img_6.png)
+<br>![img_7.png](images/img_7.png)
 <br><u>Cancel Booking</u>
-<br>![img_8.png](img_8.png)
-<br>![img_9.png](img_9.png)
+<br>![img_8.png](images/img_8.png)
+<br>![img_9.png](images/img_9.png)
 <br><u>Edit Profile</u>
-<br>![img_10.png](img_10.png)
-<br>![img_11.png](img_11.png)
+<br>![img_10.png](images/img_10.png)
+<br>![img_11.png](images/img_11.png)
 <br><u>Add Room</u>
-<br>![img_12.png](img_12.png)
-<br>![img_13.png](img_13.png)
-<br>![img_14.png](img_14.png)
+<br>![img_12.png](images/img_12.png)
+<br>![img_13.png](images/img_13.png)
+<br>![img_14.png](images/img_14.png)
 <br><u>Edit Room</u>
-<br>![img_15.png](img_15.png)
-<br>![img_16.png](img_16.png)
+<br>![img_15.png](images/img_15.png)
+<br>![img_16.png](images/img_16.png)
 <br><u>Delete Room</u>
-<br>![img_17.png](img_17.png)
-<br>![img_18.png](img_18.png)
+<br>![img_17.png](images/img_17.png)
+<br>![img_18.png](images/img_18.png)
 <br>
 <br>
 <u><strong>Booking A Room</strong></u>
 <br>Command: /book
-<br>![img_19.png](img_19.png)
-<br>![img_20.png](img_20.png)
-<br>![img_21.png](img_21.png)
-<br>![img_22.png](img_22.png)
-<br>![img_23.png](img_23.png)
+<br>![img_19.png](images/img_19.png)
+<br>![img_20.png](images/img_20.png)
+<br>![img_21.png](images/img_21.png)
+<br>![img_22.png](images/img_22.png)
+<br>![img_23.png](images/img_23.png)
 <br>
 <br>
 <u><strong>Available Room List Based On Date</strong></u>
 <br>Command: /roomlist
-<br>![img_24.png](img_24.png)
-<br>![img_25.png](img_25.png)
+<br>![img_24.png](images/img_24.png)
+<br>![img_25.png](images/img_25.png)
 <br>
 <br>
 <u><strong>System Admin Access</strong></u>
 <br>Command: /roomlist
 <br>System admin verification code: A221 PNG BOT
 <br><u>View Booking List</u>
-<br>![img_26.png](img_26.png)
-<br>![img_27.png](img_27.png)
+<br>![img_26.png](images/img_26.png)
+<br>![img_27.png](images/img_27.png)
 <br><u>View School Admin</u>
-<br>![img_28.png](img_28.png)
+<br>![img_28.png](images/img_28.png)
 <br><u>Approve School Admin</u>
-<br>![img_29.png](img_29.png)
-<br>![img_30.png](img_30.png)
+<br>![img_29.png](images/img_29.png)
+<br>![img_30.png](images/img_30.png)
 <br><u>Resign School Admin</u>
-<br>![img_31.png](img_31.png)
-<br>![img_32.png](img_32.png)
+<br>![img_31.png](images/img_31.png)
+<br>![img_32.png](images/img_32.png)
 
 ## Use Case Diagram
 ![image](https://user-images.githubusercontent.com/80701138/213088182-709b99f4-679f-4f61-b8a6-aef319fc87ca.png)
