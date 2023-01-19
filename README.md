@@ -66,6 +66,71 @@ The additional telegram bot booking system will be a great help for staffs who a
 [User Manual.pdf](https://github.com/STIW3054-A221/group-project-png/files/10442345/User.Manual.pdf)
 
 ## Result/Output
+
+<u><strong>Register User</strong>
+<br>Command: /registeruser
+<br>![img.png](img.png)
+<br>![img_1.png](img_1.png)
+<br>
+<br>
+<u><strong>User Login</strong>
+<br>Command: /login
+<br><u>View Booking Details
+<br>![img_2.png](img_2.png)
+<br>![img_3.png](img_3.png)
+<br><u>Edit Booking
+<br>![img_4.png](img_4.png)
+<br>![img_5.png](img_5.png)
+<br>![img_6.png](img_6.png)
+<br>![img_7.png](img_7.png)
+<br><u>Cancel Booking
+<br>![img_8.png](img_8.png)
+<br>![img_9.png](img_9.png)
+<br><u>Edit Profile
+<br>![img_10.png](img_10.png)
+<br>![img_11.png](img_11.png)
+<br><u>Add Room
+<br>![img_12.png](img_12.png)
+<br>![img_13.png](img_13.png)
+<br>![img_14.png](img_14.png)
+<br><u>Edit Room
+<br>![img_15.png](img_15.png)
+<br>![img_16.png](img_16.png)
+<br><u>Delete Room
+<br>![img_17.png](img_17.png)
+<br>![img_18.png](img_18.png)
+<br>
+<br>
+<u><strong>Booking A Room</strong>
+<br>Command: /book
+<br>![img_19.png](img_19.png)
+<br>![img_20.png](img_20.png)
+<br>![img_21.png](img_21.png)
+<br>![img_22.png](img_22.png)
+<br>![img_23.png](img_23.png)
+<br>
+<br>
+<u><strong>Available Room List Based On Date</strong>
+<br>Command: /roomlist
+<br>![img_24.png](img_24.png)
+<br>![img_25.png](img_25.png)
+<br>
+<br>
+<u><strong>System Admin Access</strong>
+<br>Command: /roomlist
+<br>System admin verification code: A221 PNG BOT
+<br><u>View Booking List
+<br>![img_26.png](img_26.png)
+<br>![img_27.png](img_27.png)
+<br><u>View School Admin
+<br>![img_28.png](img_28.png)
+<br><u>Approve School Admin
+<br>![img_29.png](img_29.png)
+<br>![img_30.png](img_30.png)
+<br><u>Resign School Admin
+<br>![img_31.png](img_31.png)
+<br>![img_32.png](img_32.png)
+
 ## Use Case Diagram
 ![image](https://user-images.githubusercontent.com/80701138/213088182-709b99f4-679f-4f61-b8a6-aef319fc87ca.png)
 
@@ -89,7 +154,7 @@ The additional telegram bot booking system will be a great help for staffs who a
 <li>Date format in java: Java simple date format. Edureka. (2022, November 29). Retrieved December 14, 2022, from https://www.edureka.co/blog/date-format-in-java/#:~:text=The%20DateFormat%20class%20in%20Java,Format%20classes%20are%20not%20synchronized. </li>
 <li>JavaTPoint. (n.d.). Java convert string to date - javatpoint. www.javatpoint.com. Retrieved December 14, 2022, from https://www.javatpoint.com/java-string-to-date </li>
 <li>Refsnes Data. (n.d.). Javascript string split(). JavaScript String split() Method. Retrieved December 11, 2022, from https://www.w3schools.com/jsref/jsref_split.asp </li>
-</li>SendPulse Team. (2022, November 18). How to Create and Connect a Telegram Chatbot. SendPulse. Retrieved December 10, 2022, from https://sendpulse.com/knowledge-base/chatbot/telegram/create-telegram-chatbot </li>
+<li>SendPulse Team. (2022, November 18). How to Create and Connect a Telegram Chatbot. SendPulse. Retrieved December 10, 2022, from https://sendpulse.com/knowledge-base/chatbot/telegram/create-telegram-chatbot </li>
 <li>SQLite java: Select data. SQLite Tutorial. (2022, August 28). Retrieved December 13, 2022, from https://www.sqlitetutorial.net/sqlite-java/select/ </li>
 <li>Using SimpleDateFormat for custom date formatting and parsing. (n.d.). Retrieved December 17, 2022, from http://web.cs.ucla.edu/classes/winter15/cs144/projects/java/simpledateformat.html </li>
 <li>Stack Abuse. (2021). Java: Check if String is a Number. Retrieved January 10, 2023, from https://stackabuse.com/java-check-if-string-is-a-number/.</li>
