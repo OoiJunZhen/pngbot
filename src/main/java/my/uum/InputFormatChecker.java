@@ -6,8 +6,16 @@ import java.util.Date;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+/**
+ * This class is mainly for control the input format
+ */
 public class InputFormatChecker {
 
+    /**
+     * This method is to check the IC format for the date of birth and the 7th character must be 0
+     * @param ICNO
+     * @return format true or false
+     */
     public boolean checkICFormat(String ICNO){
         char c;
         int num;
@@ -70,6 +78,11 @@ public class InputFormatChecker {
 
     }
 
+    /**
+     * This method is to check the phone number format which the input is number and start with 0 as well as the number length
+     * @param TelNo
+     * @return format true or false
+     */
     public boolean TelNumFormat(String TelNo){
         //1. Check whether the input is numbers
         try{
@@ -93,6 +106,11 @@ public class InputFormatChecker {
 
     }
 
+    /**
+     * This method is to check the name format which the input is not just bunch or number
+     * @param name
+     * @return format true or false
+     */
     public boolean NameFormat(String name){
 
         //Check whether the name is null
@@ -111,7 +129,11 @@ public class InputFormatChecker {
         return false;
     }
 
-
+    /**
+     * This method is to check the email format which must have the symbol
+     * @param email
+     * @return format true or false
+     */
     public boolean EmailFormat(String email){
         final String emailRegex = "^[\\w-\\+]+(\\.[\\w]+)*@[\\w-]+(\\.[\\w]+)*(\\.[a-z]{2,})$";
 
@@ -125,6 +147,11 @@ public class InputFormatChecker {
             return false;
     }
 
+    /**
+     * This method is to check the date format which only can input number
+     * @param date
+     * @return format true or false
+     */
     public boolean DateFormat(String date){
         //date format reference 15/03/2024
 
@@ -174,7 +201,7 @@ public class InputFormatChecker {
      * THe purpose of this method is to ensure that the booking made is between 1 month to 1 year when booking is made
      * @param bookDate
      * @param bookMadeDate
-     * @return
+     * @return format true or false
      */
     public boolean bookDate(Date bookDate, Date bookMadeDate){
         //bookDate = the date that user want to use the room
@@ -221,6 +248,11 @@ public class InputFormatChecker {
 
     }
 
+    /**
+     * This method is to check the time format which the input will only have number
+     * @param input
+     * @return
+     */
     public boolean timeFormat(String input){
 
         int hour;
@@ -252,6 +284,11 @@ public class InputFormatChecker {
             return true;
     }
 
+    /**
+     * This method is to check the time open is from 8am to 8pm
+     * @param input
+     * @return format true or false
+     */
     public boolean timeOpen(String input){
 
         int hour;
@@ -274,6 +311,11 @@ public class InputFormatChecker {
 
     }
 
+    /**
+     * This method is to check the user input roomID in correct format
+     * @param room_id
+     * @return
+     */
     public boolean checkRoomIDInput(String room_id) {
         Integer Room_ID = 0;
 

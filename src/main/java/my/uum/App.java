@@ -6,6 +6,9 @@ import org.telegram.telegrambots.updatesreceivers.DefaultBotSession;
 import java.util.Calendar;
 import java.util.Timer;
 
+/**
+ * This class is mainly for register telegram bot and set timer as daemon thread to automatically delete the database information after a week
+ */
 public class App {
     public static void main(String[] args) throws ClassNotFoundException {
 

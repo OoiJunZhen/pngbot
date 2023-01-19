@@ -16,6 +16,9 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 
+/**
+ * This class is mainly for run all the commands and buttons in telegram bot
+ */
 public class PNG_bot extends TelegramLongPollingBot {
 
     @Override
@@ -2347,7 +2350,7 @@ public class PNG_bot extends TelegramLongPollingBot {
                             if(databaseManager.SchoolHaveRoom(Integer.parseInt(message.getText()))){
                                 userState.put(message.getChatId(),"RoomList:Date_AvailableTime");
                                 roomListMap.get(message.getChatId()).setSchoolID(Integer.parseInt(message.getText()));
-                                sendMessage.setText(databaseManager.RoomListwDate(Integer.parseInt(message.getText()),roomListMap.get(message.getChatId()).getDate()) +
+                                sendMessage.setText(databaseManager.RoomListDate(Integer.parseInt(message.getText()),roomListMap.get(message.getChatId()).getDate()) +
                                         "You can enter room id if you want to learn more about specific room.\n" +
                                         "Example reply: 2");
                             }else{

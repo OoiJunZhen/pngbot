@@ -96,3 +96,4 @@ The additional telegram bot booking system will be a great help for staffs who a
 </ol>
 
 ## JavaDoc
+https://xinyinlow.github.io/javaDoc-PNG_bot/my/uum/package-summary.html
