@@ -54,7 +54,7 @@
 ## Introduction
 In this day and age, virtual agents, also known as chatbots, are utilized to make abundances of tasks ranging from giving users reminders, booking rooms, to ordering pizza deliveries. In essence, the purpose of using a chatbot in this process is to streamline it into a straightforward discussion between the user and the machine, making it quicker and easier than navigating through several website options. People who are less familiar with computers should be able to utilise it in a way that they wouldn't be able to using the conventional methods since it should be highly straightforward.
 
-The additional telegram bot booking system will be a great help for staffs who are not well-versed in using computers while still wanting to make a booking for a room in School of Computing(SOC) without having to physically go to there. This not only saves time for staffs but for ones who manages the booking as well.
+The additional telegram bot booking system will be a great help for staffs who are not well-versed in using computers while still wanting to make a booking for a room in University Utara malaysia(UUM) without having to physically go to there. This not only saves time for staffs but for ones who manages the booking as well.
 
 
 
